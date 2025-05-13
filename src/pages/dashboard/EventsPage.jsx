@@ -3,18 +3,24 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Plus, Search, Filter, Calendar, MapPin, Trash2, Edit, Eye } from "lucide-react"
+import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import DashboardLayout from "@/components/DashboardLayout"
-import { useToast } from "@/components/ui/use-toast"
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu"
+import { Badge } from "../../components/ui/badge"
+import DashboardLayout from "@/components/layout/DashboardLayout"
+import { getCurrentUser, getEvents, deleteEvent } from "@/services/data-services"
 
 export default function EventsPage() {
-  const { toast } = useToast()
+  const user = getCurrentUser()
   const [events, setEvents] = useState([])
   const [filteredEvents, setFilteredEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -29,9 +35,7 @@ export default function EventsPage() {
         setFilteredEvents(data)
       } catch (error) {
         console.error("Error fetching events:", error)
-        toast({
-          variant: "destructive",
-          title: "Error",
+        toast.error("Error", {
           description: "No se pudieron cargar los eventos. Intente nuevamente.",
         })
       } finally {
@@ -40,7 +44,7 @@ export default function EventsPage() {
     }
 
     fetchEvents()
-  }, [toast])
+  }, [])
 
   useEffect(() => {
     // Aplicar filtros cuando cambian los criterios
@@ -68,15 +72,12 @@ export default function EventsPage() {
     try {
       await deleteEvent(id)
       setEvents(events.filter((event) => event.id !== id))
-      toast({
-        title: "Evento eliminado",
+      toast.success("Evento eliminado", {
         description: "El evento ha sido eliminado correctamente.",
       })
     } catch (error) {
       console.error("Error deleting event:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
+      toast.error("Error", {
         description: "No se pudo eliminar el evento. Intente nuevamente.",
       })
     }
@@ -106,7 +107,7 @@ export default function EventsPage() {
             <p className="text-[#435761]">Gestiona y participa en eventos relacionados con el Río Motagua.</p>
           </div>
           <Button className="bg-[#2ba4e0] hover:bg-[#418fb6]" asChild>
-            <Link href="/dashboard/events/new">
+            <Link to="/dashboard/events/new">
               <Plus className="mr-2 h-4 w-4" />
               Nuevo Evento
             </Link>
@@ -227,7 +228,7 @@ export default function EventsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/events/${event.id}`}>
+                            <Link to={`/dashboard/events/${event.id}`}>
                               <Eye className="mr-2 h-4 w-4" />
                               <span>Ver detalles</span>
                             </Link>
@@ -235,7 +236,7 @@ export default function EventsPage() {
                           {canManageEvent(event) && (
                             <>
                               <DropdownMenuItem asChild>
-                                <Link href={`/dashboard/events/edit/${event.id}`}>
+                                <Link to={`/dashboard/events/edit/${event.id}`}>
                                   <Edit className="mr-2 h-4 w-4" />
                                   <span>Editar</span>
                                 </Link>
