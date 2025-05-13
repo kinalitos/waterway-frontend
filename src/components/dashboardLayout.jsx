@@ -16,8 +16,7 @@ import {
   LogOut,
 } from "lucide-react"
 
-import { Button } from "../ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,13 +24,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "../ui/sheet"
-import { Separator } from "../ui/separator"
-import { useAuth } from "../../contexts/AuthContext"
+} from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
+import { Separator } from "@/components/ui/separator"
 
 export default function DashboardLayout({ children }) {
-  const { user, logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
