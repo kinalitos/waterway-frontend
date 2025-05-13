@@ -27,6 +27,7 @@ import {
 } from "./ui/dropdown-menu"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "./ui/sheet"
 import { Separator } from "./ui/separator"
+import { Button } from "./ui/button"
 
 export default function DashboardLayout({ children }) {
   const user =""
