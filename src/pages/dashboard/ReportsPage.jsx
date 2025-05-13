@@ -16,12 +16,11 @@ import {
 } from "../../components/ui/dropdown-menu"
 import { Badge } from "../../components/ui/badge"
 import DashboardLayout from "@/components/layout/DashboardLayout"
-import { getCurrentUser, getContaminationReports, deleteReport } from "../../services/data-service"
-import { useToast } from "../../components/ui/use-toast"
+import { getCurrentUser, getContaminationReports, deleteReport } from "@/services/data-services"
+import { toast } from "sonner"
 
 export default function ReportsPage() {
   const user = getCurrentUser()
-  const { toast } = useToast()
   const [reports, setReports] = useState([])
   const [filteredReports, setFilteredReports] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -36,33 +35,26 @@ export default function ReportsPage() {
         setFilteredReports(data)
       } catch (error) {
         console.error("Error fetching reports:", error)
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "No se pudieron cargar los reportes. Intente nuevamente.",
-        })
+        toast.error("No se pudieron cargar los reportes. Intente nuevamente.")
       } finally {
         setIsLoading(false)
       }
     }
 
     fetchReports()
-  }, [toast])
+  }, [])
 
   useEffect(() => {
-    // Aplicar filtros cuando cambian los criterios
     let filtered = [...reports]
 
-    // Filtrar por búsqueda
     if (searchQuery) {
       filtered = filtered.filter(
         (report) =>
           report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          report.description.toLowerCase().includes(searchQuery.toLowerCase()),
+          report.description.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
 
-    // Filtrar por estado
     if (statusFilter !== "all") {
       filtered = filtered.filter((report) => report.status === statusFilter)
     }
@@ -74,21 +66,13 @@ export default function ReportsPage() {
     try {
       await deleteReport(id)
       setReports(reports.filter((report) => report.id !== id))
-      toast({
-        title: "Reporte eliminado",
-        description: "El reporte ha sido eliminado correctamente.",
-      })
+      toast.success("El reporte ha sido eliminado correctamente.")
     } catch (error) {
       console.error("Error deleting report:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "No se pudo eliminar el reporte. Intente nuevamente.",
-      })
+      toast.error("No se pudo eliminar el reporte. Intente nuevamente.")
     }
   }
 
-  // Función para formatear fechas
   const formatDate = (dateString) => {
     const date = new Date(dateString)
     return new Intl.DateTimeFormat("es-GT", {
@@ -98,7 +82,6 @@ export default function ReportsPage() {
     }).format(date)
   }
 
-  // Determinar si el usuario puede eliminar un reporte
   const canDeleteReport = (report) => {
     return user?.role === "administrador" || user?.role === "moderador" || report.created_by === user?.id
   }

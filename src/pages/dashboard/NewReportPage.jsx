@@ -10,13 +10,11 @@ import { Input } from "../../components/ui/input"
 import { Label } from "../../components/ui/label"
 import { Textarea } from "../../components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card"
-import { useToast } from "../../components/ui/use-toast"
 import DashboardLayout from "@/components/layout/DashboardLayout"
-import { getCurrentUser, createContaminationReport } from "../../services/data-service"
+import { getCurrentUser, createContaminationReport } from "@/services/data-services"
 
 export default function NewReportPage() {
   const user = getCurrentUser()
-  const { toast: useToastToast } = useToast() // Renombrar para evitar colisión
   const navigate = useNavigate()
 
   const [title, setTitle] = useState("")
