@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useState } from "react"
+import { Link, useLocation } from "react-router-dom"
 import {
   MapPin,
   Menu,
@@ -16,7 +16,8 @@ import {
   LogOut,
 } from "lucide-react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import { Button } from "../ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,20 +25,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "./ui/sheet"
-import { Separator } from "./ui/separator"
+} from "../ui/dropdown-menu"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "../ui/sheet"
+import { Separator } from "../ui/separator"
+import { getCurrentUser } from "@/services/data-services"
 
 export default function DashboardLayout({ children }) {
-  const user =""
+  const user = getCurrentUser()
   const location = useLocation()
-  const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  // Cerrar el menú móvil cuando cambia la ruta
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [location.pathname])
 
   // Determinar los enlaces de navegación según el rol del usuario
   const getNavLinks = () => {
@@ -70,10 +66,6 @@ export default function DashboardLayout({ children }) {
   }
 
   const navLinks = getNavLinks()
-
-  const handleLogout = () => {
-    navigate("/login")
-  }
 
   const NavLink = ({ href, label, icon: Icon }) => {
     const isActive = location.pathname === href
@@ -135,7 +127,7 @@ export default function DashboardLayout({ children }) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src="https://via.placeholder.com/36" alt={user?.name || "Usuario"} />
+                  <AvatarImage src="/placeholder.svg?height=36&width=36" alt={user?.name || "Usuario"} />
                   <AvatarFallback className="bg-[#418fb6] text-white">{user?.name?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
               </Button>
@@ -155,9 +147,11 @@ export default function DashboardLayout({ children }) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Cerrar sesión</span>
+              <DropdownMenuItem asChild>
+                <Link to="/">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Salir</span>
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
