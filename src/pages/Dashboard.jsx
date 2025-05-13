@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Plus, Search, Filter, Calendar, MapPin, Trash2, Edit, Eye } from "lucide-react"
+import { toast } from "sonner" // Import sonner
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,10 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import DashboardLayout from "@/components/DashboardLayout"
-import { useToast } from "@/components/ui/use-toast"
 
 export default function EventsPage() {
-  const { toast } = useToast()
   const [events, setEvents] = useState([])
   const [filteredEvents, setFilteredEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -29,10 +28,8 @@ export default function EventsPage() {
         setFilteredEvents(data)
       } catch (error) {
         console.error("Error fetching events:", error)
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "No se pudieron cargar los eventos. Intente nuevamente.",
+        toast.error("No se pudieron cargar los eventos. Intente nuevamente.", {
+          description: "Error",
         })
       } finally {
         setIsLoading(false)
@@ -40,7 +37,7 @@ export default function EventsPage() {
     }
 
     fetchEvents()
-  }, [toast])
+  }, [])
 
   useEffect(() => {
     // Aplicar filtros cuando cambian los criterios
@@ -68,16 +65,13 @@ export default function EventsPage() {
     try {
       await deleteEvent(id)
       setEvents(events.filter((event) => event.id !== id))
-      toast({
-        title: "Evento eliminado",
-        description: "El evento ha sido eliminado correctamente.",
+      toast.success("El evento ha sido eliminado correctamente.", {
+        description: "Evento eliminado",
       })
     } catch (error) {
       console.error("Error deleting event:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "No se pudo eliminar el evento. Intente nuevamente.",
+      toast.error("No se pudo eliminar el evento. Intente nuevamente.", {
+        description: "Error",
       })
     }
   }
@@ -103,7 +97,7 @@ export default function EventsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-[#282f33]">Eventos</h1>
-            <p className="text-[#435761]">Gestiona y participa en eventos relacionados con el Río Motagua.</p>
+            <p className="text-[#435761]">Gestiona yparticipa en eventos relacionados con el Río Motagua.</p>
           </div>
           <Button className="bg-[#2ba4e0] hover:bg-[#418fb6]" asChild>
             <Link href="/dashboard/events/new">
