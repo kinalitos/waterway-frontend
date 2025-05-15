@@ -34,7 +34,6 @@ export default function MapsPage() {
   const canViewHeatMap = ["investigador", "moderador", "administrador"].includes(user?.role)
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[#282f33]">Mapas</h1>
@@ -200,6 +199,5 @@ export default function MapsPage() {
           </Card>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

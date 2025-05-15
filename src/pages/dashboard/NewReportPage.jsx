@@ -101,7 +101,6 @@ export default function NewReportPage() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[#282f33]">Nuevo Reporte de Contaminación</h1>
@@ -241,6 +240,5 @@ export default function NewReportPage() {
           </form>
         </Card>
       </div>
-    </DashboardLayout>
   )
 }

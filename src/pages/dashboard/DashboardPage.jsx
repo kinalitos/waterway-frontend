@@ -53,7 +53,6 @@ export default function DashboardPage() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[#282f33]">Bienvenido, {user?.name || "Usuario"}</h1>
@@ -253,6 +252,5 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

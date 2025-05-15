@@ -1,5 +1,5 @@
 "use client"
-
+import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import {
@@ -178,7 +178,9 @@ export default function DashboardLayout({ children }) {
 
         {/* Main content */}
         <main className="flex-1 overflow-auto bg-gray-50">
-          <div className="container py-6">{children}</div>
+          <div className="container py-6">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
