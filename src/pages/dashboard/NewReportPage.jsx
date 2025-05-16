@@ -5,25 +5,23 @@ import { useNavigate } from "react-router-dom"
 import { MapPin, Upload, X } from "lucide-react"
 import { toast } from "sonner" // Cambiado a importar directamente de sonner
 import { useCurrentLocation } from '../../hooks/useCurrentLocation.js'
-const { lat, lng, isGettingLocation, error, getLocation, setLat, setLng } = useCurrentLocation()
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import DashboardLayout from "@/components/layout/DashboardLayout"
 import { getCurrentUser, createContaminationReport } from "@/services/data-services"
 
 export default function NewReportPage() {
   const user = getCurrentUser()
   const navigate = useNavigate()
-
+  const { lat, lng, isGettingLocation, error, getLocation, setLat, setLng } = useCurrentLocation()
 
   const [data, setData] = useState({ title: "", description: "", lat: "", lng: "" })
   const [images, setImages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isGettingLocation, setIsGettingLocation] = useState(false)
+
 
   const handleGetCurrentLocation = () => {
     getLocation()

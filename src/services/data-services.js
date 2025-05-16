@@ -26,6 +26,20 @@ export const getCurrentUser = () => {
   }
 }
 
+
+//Función de get events cuando exista la conexión al API
+/*
+export async function getEvents({ searchQuery = "", status = "all" } = {}) {
+  const params = new URLSearchParams();
+  if (searchQuery) params.append("q", searchQuery);
+  if (status && status !== "all") params.append("status", status);
+
+  const res = await fetch(`/api/events/filter?${params.toString()}`);
+  if (!res.ok) throw new Error("Error al obtener eventos");
+  return await res.json();
+}
+*/
+
 // Funciones para manejar eventos
 export const getEvents = async () => {
   await simulateNetworkDelay()

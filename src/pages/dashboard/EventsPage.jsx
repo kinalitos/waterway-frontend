@@ -48,26 +48,17 @@ export default function EventsPage() {
   }, [])
 
   useEffect(() => {
-    // Aplicar filtros cuando cambian los criterios
-    let filtered = [...events]
-
-    // Filtrar por búsqueda
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (event) =>
-          event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          event.location?.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    }
-
-    // Filtrar por estado
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((event) => event.status === statusFilter)
-    }
-
-    setFilteredEvents(filtered)
-  }, [searchQuery, statusFilter, events])
+  setIsLoading(true);
+  getEvents({ searchQuery, status: statusFilter })
+    .then((data) => {
+      setEvents(data);
+      setFilteredEvents(data); // Puedes eliminar filteredEvents y usar solo events
+    })
+    .catch(() =>
+      toast.error("No se pudieron cargar los eventos. Intente nuevamente.")
+    )
+    .finally(() => setIsLoading(false));
+}, [searchQuery, statusFilter]);
 
   const handleDeleteEvent = async (id) => {
     try {
