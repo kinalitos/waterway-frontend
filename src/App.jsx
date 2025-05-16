@@ -2,8 +2,8 @@ import { useState } from 'react'
 import LandingPage from './pages/LandingPage'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import EventsPage from './pages/Dashboard'
-import Login from './pages/login/Login'
-import Register from './pages/login/Register'
+import Login from './pages/auth/login/Login.jsx'
+import Register from './pages/auth/signup/Register.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
