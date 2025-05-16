@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { MapPin, Upload, X } from "lucide-react"
 import { toast } from "sonner" // Cambiado a importar directamente de sonner
+import { useCurrentLocation } from '../../hooks/useCurrentLocation.js'
+const { lat, lng, isGettingLocation, error, getLocation, setLat, setLng } = useCurrentLocation()
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,25 +26,11 @@ export default function NewReportPage() {
   const [isGettingLocation, setIsGettingLocation] = useState(false)
 
   const handleGetCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error("La geolocalización no está disponible en su navegador.")
-      return
-    }
-
-    setIsGettingLocation(true)
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLat(position.coords.latitude.toString())
-        setLng(position.coords.longitude.toString())
-        setIsGettingLocation(false)
-      },
-      (error) => {
-        console.error("Error getting location:", error)
-        toast.error("No se pudo obtener su ubicación actual. Por favor, ingrésela manualmente.")
-        setIsGettingLocation(false)
-      },
-    )
+    getLocation()
   }
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files)
