@@ -8,8 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import DashboardLayout from "@/components/layout/DashboardLayout"
-import { getCurrentUser } from "../../services/data-services"
+import { getCurrentUser } from "@/services/data-services"
 
 export default function MapsPage() {
   const user = getCurrentUser()

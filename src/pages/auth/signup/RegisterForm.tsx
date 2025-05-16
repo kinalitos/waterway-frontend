@@ -2,14 +2,15 @@ import { useState, useRef, ReactNode, ComponentPropsWithoutRef } from "react"
 import * as Label from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
 import { User, X } from "lucide-react"
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils.js";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { signup, signIn } from "@/services/auth"
+import { signup } from "@/services/auth.js"
 import { z } from "zod"
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import React from "react";
+import { useAuth } from "@/providers/AuthProvider.js";
 
 const Button = ({
   className,
@@ -76,6 +77,9 @@ export function RegisterForm() {
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const {
+    login,
+  } = useAuth()
 
   const {
     register,
@@ -109,25 +113,33 @@ export function RegisterForm() {
     try {
       // Simulate API call
       const res = await signup({
-        ...data,
+        email: data.email,
+        password: data.password,
         name: data.firstName,
         last_name: data.lastName,
         // for now lets assume we can only signup as user
-        role: "user"
+        role: "usuario"
       })
       if (res.error) {
         toast.error(
-          "Error trying to create a user"
+          "Error tratando de crear usuario"
         )
         return;
       }
-      const user = res.data!
+      toast.success(
+        "User created successfully, trying to login now"
+      )
 
-      await signIn({
-        email: user.email, password: data.password, callbackUrl: "/"
+      const isLoggedIn = await login({
+        email: data.email, password: data.password, callbackUrl: "/"
       })
+      if (isLoggedIn) {
+        toast.success("Login exitoso")
+      } else {
+        toast.error("Login fallido")
+      }
     } catch (error) {
-      console.error("Registration failed", error)
+      toast.error("Error de todos")
     }
   }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Plus, Search, Filter, Calendar, MapPin, Trash2, Edit, Eye } from "lucide-react"
-import { toast } from "sonner" // Import sonner
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import DashboardLayout from "@/components/dashboardLayout.jsx"
+import { deleteEvent } from "@/services/data-services.js";
 
 export default function EventsPage() {
   const [events, setEvents] = useState([])

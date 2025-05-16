@@ -9,7 +9,7 @@
     },
     "module": "NodeNext",
     // ...
-    "jsx": "react",
+    "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true
   }
 }
