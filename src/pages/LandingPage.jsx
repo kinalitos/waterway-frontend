@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   ChevronRight,
   Database,
@@ -18,62 +18,120 @@ import {
   Leaf,
   ExternalLink,
   ArrowUpRight,
-} from "lucide-react"
+} from "lucide-react";
+import { Line, Bar, Doughnut } from "react-chartjs-2";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import RioMotaguaDataSection from "./RioMotaguaDataSection";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 
 export default function LandingPage() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [stats, setStats] = useState({ users: 0, reports: 0, solutions: 0, communities: 0 })
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [stats, setStats] = useState({
+    users: 0,
+    reports: 0,
+    solutions: 0,
+    communities: 0,
+  });
 
+  const targetStats = {
+  users: 3200,         // Voluntarios y monitores ciudadanos
+  reports: 1850,       // Reportes de contaminación registrados
+  solutions: 48,       // Iniciativas de solución implementadas
+  communities: 26,     // Comunidades ribereñas participantes
+};
   // Animación de conteo para estadísticas
   useEffect(() => {
-    const targetStats = { users: 2500, reports: 1280, solutions: 350, communities: 48 }
-    const duration = 2000
-    const frameDuration = 1000 / 60
-    const totalFrames = Math.round(duration / frameDuration)
-    let frame = 0
+    const targetStats = {
+      users: 2500,
+      reports: 1280,
+      solutions: 350,
+      communities: 48,
+    };
+    const duration = 2000;
+    const frameDuration = 1000 / 60;
+    const totalFrames = Math.round(duration / frameDuration);
+    let frame = 0;
 
     const timer = setInterval(() => {
-      frame++
-      const progress = frame / totalFrames
+      frame++;
+      const progress = frame / totalFrames;
       setStats({
         users: Math.floor(progress * targetStats.users),
         reports: Math.floor(progress * targetStats.reports),
         solutions: Math.floor(progress * targetStats.solutions),
         communities: Math.floor(progress * targetStats.communities),
-      })
+      });
 
       if (frame === totalFrames) {
-        clearInterval(timer)
+        clearInterval(timer);
       }
-    }, frameDuration)
+    }, frameDuration);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
+
+  // Animación de conteo para estadísticas
+  useEffect(() => {
+    const targetStats = {
+      users: 2500,
+      reports: 1280,
+      solutions: 350,
+      communities: 48,
+    };
+    const duration = 2000;
+    const frameDuration = 1000 / 60;
+    const totalFrames = Math.round(duration / frameDuration);
+    let frame = 0;
+
+    const timer = setInterval(() => {
+      frame++;
+      const progress = frame / totalFrames;
+      setStats({
+        users: Math.floor(progress * targetStats.users),
+        reports: Math.floor(progress * targetStats.reports),
+        solutions: Math.floor(progress * targetStats.solutions),
+        communities: Math.floor(progress * targetStats.communities),
+      });
+
+      if (frame === totalFrames) {
+        clearInterval(timer);
+      }
+    }, frameDuration);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Detectar scroll para cambiar estilo del header
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
-        setIsScrolled(true)
+        setIsScrolled(true);
       } else {
-        setIsScrolled(false)
+        setIsScrolled(false);
       }
-    }
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col">
       <header
         className={`sticky top-0 z-50 w-full border-b backdrop-blur transition-all duration-300 ${
-          isScrolled ? "bg-white/95 border-gray-200 shadow-sm" : "bg-transparent border-transparent"
+          isScrolled
+            ? "bg-white/95 border-gray-200 shadow-sm"
+            : "bg-transparent border-transparent"
         }`}
       >
         <div className="container mx-auto px-4 md:px-6 max-w-7xl flex h-16 items-center justify-between">
@@ -86,21 +144,30 @@ export default function LandingPage() {
 
           {/* Navegación de escritorio */}
           <nav className="hidden md:flex gap-6">
-            <Link to="#features" className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium">
+            <a
+              href="#features"
+              className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium"
+            >
               Características
-            </Link>
-            <Link to="#roles" className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium">
+            </a>
+            <a
+              href="#roles"
+              className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium"
+            >
               Roles
-            </Link>
-            <Link to="#data" className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium">
+            </a>
+            <a
+              href="#data"
+              className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium"
+            >
               Datos
-            </Link>
-            <Link to="#testimonials" className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium">
+            </a>
+            <a
+              href="#testimonials"
+              className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium"
+            >
               Testimonios
-            </Link>
-            <Link to="#about" className="text-[#435761] hover:text-[#2ba4e0] transition-colors font-medium">
-              Acerca de
-            </Link>
+            </a>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -122,7 +189,11 @@ export default function LandingPage() {
               className="md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </Button>
           </div>
         </div>
@@ -166,7 +237,11 @@ export default function LandingPage() {
               >
                 Acerca de
               </Link>
-              <Link to="/login" className="text-[#418fb6] font-medium" onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                to="/login"
+                className="text-[#418fb6] font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 Iniciar Sesión
               </Link>
             </nav>
@@ -195,12 +270,17 @@ export default function LandingPage() {
                     Monitoreo y Soluciones para el Río Motagua
                   </h1>
                   <p className="max-w-[600px] text-gray-200 md:text-xl">
-                    Utilizamos tecnología avanzada y datos satelitales de la red Copernicus para monitorear, analizar y
-                    proponer soluciones a la contaminación del Río Motagua.
+                    Utilizamos tecnología avanzada y datos satelitales de la red
+                    Copernicus para monitorear, analizar y proponer soluciones a
+                    la contaminación del Río Motagua.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button size="lg" className="bg-[#2ba4e0] hover:bg-[#418fb6] text-white" asChild>
+                  <Button
+                    size="lg"
+                    className="bg-[#2ba4e0] hover:bg-[#418fb6] text-white"
+                    asChild
+                  >
                     <Link to="/register">
                       Comenzar ahora
                       <ChevronRight className="ml-2 h-4 w-4" />
@@ -209,28 +289,36 @@ export default function LandingPage() {
                   <Button
                     size="lg"
                     variant=""
-                    className="border-white text-white hover:bg-white hover:text-[#435761] cursor-pointer"
+                    className="border-white text-white bg-gray-800 hover:bg-gray-900 hover:text-[#435761] cursor-pointer"
                   >
-                    Ver demostración
+                    Ver mapa en tiempo real
                   </Button>
                 </div>
 
                 {/* Estadísticas */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/20">
                   <div className="text-center">
-                    <p className="text-2xl md:text-3xl font-bold text-white">{stats.users.toLocaleString()}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-white">
+                      {stats.users.toLocaleString()}
+                    </p>
                     <p className="text-sm text-gray-300">Usuarios</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl md:text-3xl font-bold text-white">{stats.reports.toLocaleString()}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-white">
+                      {stats.reports.toLocaleString()}
+                    </p>
                     <p className="text-sm text-gray-300">Reportes</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl md:text-3xl font-bold text-white">{stats.solutions.toLocaleString()}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-white">
+                      {stats.solutions.toLocaleString()}
+                    </p>
                     <p className="text-sm text-gray-300">Soluciones</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl md:text-3xl font-bold text-white">{stats.communities.toLocaleString()}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-white">
+                      {stats.communities.toLocaleString()}
+                    </p>
                     <p className="text-sm text-gray-300">Comunidades</p>
                   </div>
                 </div>
@@ -257,7 +345,9 @@ export default function LandingPage() {
                     <div className="h-3 w-3 rounded-full bg-green-500 mr-2 animate-pulse"></div>
                     <p className="font-bold text-[#282f33]">Monitoreo activo</p>
                   </div>
-                  <p className="text-sm text-[#435761]">Actualizado hace 5 min</p>
+                  <p className="text-sm text-[#435761]">
+                    Actualizado hace 5 min
+                  </p>
                 </div>
               </div>
             </div>
@@ -266,21 +356,54 @@ export default function LandingPage() {
           {/* Logos de colaboradores */}
           <div className="container mx-auto px-4 md:px-6 max-w-7xl mt-16 relative z-10">
             <div className="flex flex-col items-center">
-              <p className="text-sm text-gray-300 mb-6">Colaboramos con organizaciones líderes</p>
-              <div className="flex flex-wrap justify-center gap-8 opacity-70">
-                <div className="h-8 w-24 bg-white/80 rounded"></div>
-                <div className="h-8 w-24 bg-white/80 rounded"></div>
-                <div className="h-8 w-24 bg-white/80 rounded"></div>
-                <div className="h-8 w-24 bg-white/80 rounded"></div>
-                <div className="h-8 w-24 bg-white/80 rounded"></div>
+              <p className="text-sm text-gray-300 mb-6 text-center">
+                Colaboramos con organizaciones líderes
+              </p>
+              <div className="flex flex-wrap justify-center gap-10 opacity-80">
+                <img
+                  src="https://object.cloud.sdsc.edu/v1/AUTH_opentopography/www/images/logos/Copernicus_logo.png"
+                  alt="Logo de Copernicus"
+                  title="Copernicus"
+                  className="h-10 md:h-12 object-contain transition-transform duration-300 hover:scale-105"
+                />
+                <img
+                  src="https://tienda.uvg.edu.gt/attach/tiendas/Logo-vertical-verde_5a8b26cb76441.jpg"
+                  alt="Logo de UVG"
+                  title="Universidad del Valle de Guatemala"
+                  className="h-10 md:h-12 object-contain transition-transform duration-300 hover:scale-105"
+                />
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-10 md:h-12 w-24 bg-white/10 rounded flex items-center justify-center text-white/50 border border-white/20"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16l4-4m0 0l4-4m-4 4l4 4M20 4v16"
+                      />
+                    </svg>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
         {/* Sección de características mejorada */}
-        <section id="features" className="w-full py-20 md:py-32">
-          <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+        <section className="w-full py-20 md:py-32">
+          <div
+            id="features"
+            className="container mx-auto px-4 md:px-6 max-w-7xl"
+          >
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <Badge className="bg-[#418fb6]/20 text-[#418fb6] hover:bg-[#418fb6]/30 border-none">
                 Características
@@ -290,8 +413,8 @@ export default function LandingPage() {
                   Análisis de Datos Ambientales
                 </h2>
                 <p className="max-w-[900px] text-[#435761] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Nuestra plataforma ofrece herramientas avanzadas para el análisis de datos de las Cuencas del Río
-                  Motagua
+                  Nuestra plataforma ofrece herramientas avanzadas para el
+                  análisis de datos de las Cuencas del Río Motagua
                 </p>
               </div>
             </div>
@@ -302,15 +425,19 @@ export default function LandingPage() {
                   <div className="p-3 rounded-lg bg-[#418fb6]/10 w-fit group-hover:bg-[#2ba4e0]/20 transition-colors">
                     <MapPin className="h-6 w-6 text-[#2ba4e0]" />
                   </div>
-                  <CardTitle className="mt-4 text-[#282f33]">Mapeo de Contaminación</CardTitle>
+                  <CardTitle className="mt-4 text-[#282f33]">
+                    Mapeo de Contaminación
+                  </CardTitle>
                   <CardDescription className="text-[#435761]">
-                    Visualiza fuentes de contaminación reportadas por usuarios e investigadores.
+                    Visualiza fuentes de contaminación reportadas por usuarios e
+                    investigadores.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-[#434546]">
-                    Accede a mapas interactivos que muestran puntos críticos de contaminación a lo largo del río con
-                    actualizaciones en tiempo real.
+                    Accede a mapas interactivos que muestran puntos críticos de
+                    contaminación a lo largo del río con actualizaciones en
+                    tiempo real.
                   </p>
                 </CardContent>
                 <CardFooter>
@@ -328,15 +455,19 @@ export default function LandingPage() {
                   <div className="p-3 rounded-lg bg-[#418fb6]/10 w-fit group-hover:bg-[#2ba4e0]/20 transition-colors">
                     <Database className="h-6 w-6 text-[#2ba4e0]" />
                   </div>
-                  <CardTitle className="mt-4 text-[#282f33]">Datos Satelitales</CardTitle>
+                  <CardTitle className="mt-4 text-[#282f33]">
+                    Datos Satelitales
+                  </CardTitle>
                   <CardDescription className="text-[#435761]">
-                    Integración con la red Copernicus para obtener datos satelitales actualizados.
+                    Integración con la red Copernicus para obtener datos
+                    satelitales actualizados.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-[#434546]">
-                    Analiza imágenes satelitales y datos ambientales para identificar cambios en la calidad del agua y
-                    monitorear la salud del ecosistema.
+                    Analiza imágenes satelitales y datos ambientales para
+                    identificar cambios en la calidad del agua y monitorear la
+                    salud del ecosistema.
                   </p>
                 </CardContent>
                 <CardFooter>
@@ -354,15 +485,19 @@ export default function LandingPage() {
                   <div className="p-3 rounded-lg bg-[#418fb6]/10 w-fit group-hover:bg-[#2ba4e0]/20 transition-colors">
                     <BarChart2 className="h-6 w-6 text-[#2ba4e0]" />
                   </div>
-                  <CardTitle className="mt-4 text-[#282f33]">Análisis Avanzado</CardTitle>
+                  <CardTitle className="mt-4 text-[#282f33]">
+                    Análisis Avanzado
+                  </CardTitle>
                   <CardDescription className="text-[#435761]">
-                    Herramientas de análisis para investigadores y empresas comprometidas.
+                    Herramientas de análisis para investigadores y empresas
+                    comprometidas.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-[#434546]">
-                    Genera informes detallados y visualizaciones para comprender mejor los patrones de contaminación y
-                    desarrollar estrategias efectivas.
+                    Genera informes detallados y visualizaciones para comprender
+                    mejor los patrones de contaminación y desarrollar
+                    estrategias efectivas.
                   </p>
                 </CardContent>
                 <CardFooter>
@@ -384,10 +519,13 @@ export default function LandingPage() {
                     <Globe className="h-6 w-6 text-[#2ba4e0]" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-[#282f33] mb-2">Cobertura Geográfica Completa</h3>
+                    <h3 className="text-xl font-bold text-[#282f33] mb-2">
+                      Cobertura Geográfica Completa
+                    </h3>
                     <p className="text-[#435761]">
-                      Monitoreo de toda la cuenca del Río Motagua, desde su nacimiento en Guatemala hasta su
-                      desembocadura en Honduras.
+                      Monitoreo de toda la cuenca del Río Motagua, desde su
+                      nacimiento en Guatemala hasta su desembocadura en
+                      Honduras.
                     </p>
                     <ul className="mt-4 space-y-2">
                       {[
@@ -411,12 +549,19 @@ export default function LandingPage() {
                     <Droplets className="h-6 w-6 text-[#2ba4e0]" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-[#282f33] mb-2">Análisis de Calidad del Agua</h3>
+                    <h3 className="text-xl font-bold text-[#282f33] mb-2">
+                      Análisis de Calidad del Agua
+                    </h3>
                     <p className="text-[#435761]">
-                      Mediciones precisas de parámetros clave para determinar la salud del ecosistema acuático.
+                      Mediciones precisas de parámetros clave para determinar la
+                      salud del ecosistema acuático.
                     </p>
                     <ul className="mt-4 space-y-2">
-                      {["Niveles de oxígeno", "Presencia de contaminantes", "Biodiversidad acuática"].map((item, i) => (
+                      {[
+                        "Niveles de oxígeno",
+                        "Presencia de contaminantes",
+                        "Biodiversidad acuática",
+                      ].map((item, i) => (
                         <li key={i} className="flex items-center">
                           <CheckCircle2 className="h-5 w-5 text-[#2ba4e0] mr-2 flex-shrink-0" />
                           <span className="text-sm text-[#435761]">{item}</span>
@@ -431,16 +576,19 @@ export default function LandingPage() {
         </section>
 
         {/* Sección de roles mejorada */}
-        <section id="roles" className="w-full py-20 md:py-32 bg-gradient-to-b from-[#282f33] to-[#435761] text-white">
-          <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+        <section className="w-full py-20 md:py-32 bg-gradient-to-b from-[#282f33] to-[#435761] text-white">
+          <div id="roles" className="container mx-auto px-4 md:px-6 max-w-7xl">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <Badge className="bg-[#2ba4e0]/20 text-[#2ba4e0] hover:bg-[#2ba4e0]/30 border-none">
                 Roles de Usuario
               </Badge>
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Colaboración Multidisciplinaria</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Colaboración Multidisciplinaria
+                </h2>
                 <p className="max-w-[900px] text-gray-300 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Diferentes roles para diferentes necesidades, todos trabajando por un mismo objetivo
+                  Diferentes roles para diferentes necesidades, todos trabajando
+                  por un mismo objetivo
                 </p>
               </div>
             </div>
@@ -452,8 +600,8 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Usuario</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
-                  Acceso a eventos, publicaciones y reportes de contaminación. Pueden inscribirse a eventos y crear
-                  reportes.
+                  Acceso a eventos, publicaciones y reportes de contaminación.
+                  Pueden inscribirse a eventos y crear reportes.
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
@@ -477,8 +625,8 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Investigador</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
-                  Acceso a mapas de calor y datos de Copernicus por defecto. Pueden realizar análisis avanzados de
-                  datos.
+                  Acceso a mapas de calor y datos de Copernicus por defecto.
+                  Pueden realizar análisis avanzados de datos.
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
@@ -502,7 +650,8 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Empresa</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
-                  Perfil empresarial personalizable. Pueden participar en iniciativas y acceder a datos relevantes.
+                  Perfil empresarial personalizable. Pueden participar en
+                  iniciativas y acceder a datos relevantes.
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
@@ -526,8 +675,8 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Moderador</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
-                  Gestión de reportes y publicaciones. Pueden editar, crear y eliminar contenido para mantener la
-                  calidad.
+                  Gestión de reportes y publicaciones. Pueden editar, crear y
+                  eliminar contenido para mantener la calidad.
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
@@ -551,7 +700,8 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Administrador</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
-                  Acceso completo a todas las funcionalidades del sistema sin restricciones.
+                  Acceso completo a todas las funcionalidades del sistema sin
+                  restricciones.
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
@@ -573,8 +723,8 @@ export default function LandingPage() {
         </section>
 
         {/* Nueva sección: Impacto */}
-        <section id="impact" className="w-full py-20 md:py-32 bg-white">
-          <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+        <section className="w-full py-20 md:py-32 bg-white">
+          <div id="impact" className="container mx-auto px-4 md:px-6 max-w-7xl">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <Badge className="bg-[#418fb6]/20 text-[#418fb6] hover:bg-[#418fb6]/30 border-none">
                 Nuestro Impacto
@@ -584,7 +734,8 @@ export default function LandingPage() {
                   Transformando el Río Motagua
                 </h2>
                 <p className="max-w-[900px] text-[#435761] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Nuestras iniciativas están generando un cambio real y medible en la salud del ecosistema
+                  Nuestras iniciativas están generando un cambio real y medible
+                  en la salud del ecosistema
                 </p>
               </div>
             </div>
@@ -597,10 +748,13 @@ export default function LandingPage() {
                       <Leaf className="h-6 w-6 text-[#2ba4e0]" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-[#282f33] mb-2">Recuperación de Ecosistemas</h3>
+                      <h3 className="text-xl font-bold text-[#282f33] mb-2">
+                        Recuperación de Ecosistemas
+                      </h3>
                       <p className="text-[#435761]">
-                        Hemos logrado restaurar más de 15 km de ribera, mejorando la biodiversidad y la calidad del agua
-                        en estas zonas.
+                        Hemos logrado restaurar más de 15 km de ribera,
+                        mejorando la biodiversidad y la calidad del agua en
+                        estas zonas.
                       </p>
                     </div>
                   </div>
@@ -610,9 +764,12 @@ export default function LandingPage() {
                       <Users className="h-6 w-6 text-[#2ba4e0]" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-[#282f33] mb-2">Participación Comunitaria</h3>
+                      <h3 className="text-xl font-bold text-[#282f33] mb-2">
+                        Participación Comunitaria
+                      </h3>
                       <p className="text-[#435761]">
-                        Más de 48 comunidades participan activamente en nuestras iniciativas de limpieza y conservación.
+                        Más de 48 comunidades participan activamente en nuestras
+                        iniciativas de limpieza y conservación.
                       </p>
                     </div>
                   </div>
@@ -622,9 +779,12 @@ export default function LandingPage() {
                       <Database className="h-6 w-6 text-[#2ba4e0]" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-[#282f33] mb-2">Base de Datos Científica</h3>
+                      <h3 className="text-xl font-bold text-[#282f33] mb-2">
+                        Base de Datos Científica
+                      </h3>
                       <p className="text-[#435761]">
-                        Hemos recopilado más de 10,000 muestras y análisis que sirven como base para políticas públicas.
+                        Hemos recopilado más de 10,000 muestras y análisis que
+                        sirven como base para políticas públicas.
                       </p>
                     </div>
                   </div>
@@ -652,9 +812,13 @@ export default function LandingPage() {
                   <div className="absolute -bottom-4 -right-4 bg-white p-4 rounded-lg shadow-lg">
                     <div className="flex items-center">
                       <div className="h-3 w-3 rounded-full bg-green-500 mr-2"></div>
-                      <p className="font-bold text-[#282f33]">+45% mejora en calidad del agua</p>
+                      <p className="font-bold text-[#282f33]">
+                        +45% mejora en calidad del agua
+                      </p>
                     </div>
-                    <p className="text-sm text-[#435761]">En zonas de intervención</p>
+                    <p className="text-sm text-[#435761]">
+                      En zonas de intervención
+                    </p>
                   </div>
                 </div>
               </div>
@@ -663,16 +827,22 @@ export default function LandingPage() {
         </section>
 
         {/* Nueva sección: Testimonios */}
-        <section id="testimonials" className="w-full py-20 md:py-32 bg-[#f8fafc]">
-          <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+        <section className="w-full py-20 md:py-32 bg-[#f8fafc]">
+          <div
+            id="testimonials"
+            className="container mx-auto px-4 md:px-6 max-w-7xl"
+          >
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <Badge className="bg-[#418fb6]/20 text-[#418fb6] hover:bg-[#418fb6]/30 border-none">Testimonios</Badge>
+              <Badge className="bg-[#418fb6]/20 text-[#418fb6] hover:bg-[#418fb6]/30 border-none">
+                Testimonios
+              </Badge>
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-[#282f33]">
                   Lo que dicen nuestros usuarios
                 </h2>
                 <p className="max-w-[900px] text-[#435761] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Descubre cómo nuestra plataforma está ayudando a investigadores, comunidades y empresas
+                  Descubre cómo nuestra plataforma está ayudando a
+                  investigadores, comunidades y empresas
                 </p>
               </div>
             </div>
@@ -698,7 +868,10 @@ export default function LandingPage() {
                   role: "Director de Sostenibilidad, EcoSolutions",
                 },
               ].map((testimonial, i) => (
-                <div key={i} className="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                <div
+                  key={i}
+                  className="bg-white p-8 rounded-xl shadow-md border border-gray-100"
+                >
                   <div className="flex flex-col h-full">
                     <div className="mb-4">
                       {[...Array(5)].map((_, i) => (
@@ -708,11 +881,17 @@ export default function LandingPage() {
                       ))}
                     </div>
                     <blockquote className="flex-grow">
-                      <p className="text-[#435761] italic">"{testimonial.quote}"</p>
+                      <p className="text-[#435761] italic">
+                        "{testimonial.quote}"
+                      </p>
                     </blockquote>
                     <div className="mt-6 pt-6 border-t border-gray-100">
-                      <p className="font-bold text-[#282f33]">{testimonial.author}</p>
-                      <p className="text-sm text-[#435761]">{testimonial.role}</p>
+                      <p className="font-bold text-[#282f33]">
+                        {testimonial.author}
+                      </p>
+                      <p className="text-sm text-[#435761]">
+                        {testimonial.role}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -721,26 +900,36 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section>
+  <RioMotaguaDataSection />
+</section>
         {/* CTA mejorado */}
         <section className="w-full py-20 md:py-32 bg-[#2ba4e0] text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI3NjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy92MDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMCAwaDEyMDB2NjAwSDB6Ii8+PHBhdGggZD0iTTAgMGgxMjAwdjYwMEgweiIvPjxwYXRoIGQ9Ik0xMjAwIDBoLTUuMUw0ODAgMzAwLjFMNS4xIDBoLTUuMXY2MDBIMHYtNS4xTDQ4MCAzMDAuMSA5NjAgNTk0LjlsLjEuMWgyNDBWMHoiIGZpbGw9IiNGRkYiLz48cGF0aCBkPSJNMTIwMCAwbC0yNDAgMTIwLTI0MCAxMjBWMGgtNzIwdjI0MGwtMjQwIDEyMEwwIDQ4MHYxMjBoMTIwMFYweiIgZmlsbD0iI0ZGRiIvPjwvZz48L3N2Zz4=')]"></div>
           </div>
-
           <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2 max-w-3xl">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Únete a nuestra misión</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                  Únete a nuestra misión
+                </h2>
                 <p className="max-w-[800px] text-white/90 md:text-xl/relaxed">
-                  Sé parte del cambio y contribuye a la conservación del Río Motagua. Juntos podemos hacer la
-                  diferencia.
+                  Sé parte del cambio y contribuye a la conservación del Río
+                  Motagua. Juntos podemos hacer la diferencia.
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
-                <Button size="lg" className="w-full bg-white text-[#2ba4e0] hover:bg-white/90" asChild>
+                <Button
+                  size="lg"
+                  className="w-full bg-white text-[#2ba4e0] hover:bg-white/90"
+                  asChild
+                >
                   <Link to="/register">Registrarse Ahora</Link>
                 </Button>
-                <p className="text-xs text-white/70">Al registrarte, aceptas nuestros términos y condiciones.</p>
+                <p className="text-xs text-white/70">
+                  Al registrarte, aceptas nuestros términos y condiciones.
+                </p>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12 w-full max-w-4xl mx-auto">
@@ -778,19 +967,22 @@ export default function LandingPage() {
                 <span>RíoMotagua</span>
               </div>
               <p className="max-w-xs text-gray-400 text-sm">
-                Utilizando tecnología y datos para la conservación y restauración del Río Motagua y sus ecosistemas.
+                Utilizando tecnología y datos para la conservación y
+                restauración del Río Motagua y sus ecosistemas.
               </p>
               <div className="flex space-x-4 mt-6">
-                {["facebook", "twitter", "instagram", "linkedin"].map((social) => (
-                  <a
-                    key={social}
-                    href={`#${social}`}
-                    className="p-2 rounded-full bg-[#435761] hover:bg-[#2ba4e0] transition-colors"
-                  >
-                    <span className="sr-only">{social}</span>
-                    <div className="h-5 w-5 bg-white/80 rounded-sm"></div>
-                  </a>
-                ))}
+                {["facebook", "twitter", "instagram", "linkedin"].map(
+                  (social) => (
+                    <a
+                      key={social}
+                      href={`#${social}`}
+                      className="p-2 rounded-full bg-[#435761] hover:bg-[#2ba4e0] transition-colors"
+                    >
+                      <span className="sr-only">{social}</span>
+                      <div className="h-5 w-5 bg-white/80 rounded-sm"></div>
+                    </a>
+                  )
+                )}
               </div>
             </div>
 
@@ -799,22 +991,34 @@ export default function LandingPage() {
                 <h4 className="text-lg font-semibold">Proyecto</h4>
                 <ul className="space-y-2 text-sm">
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Acerca de
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Equipo
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Colaboradores
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Financiamiento
                     </Link>
                   </li>
@@ -824,22 +1028,34 @@ export default function LandingPage() {
                 <h4 className="text-lg font-semibold">Recursos</h4>
                 <ul className="space-y-2 text-sm">
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Datos
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Publicaciones
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       API <ExternalLink className="h-3 w-3 inline ml-1" />
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Documentación
                     </Link>
                   </li>
@@ -849,22 +1065,34 @@ export default function LandingPage() {
                 <h4 className="text-lg font-semibold">Legal</h4>
                 <ul className="space-y-2 text-sm">
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Privacidad
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Términos
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Cookies
                     </Link>
                   </li>
                   <li>
-                    <Link to="#" className="text-gray-400 hover:text-[#2ba4e0] transition-colors">
+                    <Link
+                      to="#"
+                      className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
+                    >
                       Licencias
                     </Link>
                   </li>
@@ -875,7 +1103,9 @@ export default function LandingPage() {
                 <ul className="space-y-2 text-sm">
                   <li className="text-gray-400">info@riomotagua.org</li>
                   <li className="text-gray-400">+502 1234 5678</li>
-                  <li className="text-gray-400">Ciudad de Guatemala, Guatemala</li>
+                  <li className="text-gray-400">
+                    Ciudad de Guatemala, Guatemala
+                  </li>
                   <li>
                     <Button
                       variant="outline"
@@ -891,15 +1121,26 @@ export default function LandingPage() {
           </div>
 
           <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-400">© 2025 Proyecto Río Motagua. Todos los derechos reservados.</p>
+            <p className="text-sm text-gray-400">
+              © 2025 Proyecto Río Motagua. Todos los derechos reservados.
+            </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
-              <Link to="#" className="text-xs text-gray-400 hover:text-[#2ba4e0]">
+              <Link
+                to="#"
+                className="text-xs text-gray-400 hover:text-[#2ba4e0]"
+              >
                 Mapa del sitio
               </Link>
-              <Link to="#" className="text-xs text-gray-400 hover:text-[#2ba4e0]">
+              <Link
+                to="#"
+                className="text-xs text-gray-400 hover:text-[#2ba4e0]"
+              >
                 Accesibilidad
               </Link>
-              <Link to="#" className="text-xs text-gray-400 hover:text-[#2ba4e0]">
+              <Link
+                to="#"
+                className="text-xs text-gray-400 hover:text-[#2ba4e0]"
+              >
                 Prensa
               </Link>
             </div>
@@ -907,5 +1148,5 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
