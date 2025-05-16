@@ -16,11 +16,10 @@ import {
 } from "../../components/ui/dropdown-menu"
 import DashboardLayout from "@/components/layout/DashboardLayout"
 import { getCurrentUser, getPublications, deletePublication } from "@/services/data-services"
-// Eliminada la importación de useToast
+import {formatDate} from '../../utils/utils.js'
 
 export default function PublicationsPage() {
   const user = getCurrentUser()
-  // Eliminada la línea const { toast: useToastToast } = useToast()
   const [publications, setPublications] = useState([])
   const [filteredPublications, setFilteredPublications] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -45,19 +44,14 @@ export default function PublicationsPage() {
     fetchPublications()
   }, []) // Eliminada la dependencia de toast
 
+  // GET QUE FUNCIONA CON EL API
   useEffect(() => {
-    // Aplicar filtros cuando cambia la búsqueda
-    if (searchQuery) {
-      const filtered = publications.filter(
-        (publication) =>
-          publication.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          publication.content.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-      setFilteredPublications(filtered)
-    } else {
-      setFilteredPublications(publications)
-    }
-  }, [searchQuery, publications])
+  setIsLoading(true);
+  getPublications(searchQuery)
+    .then(setPublications)
+    .catch(() => toast.error("No se pudieron cargar las publicaciones"))
+    .finally(() => setIsLoading(false));
+}, [searchQuery]);
 
   const handleDeletePublication = async (id) => {
     try {
@@ -72,16 +66,6 @@ export default function PublicationsPage() {
         description: "No se pudo eliminar la publicación. Intente nuevamente.",
       })
     }
-  }
-
-  // Función para formatear fechas
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat("es-GT", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(date)
   }
 
   // Determinar si el usuario puede editar o eliminar una publicación

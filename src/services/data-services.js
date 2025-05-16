@@ -142,6 +142,17 @@ export const deleteEvent = async (id) => {
   return { success: true }
 }
 
+//Para cuando ya exista la conexión al API
+/*
+// data-services.js
+export async function getPublications(searchQuery = "") {
+  const params = searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : "";
+  const res = await fetch(`/api/publications${params}`);
+  if (!res.ok) throw new Error("Error al obtener publicaciones");
+  return await res.json();
+}
+*/
+
 // Funciones para manejar publicaciones
 export const getPublications = async () => {
   await simulateNetworkDelay()
