@@ -18,6 +18,7 @@ import {
 import { Badge } from "../../components/ui/badge"
 import DashboardLayout from "@/components/layout/DashboardLayout"
 import { getCurrentUser, getEvents, deleteEvent } from "@/services/data-services"
+import {formatDate} from '../../utils/utils.js'
 
 export default function EventsPage() {
   const user = getCurrentUser()
@@ -81,16 +82,6 @@ export default function EventsPage() {
         description: "No se pudo eliminar el evento. Intente nuevamente.",
       })
     }
-  }
-
-  // Función para formatear fechas
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat("es-GT", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(date)
   }
 
   // Determinar si el usuario puede editar o eliminar un evento

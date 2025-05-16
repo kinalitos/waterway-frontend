@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import DashboardLayout from "@/components/layout/DashboardLayout"
 import { getCurrentUser, getRecentEvents, getRecentPublications, getRecentReports } from "@/services/data-services"
 import { Button } from "../../components/ui/button"
+import{formatDate} from '../../utils/utils.js'
 
 export default function DashboardPage() {
   const user = getCurrentUser()
@@ -41,16 +42,6 @@ export default function DashboardPage() {
 
     fetchDashboardData()
   }, [])
-
-  // Función para formatear fechas
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat("es-GT", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(date)
-  }
 
   return (
       <div className="space-y-6">

@@ -17,10 +17,8 @@ export default function NewReportPage() {
   const user = getCurrentUser()
   const navigate = useNavigate()
 
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [lat, setLat] = useState("")
-  const [lng, setLng] = useState("")
+
+  const [data, setData] = useState({ title: "", description: "", lat: "", lng: "" })
   const [images, setImages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isGettingLocation, setIsGettingLocation] = useState(false)
