@@ -11,6 +11,8 @@ import PublicationsPage from "./pages/dashboard/PublicationsPage";
 import DashboardLayout from "./components/dashboardLayout";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "sonner";
+import MapaIA from "./pages/ai-map/MapaIA";
+
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/ai-map" element={<MapaIA />} />
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="maps" element={<MapsPage />} />

@@ -81,7 +81,7 @@ export default function LandingPage() {
             <div className="bg-[#2ba4e0] text-white p-1 rounded-md">
               <MapPin className="h-6 w-6" />
             </div>
-            <span>RíoMotagua</span>
+            <span>WaterWay+</span>
           </div>
 
           {/* Navegación de escritorio */}
