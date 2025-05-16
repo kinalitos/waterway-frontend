@@ -27,7 +27,7 @@ export function setUpInterceptors(navigate) {
       return response
     },
     error => {
-      console.log({ message: error.response.data.mensaje })
+      //console.log({ message: error.response.data.mensaje })
       if (
         error.response.status === 401 &&
         error.response.data.mensaje === "Invalid token."
@@ -44,7 +44,7 @@ export function setUpInterceptors(navigate) {
             if (window.location.pathname !== "/login") navigate("/login")
           })
       }
-      console.log({ error })
+      //console.log({ error })
       return Promise.reject(error)
     }
   )

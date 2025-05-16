@@ -1,6 +1,7 @@
 // //////////////////////////////////////////////////// //
 // MÉTODOS EVENTS
 // //////////////////////////////////////////////////// //
+import { api } from '../lib/auth.ts'
 
 export const getEvents = async ({ searchQuery = "", status = "all" } = {}) => {
     try {
@@ -8,7 +9,7 @@ export const getEvents = async ({ searchQuery = "", status = "all" } = {}) => {
         if (searchQuery) params.q = searchQuery;
         if (status && status !== "all") params.status = status;
 
-        const response = await apiClient.get('/events/filter', { params });
+        const response = await api.get('/events', { params });
         return response.data;
     } catch (err) {
         return {
@@ -20,7 +21,7 @@ export const getEvents = async ({ searchQuery = "", status = "all" } = {}) => {
 
 export const getEvent = async (id) => {
     try {
-        return await apiClient.get(`/events/${id}`)
+        return await api.get(`/events/${id}`)
     } catch (err) {
         return {
             error: true,
@@ -31,7 +32,7 @@ export const getEvent = async (id) => {
 
 export const createEvent = async (event) => {
     try {
-        return await apiClient.post('/events', event)
+        return await api.post('/events', event)
     } catch (err) {
         return {
             error: true,
@@ -42,7 +43,7 @@ export const createEvent = async (event) => {
 
 export const updateEvent = async (id, event) => {
     try {
-        return await apiClient.put(`/events/${id}`, event)
+        return await api.put(`/events/${id}`, event)
     } catch (err) {
         return {
             error: true,
@@ -53,7 +54,7 @@ export const updateEvent = async (id, event) => {
 
 export const deleteEvent = async (id) => {
     try {
-        return await apiClient.delete(`/events/${id}`)
+        return await api.delete(`/events/${id}`)
     } catch (err) {
         return {
             error: true,
@@ -64,7 +65,7 @@ export const deleteEvent = async (id) => {
 
 export const agregarImagenEvent = async (id, imagen) => {
     try {
-        return await apiClient.post(`/events/${id}/images`, imagen)
+        return await api.post(`/events/${id}/images`, imagen)
     } catch (err) {
         return {
             error: true,
@@ -73,9 +74,9 @@ export const agregarImagenEvent = async (id, imagen) => {
     }
 }
 
-export const postParticipante = async (id, participante) => {
+export const agregarParticipante = async (id, participante) => {
     try {
-        return await apiClient.post(`/events/${id}/participants`)
+        return await api.post(`/events/${id}/participants`)
     } catch (err) {
         return {
             error: true,

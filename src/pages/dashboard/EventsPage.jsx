@@ -1,63 +1,54 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Calendar, Edit, Eye, Filter, MapPin, Plus, Search, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Plus, Search, Filter, Calendar, MapPin, Trash2, Edit, Eye } from "lucide-react"
 import { toast } from "sonner"
 
+import { useAuth } from "@/providers/AuthProvider.js"
+import { deleteEvent, getEvents } from "@/services/events-api.js"
+import { useDebouncedCallback } from 'use-debounce'
+import { Badge } from "../../components/ui/badge"
 import { Button } from "../../components/ui/button"
-import { Input } from "../../components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu"
-import { Badge } from "../../components/ui/badge"
-import DashboardLayout from "@/components/layout/DashboardLayout"
-import { getCurrentUser, getEvents, deleteEvent } from "@/services/data-services"
-import {formatDate} from '../../utils/utils.js'
+import { Input } from "../../components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
+import { formatDate } from '../../utils/utils.js'
+//import { createEvent } from "../../services/events-api.js"
 
 export default function EventsPage() {
-  const user = getCurrentUser()
+  const {user} = useAuth()
   const [events, setEvents] = useState([])
-  const [filteredEvents, setFilteredEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  
+  //const { createEvent, loading } = useCreateEvent()
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const data = await getEvents()
-        setEvents(data)
-        setFilteredEvents(data)
-      } catch (error) {
-        console.error("Error fetching events:", error)
-        toast.error("Error", {
-          description: "No se pudieron cargar los eventos. Intente nuevamente.",
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchEvents()
-  }, [])
-
-  useEffect(() => {
-  setIsLoading(true);
-  getEvents({ searchQuery, status: statusFilter })
+  const debounced = useDebouncedCallback(
+    (value) => {
+        setIsLoading(true);
+    getEvents({ searchQuery: value, status: statusFilter })
     .then((data) => {
       setEvents(data);
-      setFilteredEvents(data); // Puedes eliminar filteredEvents y usar solo events
     })
     .catch(() =>
       toast.error("No se pudieron cargar los eventos. Intente nuevamente.")
     )
     .finally(() => setIsLoading(false));
+
+    },
+    300
+  )
+
+  useEffect(() => {
+    debounced(searchQuery)
 }, [searchQuery, statusFilter]);
 
   const handleDeleteEvent = async (id) => {
@@ -91,7 +82,7 @@ export default function EventsPage() {
           <Button className="bg-[#2ba4e0] hover:bg-[#418fb6]" asChild>
             <Link to="/dashboard/events/new">
               <Plus className="mr-2 h-4 w-4" />
-              Nuevo Evento
+              Nuevo
             </Link>
           </Button>
         </div>
@@ -145,14 +136,14 @@ export default function EventsPage() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ) : filteredEvents.length === 0 ? (
+              ) : events.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="h-24 text-center">
                     No se encontraron eventos.
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredEvents.map((event) => (
+                events.map((event) => (
                   <TableRow key={event.id}>
                     <TableCell className="font-medium">{event.title}</TableCell>
                     <TableCell>
