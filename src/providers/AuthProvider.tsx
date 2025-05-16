@@ -64,6 +64,8 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = async () => {
+    localStorage.removeItem("accessToken")
+    localStorage.removeItem("refreshToken")
     setAuthState({
       loading: false,
       authenticated: false,
