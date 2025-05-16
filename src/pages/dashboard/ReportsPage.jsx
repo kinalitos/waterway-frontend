@@ -4,18 +4,17 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Plus, Search, Filter, MapPin, Trash2, Eye } from "lucide-react"
 
-import { Button } from "../../components/ui/button"
-import { Input } from "../../components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu"
-import { Badge } from "../../components/ui/badge"
-import DashboardLayout from "@/components/layout/DashboardLayout"
+} from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 import { getCurrentUser, getContaminationReports, deleteReport } from "@/services/data-services"
 import { toast } from "sonner"
 

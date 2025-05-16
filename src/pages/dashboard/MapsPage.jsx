@@ -11,15 +11,14 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import axios from "axios"
-import DashboardLayout from "@/components/layout/DashboardLayout"
-import { getCurrentUser } from "../../services/data-services"
+import { useAuth } from "@/providers/AuthProvider.js";
 
 // Configuración inicial del mapa
 const INITIAL_CENTER = { lat: 14.9515591, lon: -89.7709795 }
 const INITIAL_ZOOM = 13
 
 export default function MapsPage() {
-  const user = getCurrentUser()
+  const { user } = useAuth()
   const [showReportsMap, setShowReportsMap] = useState(true)
   const [activeTab, setActiveTab] = useState("satellite")
   const [isMapLoading, setIsMapLoading] = useState(false)
