@@ -6,7 +6,10 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "module": "NodeNext",
     // ...
+    "jsx": "react-jsx",
+    "allowSyntheticDefaultImports": true
   }
 }
