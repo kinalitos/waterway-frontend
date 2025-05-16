@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Map, Layers } from "lucide-react"
+import { Map } from "lucide-react"
 import { MapContainer, TileLayer, ImageOverlay, CircleMarker } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Button } from "@/components/ui/button"
