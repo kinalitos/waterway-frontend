@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "@/providers/AuthProvider.js";
 import { useEffect } from "react";
 import { setUpInterceptors } from "@/lib/auth.js";
+import MapaIA from "./pages/ai-map/MapaIA";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function RoutesWrapper() {
       <Route path="/" element={<LandingPage/>}/>
       <Route path="/login" element={<Login/>}/>
       <Route path="/register" element={<Register/>}/>
+      <Route path="/mapa-ia" element={<MapaIA />} />
       <Route path="/dashboard" element={<DashboardLayout/>}>
         <Route index element={<DashboardPage/>}/>
         <Route path="maps" element={<MapsPage/>}/>
