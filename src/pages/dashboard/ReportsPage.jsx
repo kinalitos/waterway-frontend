@@ -87,7 +87,6 @@ export default function ReportsPage() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -230,6 +229,5 @@ export default function ReportsPage() {
           </Table>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

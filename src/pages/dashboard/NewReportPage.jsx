@@ -4,47 +4,31 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { MapPin, Upload, X } from "lucide-react"
 import { toast } from "sonner" // Cambiado a importar directamente de sonner
+import { useCurrentLocation } from '../../hooks/useCurrentLocation.js'
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import DashboardLayout from "@/components/layout/DashboardLayout"
 import { getCurrentUser, createContaminationReport } from "@/services/data-services"
 
 export default function NewReportPage() {
   const user = getCurrentUser()
   const navigate = useNavigate()
+  const { lat, lng, isGettingLocation, error, getLocation, setLat, setLng } = useCurrentLocation()
 
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [lat, setLat] = useState("")
-  const [lng, setLng] = useState("")
+  const [data, setData] = useState({ title: "", description: "", lat: "", lng: "" })
   const [images, setImages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isGettingLocation, setIsGettingLocation] = useState(false)
+
 
   const handleGetCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error("La geolocalización no está disponible en su navegador.")
-      return
-    }
-
-    setIsGettingLocation(true)
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLat(position.coords.latitude.toString())
-        setLng(position.coords.longitude.toString())
-        setIsGettingLocation(false)
-      },
-      (error) => {
-        console.error("Error getting location:", error)
-        toast.error("No se pudo obtener su ubicación actual. Por favor, ingrésela manualmente.")
-        setIsGettingLocation(false)
-      },
-    )
+    getLocation()
   }
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files)
@@ -101,7 +85,6 @@ export default function NewReportPage() {
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[#282f33]">Nuevo Reporte de Contaminación</h1>
@@ -241,6 +224,5 @@ export default function NewReportPage() {
           </form>
         </Card>
       </div>
-    </DashboardLayout>
   )
 }
