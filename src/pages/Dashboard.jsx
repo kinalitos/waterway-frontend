@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
-import DashboardLayout from "@/components/dashboardLayout.jsx"
 import { deleteEvent } from "@/services/data-services.js";
+import { getEvents } from "@/services/events-api.js";
 
 export default function EventsPage() {
   const [events, setEvents] = useState([])

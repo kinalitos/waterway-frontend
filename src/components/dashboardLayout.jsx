@@ -29,7 +29,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose 
 import { Separator } from "./ui/separator"
 import { Button } from "./ui/button"
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout() {
   const user =""
   const location = useLocation()
   const navigate = useNavigate()
@@ -178,7 +178,7 @@ export default function DashboardLayout({ children }) {
 
         {/* Main content */}
         <main className="flex-1 overflow-auto bg-gray-50">
-          <div className="container py-6">
+          <div className="container py-6 px-4">
             <Outlet />
           </div>
         </main>
