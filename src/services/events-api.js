@@ -73,7 +73,7 @@ export const agregarImagenEvent = async (id, imagen) => {
     }
 }
 
-export const postParticipante = async (id, participante) => {
+export const postParticipante = async (id) => {
     try {
         return await apiClient.post(`/events/${id}/participants`)
     } catch (err) {
