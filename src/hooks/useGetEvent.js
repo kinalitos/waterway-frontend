@@ -12,8 +12,8 @@ export function useGetEvent(eventId) {
     setIsLoading(false);
     if (response.error) {
       toast.error(
-        response?.err?.response?.data?.msg ||
-          response?.err?.data?.msg ||
+        response?.error?.response?.data?.msg ||
+          response?.error?.data?.msg ||
           "Error al obtener el evento."
       );
       setEvent(null);
@@ -39,8 +39,8 @@ export function useGetEvents({ searchQuery = "", status = "all" } = {}) {
     setIsLoading(false);
     if (response.error) {
       toast.error(
-        response?.err?.response?.data?.msg ||
-          response?.err?.data?.msg ||
+        response?.error?.response?.data?.msg ||
+          response?.error?.data?.msg ||
           "Error al obtener eventos."
       );
       setEvents([]);

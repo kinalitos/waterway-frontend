@@ -11,15 +11,15 @@ export const useDeleteEvent = () => {
         const response = await deleteEvent(id);
         setIsLoading(false);
         if (response.error) {
-            if (response?.err?.response?.data?.errors) {
-                let arr = response?.err?.response?.data?.errors;
+            if (response?.error?.response?.data?.errors) {
+                let arr = response?.error?.response?.data?.errors;
                 arr.forEach(error => {
                     toast.error(error.msg);
                 });
             } else {
                 toast.error(
-                    response?.err?.response?.data?.msg ||
-                    response?.err?.data?.msg ||
+                    response?.error?.response?.data?.msg ||
+                    response?.error?.data?.msg ||
                     'Error deleting event. Try again.'
                 );
             }
