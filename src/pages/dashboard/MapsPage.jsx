@@ -48,7 +48,43 @@ export default function MapsPage() {
     setDate(newDate)
   }
 
-  // Función para obtener imágenes del backend
+  // Nueva función para invertir los colores RGB de un blob de imagen
+  const invertImageColors = (blob) => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image()
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas")
+          canvas.width = img.width
+          canvas.height = img.height
+          const ctx = canvas.getContext("2d")
+          ctx.drawImage(img, 0, 0)
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+          const data = imageData.data
+          for (let i = 0; i < data.length; i += 4) {
+            // Invertir cada canal RGB
+            data[i] = 255 - data[i]     // R
+            data[i + 1] = 255 - data[i + 1] // G
+            data[i + 2] = 255 - data[i + 2] // B
+          }
+          ctx.putImageData(imageData, 0, 0)
+          canvas.toBlob((newBlob) => {
+            if (newBlob) {
+              resolve(URL.createObjectURL(newBlob))
+            } else {
+              reject(new Error("No se pudo crear el blob de la imagen invertida"))
+            }
+          }, "image/png")
+        } catch (err) {
+          reject(err)
+        }
+      }
+      img.onerror = () => reject(new Error("No se pudo cargar la imagen para invertir colores"))
+      img.src = URL.createObjectURL(blob)
+    })
+  }
+
+  // Modifica fetchImage para invertir colores solo si es necesario
   const fetchImage = async (layer) => {
     if (!mapRef.current) return
     setIsMapLoading(true)
@@ -57,7 +93,6 @@ export default function MapsPage() {
       const bounds = map.getBounds()
       const size = map.getSize()
 
-      // Validar dimensiones
       if (size.x <= 0 || size.y <= 0) {
         throw new Error("Las dimensiones del mapa no son válidas")
       }
@@ -78,8 +113,13 @@ export default function MapsPage() {
         { responseType: "blob" }
       )
 
-      // Usar la imagen original sin invertir colores
-      const imageUrl = URL.createObjectURL(response.data)
+      let imageUrl
+      if (layer === "water_quality") {
+        // Invertir colores solo para la capa de calidad de agua
+        imageUrl = await invertImageColors(response.data)
+      } else {
+        imageUrl = URL.createObjectURL(response.data)
+      }
 
       setBbox([
         [bounds.getSouth(), bounds.getWest()],
