@@ -29,11 +29,11 @@ export function setUpInterceptors(navigate) {
     error => {
       console.log({ message: error.response.data.mensaje })
       if (
-        error.response.status === 401 &&
-        error.response.data.mensaje === "Invalid token."
+        error.response.status === 401 ||
+        error.response.status === 403
       ) {
         return api
-          .post(`/refresh-token`, {
+          .post('/refresh-token', {
             token: localStorage.getItem("refreshToken"),
           })
           .then(() => {

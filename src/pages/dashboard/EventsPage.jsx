@@ -1,57 +1,48 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Calendar, Edit, Eye, Filter, MapPin, Plus, Search, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Plus, Search, Filter, Calendar, MapPin, Trash2, Edit, Eye } from "lucide-react"
 import { toast } from "sonner"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getCurrentUser, getEvents, deleteEvent } from "@/services/data-services"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useAuth } from "@/providers/AuthProvider.js"
+import { deleteEvent, getEvents } from "@/services/events-api.js"
 import { formatDate } from "@/utils/utils.js"
+import { useDebouncedCallback } from 'use-debounce'
 
 export default function EventsPage() {
-  const user = getCurrentUser()
+  const {user} = useAuth()
   const [events, setEvents] = useState([])
-  const [filteredEvents, setFilteredEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const data = await getEvents()
-        setEvents(data)
-        setFilteredEvents(data)
-      } catch (error) {
-        console.error("Error fetching events:", error)
-        toast.error("Error", {
-          description: "No se pudieron cargar los eventos. Intente nuevamente.",
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  const debounced = useDebouncedCallback(
+    (value) => {
+        setIsLoading(true);
+    getEvents({ searchQuery: value, status: statusFilter })
+    .then((data) => {
+      setEvents(data);
+    })
+    .catch(() =>
+      toast.error("No se pudieron cargar los eventos. Intente nuevamente.")
+    )
+    .finally(() => setIsLoading(false));
 
-    fetchEvents()
-  }, [])
+    },
+    600
+  )
 
   useEffect(() => {
-    setIsLoading(true)
-    getEvents({ searchQuery, status: statusFilter })
-      .then((data) => {
-        setEvents(data)
-        setFilteredEvents(data)
-      })
-      .catch(() => toast.error("No se pudieron cargar los eventos. Intente nuevamente."))
-      .finally(() => setIsLoading(false))
-  }, [searchQuery, statusFilter])
+    debounced(searchQuery)
+}, [searchQuery, statusFilter]);
 
   const handleDeleteEvent = async (id) => {
     try {
@@ -160,7 +151,7 @@ export default function EventsPage() {
                     </TableCell>
                   </TableRow>
                 ))
-            ) : filteredEvents.length === 0 ? (
+            ) : events.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
                   <div className="flex flex-col items-center justify-center py-8 text-[#435761]">
@@ -171,7 +162,7 @@ export default function EventsPage() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredEvents.map((event) => (
+              events.map((event) => (
                 <TableRow key={event.id} className="group hover:bg-[#f8fafc] transition-colors">
                   <TableCell className="font-medium">{event.title}</TableCell>
                   <TableCell>
