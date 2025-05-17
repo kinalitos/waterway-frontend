@@ -35,8 +35,8 @@ function App() {
 }
 
 function RoutesWrapper() {
-  const navigate = useNavigate()
   const { refreshToken } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setUpInterceptors(navigate, refreshToken)
