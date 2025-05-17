@@ -36,9 +36,7 @@ function App() {
 
 function RoutesWrapper() {
   const navigate = useNavigate()
-  const {
-    refreshToken
-  } = useAuth();
+  const { refreshToken } = useAuth();
 
   useEffect(() => {
     setUpInterceptors(navigate, refreshToken)
@@ -49,6 +47,7 @@ function RoutesWrapper() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
       <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="maps" element={<MapsPage />} />
@@ -58,6 +57,8 @@ function RoutesWrapper() {
         <Route path="events/new" element={<CreateEvent />} />
         <Route path="publications" element={<PublicationsPage />} />
         <Route path="publications/new" element={<CreatePublication />} />
+      </Route>
+
       <Route path="/events" element={<EventosUser />} />
       <Route path="/publications" element={<PublicacionesFeedPage />} />
       <Route path="/reports" element={<ReportesFeedPage />} />
