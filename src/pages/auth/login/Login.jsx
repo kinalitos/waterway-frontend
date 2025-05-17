@@ -4,17 +4,26 @@ import { useAuth } from "@/providers/AuthProvider.js";
 import { LoggedInView } from "@/pages/auth/login/LoggedInView.js";
 
 export default function Login() {
-  const { authenticated } = useAuth()
+  const { authenticated, loading } = useAuth()
 
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Left side - Login Form */}
-      {!authenticated && (
+      {loading && (
+        <div className="w-1/2 h-full flex justify-center items-center bg-transparent">
+          <div className="relative">
+            <div className="h-16 w-16 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
+            <div className="absolute inset-0 rounded-full bg-blue-500 opacity-20 blur-md"></div>
+          </div>
+        </div>
+
+      )}
+      {!loading && !authenticated && (
         <LoginForm/>
       )}
-      {authenticated && (
+      {!loading && authenticated && (
         /*Already logged in page*/
-        <LoggedInView />
+        <LoggedInView/>
       )}
 
       {/* Right side - Image */}
