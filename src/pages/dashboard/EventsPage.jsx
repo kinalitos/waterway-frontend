@@ -5,22 +5,17 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
 
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useAuth } from "@/providers/AuthProvider.js"
 import { deleteEvent, getEvents } from "@/services/events-api.js"
+import { formatDate } from "@/utils/utils.js"
 import { useDebouncedCallback } from 'use-debounce'
-import { Badge } from "../../components/ui/badge"
-import { Button } from "../../components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu"
-import { Input } from "../../components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
-import { formatDate } from '../../utils/utils.js'
 
 export default function EventsPage() {
   const {user} = useAuth()
