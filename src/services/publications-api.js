@@ -2,12 +2,14 @@
 // MÉTODOS PUBLICATIONS
 // //////////////////////////////////////////////////// //
 
+import { api } from "../lib/auth.ts";
+
 export const getPublications = async (searchQuery = "") => {
     try {
         const params = {};
         if (searchQuery) params.search = searchQuery;
 
-        const response = await apiClient.get('/publications', { params });
+        const response = await api.get('/publications', { params });
         return response.data;
     } catch (err) {
         return {
@@ -18,7 +20,7 @@ export const getPublications = async (searchQuery = "") => {
 }
 export const getPublication = async (id) => {
     try {
-        return await apiClient.get(`/publications/${id}`)
+        return await api.get(`/publications/${id}`)
     } catch (err) {
         return {
             error: true,
@@ -28,7 +30,7 @@ export const getPublication = async (id) => {
 }
 export const createPublication = async (publication) => {
     try {
-        return await apiClient.post('/publications', publication)
+        return await api.post('/publications', publication)
     } catch (err) {
         return {
             error: true,
@@ -38,7 +40,7 @@ export const createPublication = async (publication) => {
 }
 export const updatePublication = async (id, publication) => {
     try {
-        return await apiClient.put(`/publications/${id}`, publication)
+        return await api.put(`/publications/${id}`, publication)
     } catch (err) {
         return {
             error: true,
@@ -49,7 +51,7 @@ export const updatePublication = async (id, publication) => {
 
 export const deletePublication = async (id) => {
     try {
-        return await apiClient.delete(`/publications/${id}`)
+        return await api.delete(`/publications/${id}`)
     } catch (err) {
         return {
             error: true,
