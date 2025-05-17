@@ -15,6 +15,7 @@ export const useCreateEvent = () => {
       toast.error(error)
       return
     }
+    console.log(res)
     toast.success('Event created successfully')
   }
 

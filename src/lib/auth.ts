@@ -27,13 +27,15 @@ export function setUpInterceptors(navigate) {
       return response
     },
     error => {
-      //console.log({ message: error.response.data.mensaje })
+      console.log({ message: error.response.data.mensaje })
       if (
-        error.response.status === 401 &&
-        error.response.data.mensaje === "Invalid token."
+        error.response.status === 401 ||
+        error.response.status === 403
       ) {
         return api
-          .post(`/refresh-token`)
+          .post('/refresh-token', {
+            token: localStorage.getItem("refreshToken"),
+          })
           .then(() => {
             // retry original request
             axios(error.config)
@@ -44,7 +46,7 @@ export function setUpInterceptors(navigate) {
             if (window.location.pathname !== "/login") navigate("/login")
           })
       }
-      //console.log({ error })
+      console.log({ error })
       return Promise.reject(error)
     }
   )

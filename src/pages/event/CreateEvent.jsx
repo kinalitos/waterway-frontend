@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { useState } from "react"
+import { useNavigate } from 'react-router-dom'
 import { useCreateEvent } from "../../hooks/createEvent.js"
 
 export default function EventForm() {
@@ -20,8 +21,9 @@ export default function EventForm() {
   const [location, setLocation] = useState("")
   const [image, setImage] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
+  const navigate = useNavigate()
 
-  const { createEventFunction, loading } = useCreateEvent()
+  const { createEventFunction } = useCreateEvent()
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0] || null
@@ -36,21 +38,10 @@ export default function EventForm() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // Here you would normally handle the form submission
-    // For now, just log the form data
-    console.log({
-      title,
-      description,
-      startDate,
-      endDate,
-      location,
-      image,
-    })
-
-    createEventFunction({
+    const res = await createEventFunction({
       title,
       description,
       date_start: startDate,
@@ -59,7 +50,10 @@ export default function EventForm() {
       image,
     })
 
-    alert("Evento creado exitosamente (simulación)")
+    if (res) {
+      navigate("/dashboard/events")
+    }
+
   }
 
   return (

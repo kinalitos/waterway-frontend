@@ -11,7 +11,7 @@ import { getCurrentUser, getRecentEvents, getRecentPublications, getRecentReport
 import { formatDate } from '@/utils/utils.js'
 
 export default function DashboardPage() {
-  const user = getCurrentUser()
+  const user = localStorage.getItem("nombre")
   const [recentEvents, setRecentEvents] = useState([])
   const [recentPublications, setRecentPublications] = useState([])
   const [recentReports, setRecentReports] = useState([])
@@ -44,10 +44,13 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-[#282f33]">Bienvenido, {user?.name || "Usuario"}</h1>
-        <p className="text-[#435761]">
-          Accede a las herramientas y datos para monitorear y contribuir a la conservación del Río Motagua.
+<div className="space-y-2 text-center">
+        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] bg-clip-text text-transparent">
+          Bienvenido, {user || "Usuario"}
+        </h1>
+        <p className="text-[#435761] text-center">
+          Accede a las herramientas y datos para monitorear y contribuir a la conservación del Río Motagua. 
+          Tu participación es fundamental para proteger este importante recurso natural.
         </p>
       </div>
 

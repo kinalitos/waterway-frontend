@@ -2,11 +2,22 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
-import { ArrowLeft, MapPin, Calendar, User, CheckCircle, XCircle, AlertTriangle, Trash2 } from "lucide-react"
+import {
+  ArrowLeft,
+  MapPin,
+  Calendar,
+  User,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Trash2,
+  Camera,
+  ExternalLink,
+} from "lucide-react"
 
-import { Button } from "../../components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card"
-import { Badge } from "../../components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,26 +28,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../components/ui/alert-dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
-import { useToast } from "../../components/ui/use-toast"
-import DashboardLayout from "@/components/layout/DashboardLayout"
+} from "@/components/ui/alert-dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { toast } from "sonner"
 import {
   getCurrentUser,
   getContaminationReports,
   deleteReport,
   updateContaminationReport,
-} from "../../services/data-service"
+} from "@/services/data-service"
 
 export default function ReportDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { toast } = useToast()
   const user = getCurrentUser()
 
   const [report, setReport] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [activeTab, setActiveTab] = useState("details")
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -47,43 +58,28 @@ export default function ReportDetailPage() {
         if (foundReport) {
           setReport(foundReport)
         } else {
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Reporte no encontrado",
-          })
+          toast.error("Reporte no encontrado")
           navigate("/dashboard/reports")
         }
       } catch (error) {
         console.error("Error fetching report:", error)
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "No se pudo cargar el reporte. Intente nuevamente.",
-        })
+        toast.error("No se pudo cargar el reporte. Intente nuevamente.")
       } finally {
         setIsLoading(false)
       }
     }
 
     fetchReport()
-  }, [id, navigate, toast])
+  }, [id, navigate])
 
   const handleDeleteReport = async () => {
     try {
       await deleteReport(id)
-      toast({
-        title: "Reporte eliminado",
-        description: "El reporte ha sido eliminado correctamente.",
-      })
+      toast.success("El reporte ha sido eliminado correctamente.")
       navigate("/dashboard/reports")
     } catch (error) {
       console.error("Error deleting report:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "No se pudo eliminar el reporte. Intente nuevamente.",
-      })
+      toast.error("No se pudo eliminar el reporte. Intente nuevamente.")
     }
   }
 
@@ -95,17 +91,12 @@ export default function ReportDetailPage() {
         status: newStatus,
       })
       setReport(updatedReport)
-      toast({
-        title: "Estado actualizado",
-        description: `El reporte ha sido marcado como ${newStatus === "validado" ? "validado" : newStatus === "falso" ? "falso" : "pendiente"}.`,
-      })
+      toast.success(
+        `El reporte ha sido marcado como ${newStatus === "validado" ? "validado" : newStatus === "falso" ? "falso" : "pendiente"}.`,
+      )
     } catch (error) {
       console.error("Error updating report status:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "No se pudo actualizar el estado del reporte. Intente nuevamente.",
-      })
+      toast.error("No se pudo actualizar el estado del reporte. Intente nuevamente.")
     } finally {
       setIsUpdating(false)
     }
@@ -130,246 +121,332 @@ export default function ReportDetailPage() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
-        <div className="flex h-[50vh] items-center justify-center">
-          <div className="text-center">
-            <div className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-[#2ba4e0] border-t-transparent mx-auto"></div>
-            <p className="text-[#435761]">Cargando detalles del reporte...</p>
-          </div>
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-[#2ba4e0] border-t-transparent mx-auto"></div>
+          <p className="text-[#435761]">Cargando detalles del reporte...</p>
         </div>
-      </DashboardLayout>
+      </div>
     )
   }
 
   if (!report) {
     return (
-      <DashboardLayout>
-        <div className="flex h-[50vh] flex-col items-center justify-center">
-          <AlertTriangle className="mb-4 h-16 w-16 text-yellow-500" />
-          <h2 className="text-2xl font-bold">Reporte no encontrado</h2>
-          <p className="mb-4 text-[#435761]">El reporte que estás buscando no existe o ha sido eliminado.</p>
-          <Button asChild className="bg-[#2ba4e0] hover:bg-[#418fb6]">
-            <Link to="/dashboard/reports">Volver a reportes</Link>
-          </Button>
-        </div>
-      </DashboardLayout>
+      <div className="flex h-[50vh] flex-col items-center justify-center">
+        <AlertTriangle className="mb-4 h-16 w-16 text-yellow-500" />
+        <h2 className="text-2xl font-bold">Reporte no encontrado</h2>
+        <p className="mb-4 text-[#435761]">El reporte que estás buscando no existe o ha sido eliminado.</p>
+        <Button asChild className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all">
+          <Link to="/dashboard/reports">Volver a reportes</Link>
+        </Button>
+      </div>
     )
   }
 
   return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" asChild className="mr-2">
-              <Link to="/dashboard/reports">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-[#282f33]">{report.title}</h1>
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className={`${
-                    report.status === "validado"
-                      ? "border-green-500 bg-green-50 text-green-700"
-                      : report.status === "falso"
-                        ? "border-red-500 bg-red-50 text-red-700"
-                        : "border-yellow-500 bg-yellow-50 text-yellow-700"
-                  }`}
-                >
-                  {report.status === "pending" ? "Pendiente" : report.status}
-                </Badge>
-                <span className="text-sm text-[#435761]">Reporte #{id.substring(0, 8)}</span>
-              </div>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" asChild className="mr-2 border-[#418fb6]/30 hover:bg-[#418fb6]/10">
+            <Link to="/dashboard/reports">
+              <ArrowLeft className="h-5 w-5 text-[#418fb6]" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] bg-clip-text text-transparent">
+              {report.title}
+            </h1>
+            <div className="flex items-center gap-2">
+              <Badge
+                variant="outline"
+                className={`${
+                  report.status === "validado"
+                    ? "border-green-500 bg-green-50 text-green-700"
+                    : report.status === "falso"
+                      ? "border-red-500 bg-red-50 text-red-700"
+                      : "border-yellow-500 bg-yellow-50 text-yellow-700"
+                } transition-all`}
+              >
+                {report.status === "pending" ? "Pendiente" : report.status}
+              </Badge>
+              <span className="text-sm text-[#435761]">Reporte #{id.substring(0, 8)}</span>
             </div>
           </div>
+        </div>
 
-          {canDeleteReport && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">
-                  <Trash2 className="mr-2 h-4 w-4" />
+        {canDeleteReport && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm" className="bg-red-600 hover:bg-red-700">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Eliminar
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="border-[#418fb6]/20">
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta acción no se puede deshacer. Esto eliminará permanentemente el reporte de contaminación.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="border-[#418fb6]/30 hover:bg-[#418fb6]/10">Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteReport} className="bg-red-600 hover:bg-red-700">
                   Eliminar
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta acción no se puede deshacer. Esto eliminará permanentemente el reporte de contaminación.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteReport} className="bg-red-600 hover:bg-red-700">
-                    Eliminar
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-        </div>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Información principal */}
-          <div className="md:col-span-2 space-y-6">
-            <Card className="border-[#418fb6]/20">
-              <CardHeader>
-                <CardTitle>Detalles del Reporte</CardTitle>
-                <CardDescription>Información sobre la fuente de contaminación reportada</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-[#435761]">Descripción</h3>
-                  <p className="mt-1 whitespace-pre-line text-[#282f33]">{report.description}</p>
-                </div>
+      <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab} className="w-full"/>
+        <TabsList className="grid w-full max-w-md grid-cols-3 mb-6 bg-[#f8fafc]">
+          <TabsTrigger value="details" className="data-[state=active]:bg-[#2ba4e0] data-[state=active]:text-white">
+            Detalles
+          </TabsTrigger>
+          <TabsTrigger value="images" className="data-[state=active]:bg-[#2ba4e0] data-[state=active]:text-white">
+            Imágenes
+          </TabsTrigger>
+          <TabsTrigger value="location" className="data-[state=active]:bg-[#2ba4e0] data-[state=active]:text-white">
+            Ubicación
+          </TabsTrigger>
+        </TabsList>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <h3 className="text-sm font-medium text-[#435761]">Ubicación</h3>
-                    <div className="mt-1 flex items-center text-[#282f33]">
-                      <MapPin className="mr-1 h-4 w-4 text-[#2ba4e0]" />
-                      <span>
-                        {report.lat.toFixed(6)}, {report.lng.toFixed(6)}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-[#435761]">Fecha de Reporte</h3>
-                    <div className="mt-1 flex items-center text-[#282f33]">
-                      <Calendar className="mr-1 h-4 w-4 text-[#2ba4e0]" />
-                      <span>{formatDate(report.created_at)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-[#435761]">Reportado por</h3>
-                  <div className="mt-1 flex items-center text-[#282f33]">
-                    <User className="mr-1 h-4 w-4 text-[#2ba4e0]" />
-                    <span>{report.created_by === user?.id ? "Tú" : "Usuario"}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Imágenes */}
-            <Card className="border-[#418fb6]/20">
-              <CardHeader>
-                <CardTitle>Evidencia Visual</CardTitle>
-                <CardDescription>Imágenes proporcionadas como evidencia</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {report.images && report.images.length > 0 ? (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {report.images.map((image, index) => (
-                      <div key={index} className="overflow-hidden rounded-md border">
-                        <img
-                          src={image.url || "/placeholder.svg?height=200&width=300"}
-                          alt={`Evidencia ${index + 1}`}
-                          className="h-48 w-full object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex h-48 items-center justify-center rounded-md border border-dashed">
-                    <p className="text-sm text-[#435761]">No hay imágenes disponibles para este reporte.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Panel lateral */}
-          <div className="space-y-6">
-            {/* Mapa */}
-            <Card className="border-[#418fb6]/20">
-              <CardHeader>
-                <CardTitle>Ubicación</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-48 w-full overflow-hidden rounded-md border">
-                  <div className="relative h-full w-full bg-gray-100">
-                    <img
-                      src="/placeholder.svg?height=200&width=300"
-                      alt="Mapa de ubicación"
-                      className="h-full w-full object-cover"
-                    />
-                    <div className="absolute top-1/2 left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transform rounded-full border-2 border-white bg-red-500" />
-                  </div>
-                </div>
-                <div className="mt-2 text-center text-xs text-[#435761]">
-                  Coordenadas: {report.lat.toFixed(6)}, {report.lng.toFixed(6)}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Acciones */}
-            {canValidateReport && (
-              <Card className="border-[#418fb6]/20">
-                <CardHeader>
-                  <CardTitle>Validación</CardTitle>
-                  <CardDescription>Actualizar el estado de este reporte</CardDescription>
+        <TabsContent value="details" className="mt-0">
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Información principal */}
+            <div className="md:col-span-2 space-y-6">
+              <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
+                <CardHeader className="border-b pb-4">
+                  <CardTitle className="flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                    Detalles del Reporte
+                  </CardTitle>
+                  <CardDescription>Información sobre la fuente de contaminación reportada</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <Tabs defaultValue={report.status} className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="pending">Pendiente</TabsTrigger>
-                      <TabsTrigger value="validado">Validado</TabsTrigger>
-                      <TabsTrigger value="falso">Falso</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="pending" className="mt-4">
-                      <p className="text-sm text-[#435761]">
-                        El reporte está pendiente de verificación. Aún no se ha confirmado su veracidad.
-                      </p>
-                    </TabsContent>
-                    <TabsContent value="validado" className="mt-4">
-                      <p className="text-sm text-[#435761]">
-                        El reporte ha sido verificado y confirmado como una fuente real de contaminación.
-                      </p>
-                    </TabsContent>
-                    <TabsContent value="falso" className="mt-4">
-                      <p className="text-sm text-[#435761]">
-                        El reporte ha sido verificado y se ha determinado que no es una fuente real de contaminación.
-                      </p>
-                    </TabsContent>
-                  </Tabs>
+                <CardContent className="space-y-6 pt-6">
+                  <div>
+                    <h3 className="text-sm font-medium text-[#435761]">Descripción</h3>
+                    <p className="mt-2 whitespace-pre-line text-[#282f33] bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
+                      {report.description}
+                    </p>
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <div className="bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
+                      <h3 className="text-sm font-medium text-[#435761] mb-2">Ubicación</h3>
+                      <div className="flex items-center text-[#282f33]">
+                        <MapPin className="mr-2 h-4 w-4 text-[#2ba4e0]" />
+                        <span>
+                          {report.lat.toFixed(6)}, {report.lng.toFixed(6)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
+                      <h3 className="text-sm font-medium text-[#435761] mb-2">Fecha de Reporte</h3>
+                      <div className="flex items-center text-[#282f33]">
+                        <Calendar className="mr-2 h-4 w-4 text-[#2ba4e0]" />
+                        <span>{formatDate(report.created_at)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
+                    <h3 className="text-sm font-medium text-[#435761] mb-2">Reportado por</h3>
+                    <div className="flex items-center text-[#282f33]">
+                      <User className="mr-2 h-4 w-4 text-[#2ba4e0]" />
+                      <span>{report.created_by === user?.id ? "Tú" : "Usuario"}</span>
+                    </div>
+                  </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    variant="outline"
-                    className="border-yellow-500 text-yellow-700 hover:bg-yellow-50"
-                    disabled={report.status === "pending" || isUpdating}
-                    onClick={() => handleUpdateStatus("pending")}
-                  >
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    Marcar Pendiente
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-green-500 text-green-700 hover:bg-green-50"
-                    disabled={report.status === "validado" || isUpdating}
-                    onClick={() => handleUpdateStatus("validado")}
-                  >
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Validar
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-red-500 text-red-700 hover:bg-red-50"
-                    disabled={report.status === "falso" || isUpdating}
-                    onClick={() => handleUpdateStatus("falso")}
-                  >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Marcar Falso
-                  </Button>
-                </CardFooter>
               </Card>
-            )}
+            </div>
+
+            {/* Panel lateral */}
+            <div className="space-y-6">
+              {/* Acciones */}
+              {canValidateReport && (
+                <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
+                  <CardHeader className="border-b pb-4">
+                    <CardTitle className="flex items-center text-lg">
+                      <CheckCircle className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                      Validación
+                    </CardTitle>
+                    <CardDescription>Actualizar el estado de este reporte</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                        <div className="flex items-center">
+                          <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
+                          <div>
+                            <p className="font-medium text-yellow-700">Pendiente</p>
+                            <p className="text-xs text-yellow-600">Aún no verificado</p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-yellow-500 text-yellow-700 hover:bg-yellow-100"
+                          disabled={report.status === "pending" || isUpdating}
+                          onClick={() => handleUpdateStatus("pending")}
+                        >
+                          {report.status === "pending" ? "Actual" : "Marcar"}
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200">
+                        <div className="flex items-center">
+                          <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                          <div>
+                            <p className="font-medium text-green-700">Validado</p>
+                            <p className="text-xs text-green-600">Contaminación confirmada</p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-green-500 text-green-700 hover:bg-green-100"
+                          disabled={report.status === "validado" || isUpdating}
+                          onClick={() => handleUpdateStatus("validado")}
+                        >
+                          {report.status === "validado" ? "Actual" : "Marcar"}
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-200">
+                        <div className="flex items-center">
+                          <XCircle className="h-5 w-5 text-red-500 mr-2" />
+                          <div>
+                            <p className="font-medium text-red-700">Falso</p>
+                            <p className="text-xs text-red-600">No es contaminación</p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-red-500 text-red-700 hover:bg-red-100"
+                          disabled={report.status === "falso" || isUpdating}
+                          onClick={() => handleUpdateStatus("falso")}
+                        >
+                          {report.status === "falso" ? "Actual" : "Marcar"}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Acciones rápidas */}
+              <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
+                <CardHeader className="border-b pb-4">
+                  <CardTitle className="flex items-center text-lg">
+                    <ExternalLink className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                    Acciones Rápidas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6 space-y-3">
+                  <Button className="w-full bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all">
+                    Ver en el mapa
+                  </Button>
+                  <Button variant="outline" className="w-full border-[#418fb6] text-[#418fb6] hover:bg-[#418fb6]/10">
+                    Compartir reporte
+                  </Button>
+                  <Button variant="outline" className="w-full border-[#418fb6] text-[#418fb6] hover:bg-[#418fb6]/10">
+                    Descargar datos
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
+        </TabsContent>
+
+        <TabsContent value="images" className="mt-0">
+          <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
+            <CardHeader className="border-b pb-4">
+              <CardTitle className="flex items-center">
+                <Camera className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                Evidencia Visual
+              </CardTitle>
+              <CardDescription>Imágenes proporcionadas como evidencia</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              {report.images && report.images.length > 0 ? (
+                <Carousel className="w-full max-w-3xl mx-auto">
+                  <CarouselContent>
+                    {report.images.map((image, index) => (
+                      <CarouselItem key={index}>
+                        <div className="p-1">
+                          <div className="overflow-hidden rounded-xl border border-[#418fb6]/20">
+                            <img
+                              src={image.url || "/placeholder.svg?height=400&width=600"}
+                              alt={`Evidencia ${index + 1}`}
+                              className="h-[400px] w-full object-cover"
+                            />
+                          </div>
+                          <p className="mt-2 text-center text-sm text-[#435761]">
+                            Imagen {index + 1} de {report.images.length}
+                          </p>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-2 bg-white/80 hover:bg-white border-[#418fb6]/20 text-[#2ba4e0]" />
+                  <CarouselNext className="right-2 bg-white/80 hover:bg-white border-[#418fb6]/20 text-[#2ba4e0]" />
+                </Carousel>
+              ) : (
+                <div className="flex flex-col h-[300px] items-center justify-center rounded-md border border-dashed">
+                  <Camera className="h-16 w-16 text-[#2ba4e0]/30 mb-4" />
+                  <p className="text-[#435761]">No hay imágenes disponibles para este reporte.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="location" className="mt-0">
+          <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
+            <CardHeader className="border-b pb-4">
+              <CardTitle className="flex items-center">
+                <MapPin className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                Ubicación del Reporte
+              </CardTitle>
+              <CardDescription>Coordenadas geográficas donde se reportó la contaminación</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="h-[400px] w-full overflow-hidden rounded-xl border border-[#418fb6]/20">
+                <div className="relative h-full w-full bg-[#f8fafc]">
+                  <img
+                    src="/placeholder.svg?height=400&width=800"
+                    alt="Mapa de ubicación"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 transform">
+                    <div className="absolute inset-0 animate-ping rounded-full bg-[#2ba4e0]/70"></div>
+                    <div className="absolute inset-0 rounded-full border-2 border-white bg-[#2ba4e0]"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-center space-x-6">
+                <div className="text-center">
+                  <p className="text-sm font-medium text-[#435761]">Latitud</p>
+                  <p className="text-lg font-bold text-[#282f33]">{report.lat.toFixed(6)}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-[#435761]">Longitud</p>
+                  <p className="text-lg font-bold text-[#282f33]">{report.lng.toFixed(6)}</p>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-center">
+                <Button className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all">
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Ver en Google Maps
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </div>
   )
 }
