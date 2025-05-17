@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import React from "react";
-import { Search, MapPin, Loader2, Sparkles, Send, Menu, X } from "lucide-react";
+import { Search, MapPin, Loader2, Sparkles, Send, Menu, X, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import { MapContainer, TileLayer, Marker, Popup, ImageOverlay, useMapEvents } fr
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Fix Leaflet icon (unchanged)
+// Fix Leaflet icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png",
@@ -21,11 +21,9 @@ L.Icon.Default.mergeOptions({
 });
 
 const PROMPT_SUGGESTIONS = [
-  "Muestra áreas con alta contaminación plástica",
-  "Visualiza la calidad del agua en la cuenca del Motagua",
-  "Identifica puntos críticos de deforestación cerca del río",
-  "Muestra comunidades afectadas por inundaciones recientes",
-  "Visualiza la biodiversidad acuática en el río",
+  "Muestra una imagen satelital en color natural",
+  "Visualiza la cobertura vegetal en la cuenca",
+  "Analiza la calidad del agua en el río",
 ];
 
 const motaguaBounds = [
@@ -33,7 +31,26 @@ const motaguaBounds = [
   [15.5, -88.9],
 ];
 
-const motaguaCenter = [15.0, -89.8];
+const motaguaCenter = [14.894320793736044, -90.40111250235164];
+
+// Layer descriptions
+const LAYER_DESCRIPTIONS = {
+  true_color: {
+    title: "Imagen en Color Natural",
+    description: "Muestra una vista realista de la cuenca del Motagua, similar a lo que verías desde el espacio.",
+    explanation: "Esta capa utiliza bandas de luz visible (rojo, verde, azul) para representar el paisaje tal como aparece naturalmente. Es útil para identificar características geográficas, patrones de uso de la tierra y cambios en la superficie, como deforestación o urbanización en la región del río Motagua."
+  },
+  vegetation: {
+    title: "Cobertura Vegetal",
+    description: "Resalta las áreas con vegetación saludable en la cuenca del Motagua.",
+    explanation: "Esta capa utiliza el índice de vegetación por diferencia normalizada (NDVI) para mostrar la densidad y salud de la vegetación. Las áreas verdes intensas indican bosques o cultivos saludables, mientras que los tonos más claros pueden señalar vegetación escasa o degradada, ayudando a monitorear la deforestación y la salud del ecosistema."
+  },
+  water_quality: {
+    title: "Calidad del Agua",
+    description: "Visualiza indicadores de la calidad del agua en el río Motagua y sus afluentes.",
+    explanation: "Esta capa utiliza datos de sensores remotos para destacar concentraciones de sedimentos, clorofila y materia orgánica en el agua. Los colores más oscuros pueden indicar contaminación o alta turbidez, lo que ayuda a identificar áreas con problemas de calidad del agua que afectan a las comunidades y ecosistemas locales."
+  }
+};
 
 export default function MapaIA() {
   const [prompt, setPrompt] = useState("");
@@ -57,16 +74,56 @@ export default function MapaIA() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const processPrompt = (text) => {
-    if (!text.trim()) return;
+  const processPrompt = async (text) => {
+    if (!text.trim()) {
+      toast.error("Por favor, ingrese un prompt válido");
+      return;
+    }
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Get Hugging Face API token from environment variable
+      const hfApiToken = import.meta.env.VITE_HF_API_TOKEN;
+      if (!hfApiToken) {
+        throw new Error("Hugging Face API token no configurado en .env");
+      }
+
+      // Call Hugging Face API for zero-shot classification
+      const response = await fetch(
+        "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${hfApiToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            inputs: text,
+            parameters: {
+              candidate_labels: ["true_color", "vegetation", "water_quality"],
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Error al procesar el prompt");
+
+      const result = await response.json();
+      const predictedLayer = result.labels[0]; // Get the highest-scoring label
+
+      // Map the predicted layer to the appropriate fetchOverlay call
       setActiveView(text);
+      currentLayerRef.current = predictedLayer;
+      await fetchOverlay(predictedLayer);
+
       toast.success("Visualización generada", {
-        description: `Se ha generado la visualización para: "${text}"`,
+        description: `Se ha generado la visualización para: "${text}" (Capa: ${predictedLayer})`,
       });
-    }, 2000);
+    } catch (error) {
+      toast.error("Error al procesar el prompt: " + error.message);
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getMapParams = () => {
@@ -120,6 +177,20 @@ export default function MapaIA() {
     } finally {
       setOverlayLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    setPrompt("");
+    setActiveView(null);
+    setOverlayUrl(null);
+    setOverlayBounds(null);
+    setStartDate("2024-04-01");
+    setEndDate("2024-04-30");
+    currentLayerRef.current = "true_color";
+    if (mapRef.current) {
+      mapRef.current.setView(motaguaCenter, 9);
+    }
+    toast.success("Filtros restablecidos");
   };
 
   function MapEvents() {
@@ -218,7 +289,7 @@ export default function MapaIA() {
           <div className="relative w-full max-w-4xl mx-auto mb-8">
             <div className="flex items-center gap-2">
               <Input
-                placeholder="Ej. Muestra áreas con alta contaminación plástica"
+                placeholder="Ej. Muestra una imagen satelital en color natural"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && processPrompt(prompt)}
@@ -267,7 +338,9 @@ export default function MapaIA() {
                     attribution='© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  
+                  <Marker position={[14.894320793736044, -90.40111250235164]}>
+                    <Popup>Río Motagua</Popup>
+                  </Marker>
                   {overlayUrl && overlayBounds && (
                     <ImageOverlay
                       url={overlayUrl}
@@ -287,6 +360,20 @@ export default function MapaIA() {
                   </div>
                 )}
               </div>
+              {/* Layer Description Section */}
+              {activeView && (
+                <div className="mt-6 bg-white rounded-lg shadow-md p-6 border border-[#2ba4e0]/10 max-w-6xl mx-auto">
+                  <h3 className="text-xl font-semibold text-[#2ba4e0] mb-3">
+                    {LAYER_DESCRIPTIONS[currentLayerRef.current].title}
+                  </h3>
+                  <p className="text-gray-600 text-base mb-2">
+                    {LAYER_DESCRIPTIONS[currentLayerRef.current].description}
+                  </p>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    {LAYER_DESCRIPTIONS[currentLayerRef.current].explanation}
+                  </p>
+                </div>
+              )}
             </div>
             {/* Panel lateral de fechas y botones */}
             <div className="w-full md:w-64 flex flex-col gap-6">
@@ -349,6 +436,14 @@ export default function MapaIA() {
                     <Sparkles className="h-4 w-4" />
                   )}
                   Calidad del Agua
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleReset}
+                  className="border-[#2ba4e0] text-[#2ba4e0] hover:bg-[#2ba4e0] hover:text-white transition-colors duration-200 flex items-center gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Restablecer
                 </Button>
               </div>
             </div>
