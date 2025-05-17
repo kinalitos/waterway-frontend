@@ -15,6 +15,9 @@ import { AuthProvider } from "@/providers/AuthProvider.js";
 import { useEffect } from "react";
 import { setUpInterceptors } from "@/lib/auth.js";
 import MapaIA from "./pages/ai-map/MapaIA";
+import EventosUser from "./pages/feed/EventosFeedPage.jsx";
+import PublicacionesFeedPage from './pages/feed/PublicacionesFeedPage.jsx'
+import ReportesFeedPage from './pages/feed/ReportesFeedPage.jsx'
 
 function App() {
   return (
@@ -50,6 +53,9 @@ function RoutesWrapper() {
         <Route path="events" element={<EventsPage/>}/>
         <Route path="publications" element={<PublicationsPage/>}/>
       </Route>
+      <Route path="/events" element={<EventosUser/>}/>
+      <Route path="/publications" element={<PublicacionesFeedPage/>}/>
+      <Route path="/reports" element={<ReportesFeedPage/>}/>
     </Routes>
   )
 
