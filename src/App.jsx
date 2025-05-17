@@ -16,16 +16,20 @@ import CreatePublication from "./pages/publication/CreatePublication.jsx"
 import ReportsPage from "./pages/dashboard/ReportsPage"
 import CreateEvent from "./pages/event/CreateEvent.jsx"
 import LandingPage from './pages/LandingPage'
+import MapaIA from "./pages/ai-map/MapaIA";
+import EventosUser from "./pages/feed/EventosFeedPage.jsx";
+import PublicacionesFeedPage from './pages/feed/PublicacionesFeedPage.jsx'
+import ReportesFeedPage from './pages/feed/ReportesFeedPage.jsx'
 
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="rio-motagua-theme">
       <Router>
         <AuthProvider>
-          <RoutesWrapper/>
+          <RoutesWrapper />
         </AuthProvider>
       </Router>
-      <Toaster position="bottom-right"/>
+      <Toaster position="bottom-right" />
     </ThemeProvider>
   );
 }
@@ -42,23 +46,24 @@ function RoutesWrapper() {
 
   return (
     <Routes>
-      <Route path="/" element={<LandingPage/>}/>
-      <Route path="/login" element={<Login/>}/>
-      <Route path="/register" element={<Register/>}/>
-      <Route path="/dashboard" element={<DashboardLayout/>}>
-        <Route index element={<DashboardPage/>}/>
-        <Route path="maps" element={<MapsPage/>}/>
-        <Route path="reports" element={<ReportsPage/>}/>
-        <Route path="reports/new" element={<NewReportPage/>}/>
-        <Route path="events" element={<EventsPage/>}/>
-        <Route path="events/new" element={<CreateEvent/>}/>
-        <Route path="publications" element={<PublicationsPage/>}/>
-        <Route path="publications/new" element={<CreatePublication/>}/>
-
-      </Route>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="maps" element={<MapsPage />} />
+        <Route path="reports" element={<ReportsPage />} />
+        <Route path="reports/new" element={<NewReportPage />} />
+        <Route path="events" element={<EventsPage />} />
+        <Route path="events/new" element={<CreateEvent />} />
+        <Route path="publications" element={<PublicationsPage />} />
+        <Route path="publications/new" element={<CreatePublication />} />
+      <Route path="/events" element={<EventosUser />} />
+      <Route path="/publications" element={<PublicacionesFeedPage />} />
+      <Route path="/reports" element={<ReportesFeedPage />} />
+      <Route path="/mapa-ia" element={<MapaIA />} />
     </Routes>
   )
-
 }
 
 export default App;
