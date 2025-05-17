@@ -7,11 +7,11 @@ export const api = axios.create({
   },
 })
 
-export function setUpInterceptors(navigate) {
+export function setUpInterceptors(navigate, refreshToken) {
   api.interceptors.request.use(
     config => {
       const token = localStorage.getItem("accessToken")
-        console.log({ token })
+      console.log({ token })
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
@@ -33,15 +33,19 @@ export function setUpInterceptors(navigate) {
         error.response.status === 403
       ) {
         return api
-          .post('/refresh-token', {
+          .post('/auth/refresh-token', {
             token: localStorage.getItem("refreshToken"),
           })
-          .then(() => {
+          .then((res) => {
             // retry original request
-            axios(error.config)
+            localStorage.setItem("accessToken", res.data.data.accessToken)
+            refreshToken();
+            void api(error.config);
           })
           .catch(() => {
             // redirect to login
+            localStorage.removeItem("accessToken")
+            localStorage.removeItem("refreshToken")
 
             if (window.location.pathname !== "/login") navigate("/login")
           })
