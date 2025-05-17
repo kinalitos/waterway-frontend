@@ -40,7 +40,7 @@ export function setUpInterceptors(navigate, refreshToken) {
             // retry original request
             localStorage.setItem("accessToken", res.data.data.accessToken)
             refreshToken();
-            axios(error.config)
+            void api(error.config);
           })
           .catch(() => {
             // redirect to login
