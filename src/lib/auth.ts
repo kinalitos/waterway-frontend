@@ -33,7 +33,9 @@ export function setUpInterceptors(navigate) {
         error.response.data.mensaje === "Invalid token."
       ) {
         return api
-          .post(`/refresh-token`)
+          .post(`/refresh-token`, {
+            token: localStorage.getItem("refreshToken"),
+          })
           .then(() => {
             // retry original request
             axios(error.config)
