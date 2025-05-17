@@ -267,15 +267,14 @@ export default function MapaIA() {
                     attribution='© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  <Marker position={motaguaCenter}>
-                    <Popup>Centro aproximado del río Motagua.</Popup>
-                  </Marker>
+                  
                   {overlayUrl && overlayBounds && (
                     <ImageOverlay
                       url={overlayUrl}
                       bounds={overlayBounds}
                       opacity={1}
                       zIndex={500}
+                      className="invert"
                     />
                   )}
                 </MapContainer>
