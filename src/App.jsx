@@ -1,5 +1,5 @@
 import { setUpInterceptors } from "@/lib/auth.js"
-import { AuthProvider } from "@/providers/AuthProvider.js"
+import { AuthProvider, useAuth } from "@/providers/AuthProvider.js"
 import { useEffect } from "react"
 import { Route, BrowserRouter as Router, Routes, useNavigate } from 'react-router-dom'
 import { Toaster } from "sonner"
@@ -32,9 +32,12 @@ function App() {
 
 function RoutesWrapper() {
   const navigate = useNavigate()
+  const {
+    refreshToken
+  } = useAuth();
 
   useEffect(() => {
-    setUpInterceptors(navigate)
+    setUpInterceptors(navigate, refreshToken)
   }, []);
 
   return (

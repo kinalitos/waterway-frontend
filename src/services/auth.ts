@@ -48,7 +48,7 @@ export async function signIn({ email, password }: SignInPayload): Promise<IRespo
 export async function signup(props: Omit<User, "id"> & { password: string }): Promise<IResponse<User>> {
   try {
     const { name, last_name, email, password, role } = props;
-    const response = await api.post<User>("/auth/signup", {
+    const response = await api.post<IBackendResponse<User>>("/auth/signup", {
       name,
       last_name,
       email,
@@ -56,7 +56,7 @@ export async function signup(props: Omit<User, "id"> & { password: string }): Pr
       role,
     });
 
-    return { data: response.data, error: null };
+    return { data: response.data.data, error: null };
   } catch (e: any) {
     console.error("Error signing up", e.response?.data || e.message);
     return { error: e.response?.data?.message || "Error signing up", data: null };
@@ -65,8 +65,8 @@ export async function signup(props: Omit<User, "id"> & { password: string }): Pr
 
 export async function verifyAuthRequest(): Promise<IResponse<User>> {
   try {
-    const response = await api.get<User>("/auth/verify");
-    return { data: response.data, error: null };
+    const response = await api.get<IBackendResponse<User>>("/auth/verify");
+    return { data: response.data.data, error: null };
   } catch (e: any) {
     console.error("Error verifying auth", e.response?.data || e.message);
     return { data: null, error: e.response?.data?.message || "Error verifying auth" };

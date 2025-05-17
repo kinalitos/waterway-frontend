@@ -44,8 +44,6 @@ export const AuthProvider = ({ children }) => {
       return false
     }
     console.log({ data })
-    localStorage.setItem("role", data.role),
-    localStorage.setItem("nombre", data.nombre)
     localStorage.setItem("accessToken", data.accessToken)
     localStorage.setItem("refreshToken", data.refreshToken)
 
@@ -76,12 +74,34 @@ export const AuthProvider = ({ children }) => {
     navigate("/login")
   }
 
+  const refreshToken = async () => {
+    const refreshToken = localStorage.getItem("refreshToken")
+    if (!refreshToken) return null
+
+    const { data, error } = await verifyAuthRequest()
+    if (error) {
+      setAuthState({
+        loading: false,
+        authenticated: false,
+        user: null
+      })
+      return null
+    }
+
+    setAuthState({
+      loading: false,
+      authenticated: true,
+      user: data
+    })
+    return data
+  }
+
   useEffect(() => {
     void verifyAuth()
   }, [])
 
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout, verifyAuth }}>
+    <AuthContext.Provider value={{ ...authState, login, logout, verifyAuth, refreshToken }}>
       {children}
     </AuthContext.Provider>
   )
