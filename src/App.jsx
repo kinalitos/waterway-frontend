@@ -58,11 +58,11 @@ function RoutesWrapper() {
         <Route path="events/new" element={<CreateEvent/>}/>
         <Route path="publications" element={<PublicationsPage/>}/>
         <Route path="publications/new" element={<CreatePublication/>}/>
-        <Route path="/events" element={<EventosUser/>}/>
-        <Route path="/publications" element={<PublicacionesFeedPage/>}/>
-        <Route path="/reports" element={<ReportesFeedPage/>}/>
-        <Route path="/mapa-ia" element={<MapaIA />} />
       </Route>
+      <Route path="/events" element={<EventosUser/>}/>
+      <Route path="/publications" element={<PublicacionesFeedPage/>}/>
+      <Route path="/reports" element={<ReportesFeedPage/>}/>
+      <Route path="/mapa-ia" element={<MapaIA />} />
     </Routes>
   )
 
