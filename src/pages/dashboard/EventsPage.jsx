@@ -57,10 +57,14 @@ export default function EventsPage() {
     }
   }
 
-  // Determinar si el usuario puede editar o eliminar un evento
-  const canManageEvent = (event) => {
-    return user?.role === "administrador" || user?.role === "moderador" || event.created_by === user?.id
-  }
+   const canManageEvent = (events) => {
+    return (
+      user?.role === "administrador" ||
+      user?.role === "moderador" ||
+      events.created_by === user?.id
+    );
+  };
+
   
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -219,7 +223,7 @@ export default function EventsPage() {
                               <span>Ver detalles</span>
                             </Link>
                           </DropdownMenuItem>
-                          {//canManageEvent(event) && (
+                          {canManageEvent(events) && (
                             <>
                               <DropdownMenuItem asChild>
                                 <Link to={`/dashboard/events/edit/${event._id}`}>
@@ -232,7 +236,7 @@ export default function EventsPage() {
                                 <span>Eliminar</span>
                               </DropdownMenuItem>
                             </>
-                         /* )*/
+                          )
                          }
                         </DropdownMenuContent>
                       </DropdownMenu>
