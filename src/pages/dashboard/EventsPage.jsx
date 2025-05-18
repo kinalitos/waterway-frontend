@@ -1,5 +1,3 @@
-"use client"
-
 import { Calendar, Edit, Eye, Filter, MapPin, Plus, Search, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
@@ -46,16 +44,16 @@ export default function EventsPage() {
 
   const handleDeleteEvent = async (id) => {
     try {
-      await deleteEvent(id)
-      setEvents(events.filter((event) => event.id !== id))
+      await deleteEvent(id);
+      setEvents(events.filter((event) => event._id !== id));
       toast.success("Evento eliminado", {
         description: "El evento ha sido eliminado correctamente.",
-      })
+      });
     } catch (error) {
-      console.error("Error deleting event:", error)
+      console.error("Error deleting event:", error);
       toast.error("Error", {
         description: "No se pudo eliminar el evento. Intente nuevamente.",
-      })
+      });
     }
   }
 
@@ -63,7 +61,7 @@ export default function EventsPage() {
   const canManageEvent = (event) => {
     return user?.role === "administrador" || user?.role === "moderador" || event.created_by === user?.id
   }
-
+  
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -133,7 +131,7 @@ export default function EventsPage() {
               Array(5)
                 .fill(0)
                 .map((_, index) => (
-                  <TableRow key={index}>
+                  <TableRow key={`skeleton-${index}`}>
                     <TableCell>
                       <Skeleton className="h-6 w-full" />
                     </TableCell>
@@ -193,63 +191,59 @@ export default function EventsPage() {
                       {event.status === "active" ? "Activo" : event.status === "completed" ? "Completado" : "Cancelado"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="h-8 w-8 p-0 opacity-70 group-hover:opacity-100 transition-opacity"
-                        >
-                          <span className="sr-only">Abrir menú</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4"
-                          >
-                            <circle cx="12" cy="12" r="1" />
-                            <circle cx="12" cy="5" r="1" />
-                            <circle cx="12" cy="19" r="1" />
-                          </svg>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40 border-[#418fb6]/20">
-                        <DropdownMenuItem asChild className="cursor-pointer">
-                          <Link to={`/dashboard/events/${event.id}`} className="flex items-center">
-                            <Eye className="mr-2 h-4 w-4 text-[#2ba4e0]" />
-                            <span>Ver detalles</span>
-                          </Link>
-                        </DropdownMenuItem>
-                        {canManageEvent(event) && (
-                          <>
-                            <DropdownMenuItem asChild className="cursor-pointer">
-                              <Link to={`/dashboard/events/edit/${event.id}`} className="flex items-center">
-                                <Edit className="mr-2 h-4 w-4 text-[#418fb6]" />
-                                <span>Editar</span>
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleDeleteEvent(event.id)}
-                              className="text-red-600 cursor-pointer focus:text-red-600 focus:bg-red-50"
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Abrir menú</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-4 w-4"
                             >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              <span>Eliminar</span>
-                            </DropdownMenuItem>
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+                              <circle cx="12" cy="12" r="1" />
+                              <circle cx="12" cy="5" r="1" />
+                              <circle cx="12" cy="19" r="1" />
+                            </svg>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link to={`/dashboard/events/${event._id}`}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              <span>Ver detalles</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          {//canManageEvent(event) && (
+                            <>
+                              <DropdownMenuItem asChild>
+                                <Link to={`/dashboard/events/edit/${event._id}`}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  <span>Editar</span>
+                                </Link>                                
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleDeleteEvent(event._id)} className="text-red-600">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                <span>Eliminar</span>
+                              </DropdownMenuItem>
+                            </>
+                         /* )*/
+                         }
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
+    
   )
 }
