@@ -57,6 +57,7 @@ function RoutesWrapper() {
         <Route path="events/new" element={<CreateEvent />} />
         <Route path="publications" element={<PublicationsPage />} />
         <Route path="publications/new" element={<CreatePublication />} />
+        <Route path="/dashboard/events/edit/:eventId" element={<CreateEvent />} />
       </Route>
 
       <Route path="/events" element={<EventosUser />} />
