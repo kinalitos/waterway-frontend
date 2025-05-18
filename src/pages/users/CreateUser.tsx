@@ -30,7 +30,7 @@ const eventSchema = z.object({
   path: ["date_end"]
 });
 
-export default function EventForm({ mode = "create" }) {
+export function CreateUserForm({ mode = "create" }) {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -39,6 +39,7 @@ export default function EventForm({ mode = "create" }) {
   const { createEventFunction } = useCreateEvent();
   const { updateEventById } = useUpdateEvent();
 
+  console.log({ mode })
   const { control, handleSubmit, formState: { errors }, getValues } = useForm({
     resolver: zodResolver(eventSchema),
     ...(mode === "create" && {
