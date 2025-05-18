@@ -4,24 +4,47 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Plus, Search, FileText, Trash2, Edit, Eye, BookOpen } from "lucide-react"
 import { toast } from "sonner"
-
+import { useAuth } from "@/providers/AuthProvider.js"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { getCurrentUser, getPublications, deletePublication } from "@/services/data-services"
+import { getPublications, deletePublication } from "../../services/publications-api.js"
 import { formatDate } from "@/utils/utils.js"
+import { useDebouncedCallback } from "use-debounce"
 
 export default function PublicationsPage() {
-  const user = getCurrentUser()
+  const {user}= useAuth()
   const [publications, setPublications] = useState([])
-  const [filteredPublications, setFilteredPublications] = useState([])
+  // const [filteredPublications, setFilteredPublications] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
 
-  useEffect(() => {
+  const debounced = useDebouncedCallback(
+    (value) => {
+        setIsLoading(true);
+    getPublications({ searchQuery: value, status: statusFilter })
+    .then((data) => {
+      setPublications(data);
+    })
+    .catch(() =>
+      toast.error("No se pudieron cargar los eventos. Intente nuevamente.")
+    )
+    .finally(() => setIsLoading(false));
+
+    },
+    600
+  )
+
+
+   useEffect(() => {
+    debounced(searchQuery)
+}, [searchQuery, statusFilter]);
+
+  /* useEffect(() => {
     const fetchPublications = async () => {
       try {
         const data = await getPublications()
@@ -38,21 +61,21 @@ export default function PublicationsPage() {
     }
 
     fetchPublications()
-  }, [])
+  }, []) */
 
   // GET QUE FUNCIONA CON EL API
-  useEffect(() => {
+  /* useEffect(() => {
     setIsLoading(true)
     getPublications(searchQuery)
       .then(setPublications)
       .catch(() => toast.error("No se pudieron cargar las publicaciones"))
       .finally(() => setIsLoading(false))
-  }, [searchQuery])
+  }, [searchQuery]) */
 
   const handleDeletePublication = async (id) => {
     try {
       await deletePublication(id)
-      setPublications(publications.filter((publication) => publication.id !== id))
+      setPublications(publications.filter((publication) => publication._id !== id))
       toast.success("Publicación eliminada", {
         description: "La publicación ha sido eliminada correctamente.",
       })
@@ -167,7 +190,7 @@ export default function PublicationsPage() {
               </TableRow>
             ) : (
               publications.map((publication) => (
-                <TableRow key={publication.id} className="group hover:bg-[#f8fafc] transition-colors">
+                <TableRow key={publication._id} className="group hover:bg-[#f8fafc] transition-colors">
                   <TableCell className="font-medium group-hover:text-[#2ba4e0] transition-colors">
                     {publication.title}
                   </TableCell>
@@ -232,7 +255,7 @@ export default function PublicationsPage() {
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => handleDeletePublication(publication.id)}
+                              onClick={() => handleDeletePublication(publication._id)}
                               className="text-red-600 cursor-pointer focus:text-red-600 focus:bg-red-50"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
