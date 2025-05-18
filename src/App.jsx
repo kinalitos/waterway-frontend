@@ -20,6 +20,7 @@ import MapaIA from "./pages/ai-map/MapaIA";
 import EventosUser from "./pages/feed/EventosFeedPage.jsx";
 import PublicacionesFeedPage from './pages/feed/PublicacionesFeedPage.jsx'
 import ReportesFeedPage from './pages/feed/ReportesFeedPage.jsx'
+import ReportDetailPage from "./pages/dashboard/ReportDetailPage.jsx"
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function RoutesWrapper() {
         <Route path="maps" element={<MapsPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="reports/new" element={<NewReportPage />} />
+        <Route path ="reports/:id" element={<ReportDetailPage/>}/>
         <Route path="events" element={<EventsPage />} />
         <Route path="events/new" element={<CreateEvent />} />
         <Route path="publications" element={<PublicationsPage />} />

@@ -1,85 +1,134 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { Plus, Search, Filter, MapPin, Trash2, Eye, AlertTriangle } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Plus,
+  Search,
+  Filter,
+  MapPin,
+  Trash2,
+  Eye,
+  AlertTriangle,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
-import { getCurrentUser, getContaminationReports, deleteReport } from "@/services/data-services"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import {
+  deleteContaminationReport,
+  getContaminationReports,
+} from "../../services/contamination-reports-api";
 
 export default function ReportsPage() {
-  const user = getCurrentUser()
-  const [reports, setReports] = useState([])
-  const [filteredReports, setFilteredReports] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  // Obtener el ID y rol del usuario directamente desde localStorage
+  const userId = localStorage.getItem("id");
+  const userRole = localStorage.getItem("role") || "usuario";
+
+  const [reports, setReports] = useState([]);
+  const [filteredReports, setFilteredReports] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const data = await getContaminationReports()
-        setReports(data)
-        setFilteredReports(data)
+        const response = await getContaminationReports();
+        if (response.error) {
+          throw new Error(response.error);
+        }
+        // Mapear los reportes para renombrar _id a id y transformar status
+        const mappedReports = response.data.map((report) => ({
+          ...report,
+          id: report._id,
+          status: report.status === "pending" ? "pendiente" : report.status,
+        }));
+        setReports(mappedReports);
+        setFilteredReports(mappedReports);
       } catch (error) {
-        console.error("Error fetching reports:", error)
-        toast.error("No se pudieron cargar los reportes. Intente nuevamente.")
+        console.error("Error fetching reports:", error);
+        toast.error("No se pudieron cargar los reportes. Intente nuevamente.");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchReports()
-  }, [])
+    fetchReports();
+  }, []);
 
   useEffect(() => {
-    let filtered = [...reports]
+    let filtered = [...reports];
 
     if (searchQuery) {
       filtered = filtered.filter(
         (report) =>
           report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          report.description.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+          report.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
     if (statusFilter !== "all") {
-      filtered = filtered.filter((report) => report.status === statusFilter)
+      filtered = filtered.filter((report) => report.status === statusFilter);
     }
 
-    setFilteredReports(filtered)
-  }, [searchQuery, statusFilter, reports])
+    setFilteredReports(filtered);
+  }, [searchQuery, statusFilter, reports]);
 
   const handleDeleteReport = async (id) => {
     try {
-      await deleteReport(id)
-      setReports(reports.filter((report) => report.id !== id))
-      toast.success("El reporte ha sido eliminado correctamente.")
+      const response = await deleteContaminationReport(id);
+      if (response.error) {
+        throw new Error(response.err.message || "Error deleting report");
+      }
+      setReports(reports.filter((report) => report.id !== id));
+      setFilteredReports(filteredReports.filter((report) => report.id !== id));
+      toast.success("El reporte ha sido eliminado correctamente.");
     } catch (error) {
-      console.error("Error deleting report:", error)
-      toast.error("No se pudo eliminar el reporte. Intente nuevamente.")
+      console.error("Error deleting report:", error);
+      toast.error("No se pudo eliminar el reporte. Intente nuevamente.");
     }
-  }
+  };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat("es-GT", {
       day: "numeric",
       month: "short",
       year: "numeric",
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   const canDeleteReport = (report) => {
-    return user?.role === "administrador" || user?.role === "moderador" || report.created_by === user?.id
-  }
+    return (
+      userRole === "administrador" ||
+      userRole === "moderador" ||
+      report.created_by === userId
+    );
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -89,8 +138,9 @@ export default function ReportsPage() {
             Reportes de Contaminación
           </h1>
           <p className="text-[#435761] max-w-2xl">
-            Gestiona y visualiza reportes de fuentes de contaminación en el Río Motagua. Tu participación es clave para
-            identificar y resolver problemas ambientales.
+            Gestiona y visualiza reportes de fuentes de contaminación en el Río
+            Motagua. Tu participación es clave para identificar y resolver
+            problemas ambientales.
           </p>
         </div>
         <Button
@@ -125,7 +175,7 @@ export default function ReportsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos los estados</SelectItem>
-              <SelectItem value="pending">Pendientes</SelectItem>
+              <SelectItem value="pendiente">Pendientes</SelectItem>
               <SelectItem value="validado">Validados</SelectItem>
               <SelectItem value="falso">Falsos</SelectItem>
             </SelectContent>
@@ -142,7 +192,9 @@ export default function ReportsPage() {
               <TableHead className="font-semibold">Ubicación</TableHead>
               <TableHead className="font-semibold">Estado</TableHead>
               <TableHead className="font-semibold">Fecha</TableHead>
-              <TableHead className="text-right font-semibold">Acciones</TableHead>
+              <TableHead className="text-right font-semibold">
+                Acciones
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -174,21 +226,34 @@ export default function ReportsPage() {
                   <div className="flex flex-col items-center justify-center py-8 text-[#435761]">
                     <AlertTriangle className="h-12 w-12 text-[#2ba4e0]/40 mb-2" />
                     <p className="font-medium">No se encontraron reportes</p>
-                    <p className="text-sm text-[#435761]/70">Intenta con otros filtros o crea un nuevo reporte</p>
+                    <p className="text-sm text-[#435761]/70">
+                      Intenta con otros filtros o crea un nuevo reporte
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
             ) : (
               filteredReports.map((report) => (
-                <TableRow key={report.id} className="group hover:bg-[#f8fafc] transition-colors">
+                <TableRow
+                  key={report.id}
+                  className="group hover:bg-[#f8fafc] transition-colors"
+                >
                   <TableCell className="font-medium group-hover:text-[#2ba4e0] transition-colors">
                     {report.title}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center">
-                      <MapPin className="mr-1.5 h-3.5 w-3.5 text-[#2ba4e0]" />
+                      <a
+                        href={`https://www.google.com/maps?q=${report.lat},${report.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center"
+                        title="Ver en Google Maps"
+                      >
+                        <MapPin className="mr-1.5 h-3.5 w-3.5 text-[#2ba4e0] hover:text-[#1a73c0] transition-colors" />
+                      </a>
                       <span>
-                        {report.lat.toFixed(4)}, {report.lng.toFixed(4)}
+                        {report.lat}, {report.lng}
                       </span>
                     </div>
                   </TableCell>
@@ -199,11 +264,13 @@ export default function ReportsPage() {
                         report.status === "validado"
                           ? "border-green-500 bg-green-50 text-green-700"
                           : report.status === "falso"
-                            ? "border-red-500 bg-red-50 text-red-700"
-                            : "border-yellow-500 bg-yellow-50 text-yellow-700"
+                          ? "border-red-500 bg-red-50 text-red-700"
+                          : "border-yellow-500 bg-yellow-50 text-yellow-700"
                       } transition-all`}
                     >
-                      {report.status === "pending" ? "Pendiente" : report.status}
+                      {report.status === "pendiente"
+                        ? "Pendiente"
+                        : report.status}
                     </Badge>
                   </TableCell>
                   <TableCell>{formatDate(report.created_at)}</TableCell>
@@ -231,9 +298,15 @@ export default function ReportsPage() {
                           </svg>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40 border-[#418fb6]/20">
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-40 border-[#418fb6]/20"
+                      >
                         <DropdownMenuItem asChild className="cursor-pointer">
-                          <Link to={`/dashboard/reports/${report.id}`} className="flex items-center">
+                          <Link
+                            to={`/dashboard/reports/${report.id}`}
+                            className="flex items-center"
+                          >
                             <Eye className="mr-2 h-4 w-4 text-[#2ba4e0]" />
                             <span>Ver detalles</span>
                           </Link>
@@ -257,5 +330,5 @@ export default function ReportsPage() {
         </Table>
       </div>
     </div>
-  )
+  );
 }
