@@ -16,7 +16,13 @@ import CreatePublication from "./pages/publication/CreatePublication.jsx"
 import ReportsPage from "./pages/dashboard/ReportsPage"
 import CreateEvent from "./pages/event/CreateEvent.jsx"
 import LandingPage from './pages/LandingPage'
+
 import { UsersPage } from "@/pages/dashboard/UsersPage.js";
+import MapaIA from "./pages/ai-map/MapaIA";
+import EventosUser from "./pages/feed/EventosFeedPage.jsx";
+import PublicacionesFeedPage from './pages/feed/PublicacionesFeedPage.jsx'
+import ReportesFeedPage from './pages/feed/ReportesFeedPage.jsx'
+import ReportDetailPage from "./pages/dashboard/ReportDetailPage.jsx"
 
 function App() {
   return (
@@ -33,9 +39,7 @@ function App() {
 
 function RoutesWrapper() {
   const navigate = useNavigate()
-  const {
-    refreshToken
-  } = useAuth();
+  const { refreshToken } = useAuth();
 
   useEffect(() => {
     setUpInterceptors(navigate, refreshToken)
@@ -48,19 +52,24 @@ function RoutesWrapper() {
       <Route path="/register" element={<Register/>}/>
       <Route path="/dashboard" element={<DashboardLayout/>}>
         <Route index element={<DashboardPage/>}/>
+        <Route path="users" element={<UsersPage/>}/>
         <Route path="maps" element={<MapsPage/>}/>
         <Route path="reports" element={<ReportsPage/>}/>
         <Route path="reports/new" element={<NewReportPage/>}/>
         <Route path="events" element={<EventsPage/>}/>
         <Route path="events/new" element={<CreateEvent/>}/>
-        <Route path="users" element={<UsersPage/>}/>
         <Route path="publications" element={<PublicationsPage/>}/>
         <Route path="publications/new" element={<CreatePublication/>}/>
-
+        <Route path="reports/:id" element={<ReportDetailPage/>}/>
+        <Route path="/dashboard/events/edit/:eventId" element={<CreateEvent/>}/>
+        <Route path="portal/reports" element={<ReportesFeedPage/>}/>
+        <Route path="portal/mapa-ia" element={<MapaIA/>}/>
+        <Route path="portal/events" element={<EventosUser/>}/>
+        <Route path="portal/publications" element={<PublicacionesFeedPage/>}/>
       </Route>
+
     </Routes>
   )
-
 }
 
 export default App;

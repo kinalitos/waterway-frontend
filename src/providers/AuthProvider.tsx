@@ -44,6 +44,9 @@ export const AuthProvider = ({ children }) => {
       return false
     }
     console.log({ data })
+    localStorage.setItem("nombre", data.nombre)
+    localStorage.setItem("role" , data.role)
+    localStorage.setItem("id", data.id)
     localStorage.setItem("accessToken", data.accessToken)
     localStorage.setItem("refreshToken", data.refreshToken)
 

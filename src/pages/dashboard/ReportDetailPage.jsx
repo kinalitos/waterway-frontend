@@ -14,7 +14,6 @@ import {
   Camera,
   ExternalLink,
 } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -31,18 +30,18 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
 import {
-  getCurrentUser,
-  getContaminationReports,
-  deleteReport,
+  getContaminationReport,
+  deleteContaminationReport,
   updateContaminationReport,
-} from "@/services/data-service"
+} from "../../services/contamination-reports-api"
 
 export default function ReportDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const user = getCurrentUser()
+  const [user, setUser] = useState(null) // Asumimos que el usuario se obtiene de alguna fuente
 
   const [report, setReport] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -50,31 +49,44 @@ export default function ReportDetailPage() {
   const [activeTab, setActiveTab] = useState("details")
 
   useEffect(() => {
-    const fetchReport = async () => {
+    const fetchUserAndReport = async () => {
       try {
-        const reports = await getContaminationReports()
-        const foundReport = reports.find((r) => r.id === id)
-
-        if (foundReport) {
-          setReport(foundReport)
-        } else {
-          toast.error("Reporte no encontrado")
-          navigate("/dashboard/reports")
+        // Obtener usuario desde localStorage (ajusta según tu lógica de autenticación)
+        const storedUser = {
+          id: localStorage.getItem("id"),
+          role: localStorage.getItem("role"),
         }
+        if (!storedUser.id) {
+          toast.error("Debe iniciar sesión para ver este reporte.")
+          navigate("/login")
+          return
+        }
+        setUser(storedUser)
+
+        // Obtener el reporte específico
+        const response = await getContaminationReport(id)
+        if (response.error) {
+          throw new Error(response.error)
+        }
+        setReport(response.data)
       } catch (error) {
         console.error("Error fetching report:", error)
         toast.error("No se pudo cargar el reporte. Intente nuevamente.")
+        navigate("/dashboard/reports")
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchReport()
+    fetchUserAndReport()
   }, [id, navigate])
 
   const handleDeleteReport = async () => {
     try {
-      await deleteReport(id)
+      const response = await deleteContaminationReport(id)
+      if (response.error) {
+        throw new Error(response.error)
+      }
       toast.success("El reporte ha sido eliminado correctamente.")
       navigate("/dashboard/reports")
     } catch (error) {
@@ -86,13 +98,15 @@ export default function ReportDetailPage() {
   const handleUpdateStatus = async (newStatus) => {
     setIsUpdating(true)
     try {
-      const updatedReport = await updateContaminationReport(id, {
-        ...report,
-        status: newStatus,
-      })
-      setReport(updatedReport)
+      const response = await updateContaminationReport(id, { status: newStatus })
+      if (response.error) {
+        throw new Error(response.error)
+      }
+      setReport(response.data)
       toast.success(
-        `El reporte ha sido marcado como ${newStatus === "validado" ? "validado" : newStatus === "falso" ? "falso" : "pendiente"}.`,
+        `El reporte ha sido marcado como ${
+          newStatus === "validado" ? "validado" : newStatus === "falso" ? "falso" : "pendiente"
+        }.`
       )
     } catch (error) {
       console.error("Error updating report status:", error)
@@ -114,10 +128,16 @@ export default function ReportDetailPage() {
     }).format(date)
   }
 
+  // Validar coordenadas
+  const isValidCoord = (coord) => typeof coord === "number" && !isNaN(coord)
+  const mapsUrl = isValidCoord(report?.lat) && isValidCoord(report?.lng)
+    ? `https://www.google.com/maps?q=${report.lat},${report.lng}`
+    : "#"
+
   // Determinar si el usuario puede eliminar o validar un reporte
   const canDeleteReport =
-    report && (user?.role === "administrador" || user?.role === "moderador" || report.created_by === user?.id)
-  const canValidateReport = report && (user?.role === "administrador" || user?.role === "moderador")
+    report && user && (user.role === "administrador" || user.role === "moderador" || report.created_by === user.id)
+  const canValidateReport = report && user && (user.role === "administrador" || user.role === "moderador")
 
   if (isLoading) {
     return (
@@ -163,11 +183,11 @@ export default function ReportDetailPage() {
                   report.status === "validado"
                     ? "border-green-500 bg-green-50 text-green-700"
                     : report.status === "falso"
-                      ? "border-red-500 bg-red-50 text-red-700"
-                      : "border-yellow-500 bg-yellow-50 text-yellow-700"
+                    ? "border-red-500 bg-red-50 text-red-700"
+                    : "border-yellow-500 bg-yellow-50 text-yellow-700"
                 } transition-all`}
               >
-                {report.status === "pending" ? "Pendiente" : report.status}
+                {report.status === "pendiente" ? "Pendiente" : report.status}
               </Badge>
               <span className="text-sm text-[#435761]">Reporte #{id.substring(0, 8)}</span>
             </div>
@@ -200,7 +220,7 @@ export default function ReportDetailPage() {
         )}
       </div>
 
-      <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab} className="w-full"/>
+      <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-3 mb-6 bg-[#f8fafc]">
           <TabsTrigger value="details" className="data-[state=active]:bg-[#2ba4e0] data-[state=active]:text-white">
             Detalles
@@ -237,7 +257,24 @@ export default function ReportDetailPage() {
                     <div className="bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
                       <h3 className="text-sm font-medium text-[#435761] mb-2">Ubicación</h3>
                       <div className="flex items-center text-[#282f33]">
-                        <MapPin className="mr-2 h-4 w-4 text-[#2ba4e0]" />
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <a
+                                href={mapsUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                                aria-label={`Ver ubicación en Google Maps (${report.lat}, ${report.lng})`}
+                              >
+                                <MapPin className="mr-2 h-4 w-4 text-[#2ba4e0] hover:text-[#1a73c0] transition-colors" />
+                              </a>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Ver en Google Maps</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                         <span>
                           {report.lat.toFixed(6)}, {report.lng.toFixed(6)}
                         </span>
@@ -256,7 +293,7 @@ export default function ReportDetailPage() {
                     <h3 className="text-sm font-medium text-[#435761] mb-2">Reportado por</h3>
                     <div className="flex items-center text-[#282f33]">
                       <User className="mr-2 h-4 w-4 text-[#2ba4e0]" />
-                      <span>{report.created_by === user?.id ? "Tú" : "Usuario"}</span>
+                      <span>{report.created_by === user?.id ? "Tú" : report.created_by?.name || "Usuario"}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -289,10 +326,10 @@ export default function ReportDetailPage() {
                           variant="outline"
                           size="sm"
                           className="border-yellow-500 text-yellow-700 hover:bg-yellow-100"
-                          disabled={report.status === "pending" || isUpdating}
-                          onClick={() => handleUpdateStatus("pending")}
+                          disabled={report.status === "pendiente" || isUpdating}
+                          onClick={() => handleUpdateStatus("pendiente")}
                         >
-                          {report.status === "pending" ? "Actual" : "Marcar"}
+                          {report.status === "pendiente" ? "Actual" : "Marcar"}
                         </Button>
                       </div>
 
@@ -347,8 +384,13 @@ export default function ReportDetailPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-3">
-                  <Button className="w-full bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all">
-                    Ver en el mapa
+                  <Button
+                    asChild
+                    className="w-full bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all"
+                  >
+                    <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                      Ver en Google Maps
+                    </a>
                   </Button>
                   <Button variant="outline" className="w-full border-[#418fb6] text-[#418fb6] hover:bg-[#418fb6]/10">
                     Compartir reporte
@@ -380,13 +422,16 @@ export default function ReportDetailPage() {
                         <div className="p-1">
                           <div className="overflow-hidden rounded-xl border border-[#418fb6]/20">
                             <img
-                              src={image.url || "/placeholder.svg?height=400&width=600"}
+                              src={`${image.image_key}?w=600&h=400&c=fill`} // Transformación de Cloudinary
                               alt={`Evidencia ${index + 1}`}
                               className="h-[400px] w-full object-cover"
+                              onError={(e) => {
+                                e.target.src = "/placeholder.svg?height=400&width=600"
+                              }}
                             />
                           </div>
                           <p className="mt-2 text-center text-sm text-[#435761]">
-                            Imagen {index + 1} de {report.images.length}
+                            Imagen {index + 1} de {report.images.length} (Subida el {formatDate(image.uploaded_at)})
                           </p>
                         </div>
                       </CarouselItem>
@@ -416,12 +461,10 @@ export default function ReportDetailPage() {
             </CardHeader>
             <CardContent className="pt-6">
               <div className="h-[400px] w-full overflow-hidden rounded-xl border border-[#418fb6]/20">
-                <div className="relative h-full w-full bg-[#f8fafc]">
-                  <img
-                    src="/placeholder.svg?height=400&width=800"
-                    alt="Mapa de ubicación"
-                    className="h-full w-full object-cover"
-                  />
+                <div className="relative h-full w-full bg-[#f8fafc] flex items-center justify-center">
+                  <p className="text-[#435761] text-center">
+                    Mapa no disponible. Usa el botón de Google Maps para ver la ubicación.
+                  </p>
                   <div className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 transform">
                     <div className="absolute inset-0 animate-ping rounded-full bg-[#2ba4e0]/70"></div>
                     <div className="absolute inset-0 rounded-full border-2 border-white bg-[#2ba4e0]"></div>
@@ -439,14 +482,20 @@ export default function ReportDetailPage() {
                 </div>
               </div>
               <div className="mt-6 flex justify-center">
-                <Button className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all">
-                  <MapPin className="mr-2 h-4 w-4" />
-                  Ver en Google Maps
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all"
+                >
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Ver en Google Maps
+                  </a>
                 </Button>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-      </div>
+      </Tabs>
+    </div>
   )
 }
