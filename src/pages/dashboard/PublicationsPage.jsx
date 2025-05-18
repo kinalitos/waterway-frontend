@@ -7,11 +7,12 @@ import { toast } from "sonner"
 import { useAuth } from "@/providers/AuthProvider.js"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {Textarea} from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { getPublications, deletePublication } from "../../services/publications-api.js"
+import { getPublications, deletePublication , updatePublication} from "../../services/publications-api.js"
 import { formatDate } from "@/utils/utils.js"
 import { useDebouncedCallback } from "use-debounce"
 
@@ -22,6 +23,8 @@ export default function PublicationsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [selectedPublication, setSelectedPublication] = useState(null)
+
 
   const debounced = useDebouncedCallback(
     (value) => {
@@ -44,33 +47,7 @@ export default function PublicationsPage() {
     debounced(searchQuery)
 }, [searchQuery, statusFilter]);
 
-  /* useEffect(() => {
-    const fetchPublications = async () => {
-      try {
-        const data = await getPublications()
-        setPublications(data)
-        setFilteredPublications(data)
-      } catch (error) {
-        console.error("Error fetching publications:", error)
-        toast.error("Error", {
-          description: "No se pudieron cargar las publicaciones. Intente nuevamente.",
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchPublications()
-  }, []) */
-
-  // GET QUE FUNCIONA CON EL API
-  /* useEffect(() => {
-    setIsLoading(true)
-    getPublications(searchQuery)
-      .then(setPublications)
-      .catch(() => toast.error("No se pudieron cargar las publicaciones"))
-      .finally(() => setIsLoading(false))
-  }, [searchQuery]) */
+  
 
   const handleDeletePublication = async (id) => {
     try {
@@ -86,6 +63,47 @@ export default function PublicationsPage() {
       })
     }
   }
+
+  
+  const handleRowClick = (publication)=>{
+    setSelectedPublication({ ...publication})
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setSelectedPublication((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSave = async () => {
+
+    if(!selectedPublication?._id){
+      toast.error("No hay publicación seleccionada para editar.")
+      return
+    }
+
+
+    try{
+      const updated = await updatePublication(selectedPublication._id,{
+        title: selectedPublication.title,
+        content: selectedPublication.content,
+      })
+
+
+      setPublications((prev) =>
+      prev.map((p) => (p._id === updated._id ? updated : p))
+     )
+
+     toast.success("Publicación actualizada exitosamente.")
+     setSelectedPublication(null)
+    } catch(error){
+      console.error(error)
+      toast.error("Error al actualizar la publicación")
+    }
+  }
+
 
   // Determinar si el usuario puede editar o eliminar una publicación
   const canManagePublication = (publication) => {
@@ -144,6 +162,13 @@ export default function PublicationsPage() {
       </div>
 
       {/* Tabla de publicaciones */}
+
+      {/* <div className="flex-gap-6">
+        <div className="flex-1">
+
+
+        </div>
+      </div> */}
       <div className="rounded-xl border border-[#418fb6]/20 overflow-hidden bg-white shadow-md">
         <Table>
           <TableHeader className="bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9]">
@@ -190,7 +215,9 @@ export default function PublicationsPage() {
               </TableRow>
             ) : (
               publications.map((publication) => (
-                <TableRow key={publication._id} className="group hover:bg-[#f8fafc] transition-colors">
+                <TableRow key={publication._id} 
+                  onClick={() => setSelectedPublication(publication)}
+                className="group hover:bg-[#f8fafc] transition-colors">
                   <TableCell className="font-medium group-hover:text-[#2ba4e0] transition-colors">
                     {publication.title}
                   </TableCell>
@@ -272,6 +299,29 @@ export default function PublicationsPage() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Formulario de edición */}
+      {selectedPublication && (
+        <div className="bg-white p-6 rounded-xl shadow-md border border-[#418fb6]/20 space-y-4">
+          <h2 className="text-xl font-semibold text-[#2ba4e0]">Editar publicación</h2>
+          <Input
+            name="title"
+            value={selectedPublication.title}
+            onChange={handleInputChange}
+            placeholder="Título"
+          />
+          <Textarea
+            name="content"
+            value={selectedPublication.content}
+            onChange={handleInputChange}
+            placeholder="Contenido"
+            rows={6}
+          />
+          <Button onClick={handleSave} className="bg-[#2ba4e0] hover:bg-[#418fb6] transition-all text-white">
+            Guardar cambios
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
