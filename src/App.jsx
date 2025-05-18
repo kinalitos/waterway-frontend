@@ -16,6 +16,7 @@ import CreatePublication from "./pages/publication/CreatePublication.jsx"
 import ReportsPage from "./pages/dashboard/ReportsPage"
 import CreateEvent from "./pages/event/CreateEvent.jsx"
 import LandingPage from './pages/LandingPage'
+import { UsersPage } from "@/pages/dashboard/UsersPage.js";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function RoutesWrapper() {
         <Route path="reports/new" element={<NewReportPage/>}/>
         <Route path="events" element={<EventsPage/>}/>
         <Route path="events/new" element={<CreateEvent/>}/>
+        <Route path="users" element={<UsersPage/>}/>
         <Route path="publications" element={<PublicationsPage/>}/>
         <Route path="publications/new" element={<CreatePublication/>}/>
 

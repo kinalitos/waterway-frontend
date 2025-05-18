@@ -32,7 +32,6 @@ import { useAuth } from "@/providers/AuthProvider.js";
 
 export default function DashboardLayout() {
   const { user } = useAuth()
-  console.log({ user })
   const location = useLocation()
   const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -50,6 +49,8 @@ export default function DashboardLayout() {
       { href: "/dashboard/publications", label: "Publicaciones", icon: FileText },
       { href: "/dashboard/maps", label: "Mapas", icon: Map },
       { href: "/dashboard/reports", label: "Reportes", icon: AlertTriangle },
+      // @TODO: mover para que solo admins puedan ver esto
+      { href: "/dashboard/users", label: "Usuarios", icon: Users },
     ]
 
     // Enlaces específicos por rol
