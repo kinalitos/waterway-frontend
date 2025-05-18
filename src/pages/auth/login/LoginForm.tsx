@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider.js";
 import { toast } from "sonner";
@@ -21,6 +21,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { loading, login } = useAuth();
+  const navigate = useNavigate()
 
   const {
     register,
@@ -40,6 +41,8 @@ export function LoginForm() {
       const isLogged = await login(data)
       if (isLogged) toast.success("Login exitoso")
       else toast.error("Login failed")
+
+      if(isLogged) navigate("/dashboard")
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Login failed")

@@ -28,9 +28,11 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "./ui/sheet"
 import { Separator } from "./ui/separator"
 import { Button } from "./ui/button"
+import { useAuth } from "@/providers/AuthProvider.js";
 
-export default function DashboardLayout({ children }) {
-  const user =""
+export default function DashboardLayout() {
+  const { user } = useAuth()
+  console.log({ user })
   const location = useLocation()
   const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -86,7 +88,7 @@ export default function DashboardLayout({ children }) {
           isActive ? "bg-[#2ba4e0] text-white" : "text-[#435761] hover:bg-[#2ba4e0]/10 hover:text-[#2ba4e0]"
         }`}
       >
-        <Icon className="h-5 w-5" />
+        <Icon className="h-5 w-5"/>
         {label}
       </Link>
     )
@@ -99,10 +101,10 @@ export default function DashboardLayout({ children }) {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-2 font-bold text-xl text-[#2ba4e0]">
-              <MapPin className="h-5 w-5" />
+              <MapPin className="h-5 w-5"/>
               <span>RíoMotagua</span>
             </Link>
-            <Separator orientation="vertical" className="h-6" />
+            <Separator orientation="vertical" className="h-6"/>
             <span className="text-sm font-medium text-[#435761]">Portal de Monitoreo</span>
           </div>
 
@@ -110,21 +112,21 @@ export default function DashboardLayout({ children }) {
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="text-[#435761]">
-                <Menu className="h-5 w-5" />
+                <Menu className="h-5 w-5"/>
                 <span className="sr-only">Menú</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
               <SheetHeader className="border-b p-4">
                 <SheetTitle className="flex items-center gap-2 text-[#2ba4e0]">
-                  <MapPin className="h-5 w-5" />
+                  <MapPin className="h-5 w-5"/>
                   <span>RíoMotagua</span>
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-1 p-4">
                 {navLinks.map((link) => (
                   <SheetClose key={link.href} asChild>
-                    <NavLink href={link.href} label={link.label} icon={link.icon} />
+                    <NavLink href={link.href} label={link.label} icon={link.icon}/>
                   </SheetClose>
                 ))}
               </div>
@@ -136,8 +138,8 @@ export default function DashboardLayout({ children }) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src="https://via.placeholder.com/36" alt={user?.name || "Usuario"} />
-                  <AvatarFallback className="bg-[#418fb6] text-white">{user?.name?.charAt(0) || "U"}</AvatarFallback>
+                  <AvatarImage src="https://via.placeholder.com/36" alt={user?.name || "Usuario"}/>
+                  <AvatarFallback className="bg-[#418fb6] text-white">{user?.name?.charAt(0) || ""}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -148,16 +150,16 @@ export default function DashboardLayout({ children }) {
                   <p className="text-xs text-gray-500">{user?.email || "usuario@ejemplo.com"}</p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator/>
               <DropdownMenuItem asChild>
                 <Link to="/dashboard/profile">
-                  <Settings className="mr-2 h-4 w-4" />
+                  <Settings className="mr-2 h-4 w-4"/>
                   <span>Perfil</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator/>
               <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogOut className="mr-2 h-4 w-4"/>
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -171,15 +173,15 @@ export default function DashboardLayout({ children }) {
         <aside className="hidden w-64 flex-col border-r bg-white md:flex">
           <div className="flex flex-col gap-1 p-4">
             {navLinks.map((link) => (
-              <NavLink key={link.href} href={link.href} label={link.label} icon={link.icon} />
+              <NavLink key={link.href} href={link.href} label={link.label} icon={link.icon}/>
             ))}
           </div>
         </aside>
 
         {/* Main content */}
         <main className="flex-1 overflow-auto bg-gray-50">
-          <div className="container py-6">
-            <Outlet />
+          <div className="container py-6 px-4">
+            <Outlet/>
           </div>
         </main>
       </div>

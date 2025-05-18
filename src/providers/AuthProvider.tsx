@@ -64,6 +64,8 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = async () => {
+    localStorage.removeItem("accessToken")
+    localStorage.removeItem("refreshToken")
     setAuthState({
       loading: false,
       authenticated: false,
@@ -72,12 +74,34 @@ export const AuthProvider = ({ children }) => {
     navigate("/login")
   }
 
+  const refreshToken = async () => {
+    const refreshToken = localStorage.getItem("refreshToken")
+    if (!refreshToken) return null
+
+    const { data, error } = await verifyAuthRequest()
+    if (error) {
+      setAuthState({
+        loading: false,
+        authenticated: false,
+        user: null
+      })
+      return null
+    }
+
+    setAuthState({
+      loading: false,
+      authenticated: true,
+      user: data
+    })
+    return data
+  }
+
   useEffect(() => {
     void verifyAuth()
   }, [])
 
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout, verifyAuth }}>
+    <AuthContext.Provider value={{ ...authState, login, logout, verifyAuth, refreshToken }}>
       {children}
     </AuthContext.Provider>
   )
