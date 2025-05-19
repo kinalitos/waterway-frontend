@@ -39,6 +39,7 @@ export default function PublicationsPage() {
   // Query params usage
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
+  const [queryInput, setQueryInput] = useState(query)
   const page = parseInt(searchParams.get("page") || "1");
   const PAGE_SIZE = 10;
   const totalPages = useRef(0);
@@ -48,7 +49,7 @@ export default function PublicationsPage() {
     getPublications({
       q: query,
       page,
-      pageSize: PAGE_SIZE
+      pageSize: PAGE_SIZE,
     })
       .then((response) => {
         if ('error' in response) {
@@ -64,12 +65,20 @@ export default function PublicationsPage() {
       .finally(() => setIsLoading(false));
   };
 
-  const handleSearch = (newQuery) => {
+  const updateQuery = (newQuery) => {
     setSearchParams({
       q: newQuery,
       page: "1", // reset to first page on new search
     });
   };
+
+  const updateQueryDebounced = useDebouncedCallback(updateQuery, 200)
+
+  const handleSearch = (newQuery) => {
+    setQueryInput(newQuery);
+    updateQueryDebounced(newQuery);
+  }
+
 
   const handlePageChange = (newPage) => {
     setSearchParams({
@@ -170,7 +179,7 @@ export default function PublicationsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#435761]"/>
             <Input
               placeholder="Buscar publicaciones..."
-              value={query}
+              value={queryInput}
               onChange={(e) => handleSearch(e.target.value)}
               className="pl-10 border-[#418fb6]/30 focus:border-[#2ba4e0] transition-all"
             />

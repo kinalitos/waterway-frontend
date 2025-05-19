@@ -18,6 +18,7 @@ export default function ReportsPage() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
+  const [queryInput, setQueryInput] = useState(query)
   const statusFilter = searchParams.get("status") || "all";
   const page = parseInt(searchParams.get("page") || "1");
   const PAGE_SIZE = 10;
@@ -40,11 +41,21 @@ export default function ReportsPage() {
       .catch(() => toast.error("No se pudieron cargar los reportes. Intente nuevamente."))
       .finally(() => setIsLoading(false));
   }
-
-  const handleSearch = (newQuery: string) => {
-    setSearchParams({ q: newQuery, status: statusFilter, page: "1" });
+  const updateQuery = (newQuery) => {
+    setSearchParams({
+      q: newQuery,
+      role: statusFilter,
+      page: "1", // reset to first page on new search
+    });
   };
 
+  const updateQueryDebounced = useDebouncedCallback(updateQuery, 200)
+
+  const handleSearch = (newQuery) => {
+    setQueryInput(newQuery);
+    updateQueryDebounced(newQuery);
+  }
+  
   const handleStatusChange = (newStatus: string) => {
     setSearchParams({ q: query, status: newStatus, page: "1" });
   };
@@ -111,7 +122,7 @@ export default function ReportsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#435761]"/>
             <Input
               placeholder="Buscar reportes..."
-              value={query}
+              value={queryInput}
               onChange={(e) => handleSearch(e.target.value)}
               className="pl-10 border-[#418fb6]/30 focus:border-[#2ba4e0] transition-all"
             />
