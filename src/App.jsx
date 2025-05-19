@@ -31,6 +31,7 @@ import EventDetail from "./pages/event/EventDetail.jsx";
 import ViewEvent from "./pages/event/ViewEvent.jsx"
 import { NotAuthorizedPage } from "@/pages/NotAuthorizedPage.js";
 import { NotFoundPage } from "@/pages/NotFoundPage.js";
+import { ProfilePage } from "@/pages/users/ProfilePage.js";
 
 
 function App() {
@@ -97,6 +98,7 @@ function RoutesWrapper() {
           <Route path="portal/events" element={<EventosUser/>}/>
           <Route path="portal/reports" element={<ReportesFeedPage/>}/>
           <Route path="portal/publications" element={<PublicacionesFeedPage/>}/>
+          <Route path="profile" element={<ProfilePage/>}/>
         </Route>
 
         {/* Rutas para investigadores, moderadores y administradores */}
