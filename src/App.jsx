@@ -118,6 +118,7 @@ function RoutesWrapper() {
           <Route path="view-event" element={<ViewEvent/>}/>
           <Route path="publications" element={<PublicationsPage/>}/>
           <Route path="publications/new" element={<CreatePublication/>}/>
+          <Route path="publications/edit/:publicationId" element={<CreatePublication mode="edit"/>}/>
         </Route>
 
         {/* Ruta de fallback para rutas no encontradas */}
