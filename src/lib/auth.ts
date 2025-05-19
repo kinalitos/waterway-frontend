@@ -11,7 +11,6 @@ export function setUpInterceptors(navigate, refreshToken) {
   api.interceptors.request.use(
     config => {
       const token = localStorage.getItem("accessToken")
-      console.log({ token })
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
@@ -32,6 +31,7 @@ export function setUpInterceptors(navigate, refreshToken) {
         error.response.status === 401 ||
         error.response.status === 403
       ) {
+        console.log("Token expired")
         return api
           .post('/auth/refresh-token', {
             token: localStorage.getItem("refreshToken"),

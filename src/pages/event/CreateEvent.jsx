@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
@@ -13,11 +13,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { useCreateEvent } from "../../hooks/createEvent.js"
-import { useUpdateEvent } from "../../hooks/event/useUpdateEvent.js"
+import { useCreateEvent } from "@/hooks/event/createEvent"
+import { useUpdateEvent } from "@/hooks/event/useUpdateEvent"
 import { getEvent } from "@/services/events-api.js";
 
-// Define Zod schema for form validation
 const eventSchema = z.object({
   title: z.string().min(3, "El título debe tener al menos 3 caracteres"),
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
@@ -244,7 +243,7 @@ export default function EventForm({ mode = "create" }) {
               <Controller
                 name="image"
                 control={control}
-                render={({ field: { value, onChange, ...field } }) => (
+                render={({ field: { onChange, ...field } }) => (
                   <Input
                     id="image"
                     type="file"
@@ -275,7 +274,7 @@ export default function EventForm({ mode = "create" }) {
           <div className="flex flex-col md:flex-row gap-4">
             <Button
               type="submit"
-              className="w-full md:w-auto bg-[#2ba4e0] hover:bg-[#418fb6] text-white text-lg font-semibold shadow"
+              className="w-1/2 bg-[#2ba4e0] hover:bg-[#418fb6] text-white text-lg font-semibold shadow"
               disabled={isLoading}
             >
               {isLoading ? "Procesando..." : eventId ? "Actualizar Evento" : "Crear Evento"}
@@ -283,7 +282,7 @@ export default function EventForm({ mode = "create" }) {
             <Button
               type="button"
               variant="outline"
-              className="w-full md:w-auto"
+              className="w-1/2"
               onClick={() => navigate("/dashboard/events")}
               disabled={isLoading}
             >

@@ -1,26 +1,26 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { createEvent } from '../services/events-api.js'
+import { createUser } from '../../services/users-api.js'
 
-export const useCreateEvent = () => {
+export const useCreateUser = () => {
   const [loading, setLoading] = useState(false)
 
-  const createEventFunction = async (event) => {
+  const createUserFunction = async (event) => {
     setLoading(true)
-    const res = await createEvent(event)
+    const res = await createUser(event)
     setLoading(false)
 
     const error = res.err?.response?.data?.error
-    if(error) {
+    if (error) {
       toast.error(error)
       return
     }
     console.log(res)
-    toast.success('Event created successfully')
+    toast.success('Usuario creado correctamente')
   }
 
   return {
     loading,
-    createEventFunction
+    createUser: createUserFunction,
   }
 }

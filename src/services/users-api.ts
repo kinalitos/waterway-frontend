@@ -32,6 +32,7 @@ export const getUser = async (id) => {
   try {
     return await api.get(`/users/${id}`)
   } catch (err) {
+    console.log(err)
     return {
       error: true,
       err

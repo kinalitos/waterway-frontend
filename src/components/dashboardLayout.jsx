@@ -49,8 +49,6 @@ export default function DashboardLayout() {
       { href: "/dashboard/publications", label: "Publicaciones", icon: FileText },
       { href: "/dashboard/maps", label: "Mapas", icon: Map },
       { href: "/dashboard/reports", label: "Reportes", icon: AlertTriangle },
-      // @TODO: mover para que solo admins puedan ver esto
-      { href: "/dashboard/users", label: "Usuarios", icon: Users },
     ]
 
     // Enlaces específicos por rol

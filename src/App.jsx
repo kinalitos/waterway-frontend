@@ -23,7 +23,7 @@ import EventosUser from "./pages/feed/EventosFeedPage.jsx";
 import PublicacionesFeedPage from './pages/feed/PublicacionesFeedPage.jsx'
 import ReportesFeedPage from './pages/feed/ReportesFeedPage.jsx'
 import ReportDetailPage from "./pages/dashboard/ReportDetailPage.jsx"
-import { CreateUserForm } from "@/pages/users/CreateUser.js";
+import { UserForm } from "@/pages/users/CreateUser.js";
 
 function App() {
   return (
@@ -54,8 +54,8 @@ function RoutesWrapper() {
       <Route path="/dashboard" element={<DashboardLayout/>}>
         <Route index element={<DashboardPage/>}/>
         <Route path="users" element={<UsersPage/>}/>
-        <Route path="users/new" element={<CreateUserForm/>}/>
-        <Route path="users/edit/:eventId" element={<CreateUserForm mode="edit"/>}/>
+        <Route path="users/new" element={<UserForm/>}/>
+        <Route path="users/edit/:userId" element={<UserForm mode="edit"/>}/>
         <Route path="maps" element={<MapsPage/>}/>
         <Route path="reports" element={<ReportsPage/>}/>
         <Route path="reports/new" element={<NewReportPage/>}/>

@@ -6,25 +6,15 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useAuth } from "@/providers/AuthProvider"
+import { TableCell, TableRow } from "@/components/ui/table"
 import { deleteUser, getUsers } from "@/services/users-api.js"
 import { useDebouncedCallback } from 'use-debounce'
 import { User } from "@/services/types.js";
 import { cn } from "@/lib/utils.js";
 import { PaginatedTable } from "@/components/ui/paginated-table.js"
 
-type PaginationData = {
-  totalPages: number;
-  currentPage: number;
-  pageSize: number;
-}
-
-
 export function UsersPage() {
-  const { user } = useAuth()
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -138,7 +128,6 @@ export function UsersPage() {
         </Button>
       </div>
 
-      {/* Filtros */}
       <div
         className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 md:space-x-4 bg-white/50 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-[#418fb6]/10">
         <div className="flex flex-1 items-center space-x-2">
@@ -188,14 +177,59 @@ export function UsersPage() {
         renderRow={(user) => (
           <TableRow key={user.id}>
             <TableCell>{`${user.name} ${user.last_name}`}</TableCell>
-            <TableCell>
+            <TableCell className="flex gap-2 items-end">
               <Mail className="inline h-3.5 w-3.5 text-[#2ba4e0]"/>
-              {user.email}
+              <span>{user.email}</span>
             </TableCell>
             <TableCell>
               <RoleBadge variant={user.role}>{user.role}</RoleBadge>
             </TableCell>
-            <TableCell className="text-right">...</TableCell>
+            <TableCell className="text-right">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Abrir menú</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                    >
+                      <circle cx="12" cy="12" r="1"/>
+                      <circle cx="12" cy="5" r="1"/>
+                      <circle cx="12" cy="19" r="1"/>
+                    </svg>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to={`/dashboard/users/${user._id}`}>
+                      <Eye className="mr-2 h-4 w-4"/>
+                      <span>Ver detalles</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  {//canManageEvent(user) && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link to={`/dashboard/users/edit/${user._id}`}>
+                          <Edit className="mr-2 h-4 w-4"/>
+                          <span>Editar</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDeleteUser(user._id)} className="text-red-600">
+                        <Trash2 className="mr-2 h-4 w-4"/>
+                        <span>Eliminar</span>
+                      </DropdownMenuItem>
+                    </>
+                    /* )*/
+                  }
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
           </TableRow>
         )}
         pagination={{
