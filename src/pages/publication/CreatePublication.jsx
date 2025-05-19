@@ -50,7 +50,7 @@ export default function CreatePublication({ mode = "create" }) {
           return;
         }
 
-        const pub = res.data.publication || res;
+        const pub = res.data || res;
         if (pub.image_url) {
           setPreviewUrl(pub.image_url);
         }
@@ -143,9 +143,24 @@ export default function CreatePublication({ mode = "create" }) {
           </div>
 
           {/* Botón enviar */}
-          <Button type="submit" className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg" disabled={isLoading}>
-            {publicationId ? "Actualizar Publicación" : "Crear Publicación"}
-          </Button>
+          <div className="flex flex-col md:flex-row gap-4">
+            <Button
+              type="submit"
+              className="w-1/2 bg-[#2ba4e0] hover:bg-[#418fb6] text-white text-lg font-semibold shadow"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creando..." : publicationId ? "Actualizar Publicación" : "Crear Publicación"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-1/2"
+              onClick={() => navigate("/dashboard/publications")}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+          </div>
         </form>
       </div>
     </div>
