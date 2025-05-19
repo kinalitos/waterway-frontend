@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -123,7 +121,7 @@ export default function PublicationsPage() {
     return (
       user?.role === "administrador" ||
       user?.role === "moderador" ||
-      publication.created_by === user?.id
+      publication.created_by === user?._id
     );
   };
 
@@ -156,18 +154,20 @@ export default function PublicationsPage() {
             Comparte conocimientos y descubrimientos con la comunidad.
           </p>
         </div>
-        <Button
-          className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
-          asChild
-        >
-          <Link
-            to="/dashboard/publications/new"
-            className="flex items-center gap-2"
+        {user?.role === "usuario" && (
+          <Button
+            className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+            asChild
           >
-            <Plus className="h-4 w-4" />
-            Nueva Publicación
-          </Link>
-        </Button>
+            <Link
+              to="/dashboard/publications/new"
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Nueva Publicación
+            </Link>
+          </Button>
+        )}
       </div>
 
       {/* Buscador */}
@@ -257,15 +257,13 @@ export default function PublicationsPage() {
                               src={
                                 publication.author_avatar || "/placeholder.svg"
                               }
-                              alt={publication.author_name || "Usuario"}
+                              alt={getAuthorInitials(user.name)}
                             />
                             <AvatarFallback>
-                              {getAuthorInitials(publication.author_name)}
+                              {getAuthorInitials(user.name)}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-sm">
-                            {publication.author_name || "Usuario"}
-                          </span>
+                          <span className="text-sm">{user.name}</span>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -318,7 +316,7 @@ export default function PublicationsPage() {
                             </DropdownMenuItem>
                             {canManagePublication(publication) && (
                               <>
-                                <DropdownMenuItem
+                                {/* <DropdownMenuItem
                                   asChild
                                   className="cursor-pointer"
                                 >
@@ -329,7 +327,7 @@ export default function PublicationsPage() {
                                     <Edit className="mr-2 h-4 w-4 text-[#418fb6]" />
                                     <span>Editar</span>
                                   </Link>
-                                </DropdownMenuItem>
+                                </DropdownMenuItem> */}
                                 <DropdownMenuItem
                                   onClick={() =>
                                     handleDeletePublication(publication._id)
@@ -352,7 +350,7 @@ export default function PublicationsPage() {
           </div>
         </div>
 
-        {selectedPublication && (
+        {selectedPublication && user?.role === "usuario" &&  (
           <div className="w-[350px] p-4 border border-[#418fb6]/20 bg-white shadow-md rounded-xl">
             <h2 className="text-xl font-semibold mb-4">Editar publicación</h2>
             <Input
@@ -380,11 +378,7 @@ export default function PublicationsPage() {
             </div>
           </div>
         )}
-
-        
       </div>
-
-     
     </div>
   );
 }

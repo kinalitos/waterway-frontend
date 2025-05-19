@@ -1,5 +1,5 @@
 "use client"
-
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -27,126 +27,21 @@ import {
   Lock,
   Video,
   Smile,
+  Plus
 } from "lucide-react"
 import { toast } from "sonner"
 
-// Datos de ejemplo para las publicaciones
-const publicacionesData = [
-  {
-    id: "pub-101",
-    contenido:
-      "¡Increíble jornada de limpieza en el Río Motagua hoy! Más de 50 voluntarios recogieron más de 200kg de plásticos. Gracias a todos los que participaron. Juntos podemos hacer la diferencia. 💙🌊 #LimpiezaRíoMotagua #MenosPlásticos",
-    fecha: "Hace 1 hora",
-    ubicacion: "Río Motagua, El Progreso",
-    imagenes: [
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-    ],
-    usuario: {
-      id: "user123",
-      nombre: "Fundación Río Limpio",
-      avatar: "/placeholder.svg",
-      verificado: true,
-    },
-    likes: 245,
-    comentarios: 32,
-    compartidos: 78,
-    guardado: true,
-    privacidad: "publico",
-    etiquetas: ["LimpiezaRíoMotagua", "MenosPlásticos", "VoluntariadoAmbiental"],
-  },
-  {
-    id: "pub-102",
-    contenido:
-      "Hoy presentamos los resultados de nuestro estudio sobre la calidad del agua en la cuenca del Río Motagua. Los niveles de contaminación han disminuido un 15% desde el año pasado gracias a las iniciativas comunitarias. Aún queda mucho por hacer, pero vamos por buen camino. Pueden descargar el informe completo en el enlace de nuestra bio.",
-    fecha: "Hace 3 horas",
-    ubicacion: "Universidad de San Carlos, Guatemala",
-    imagenes: ["/placeholder.svg?height=600&width=800"],
-    usuario: {
-      id: "user456",
-      nombre: "Centro de Estudios Ambientales",
-      avatar: "/placeholder.svg",
-      verificado: true,
-    },
-    likes: 189,
-    comentarios: 45,
-    compartidos: 67,
-    guardado: false,
-    privacidad: "publico",
-    etiquetas: ["CalidadDelAgua", "Investigación", "RíoMotagua"],
-  },
-  {
-    id: "pub-103",
-    contenido:
-      "Mi primer día como voluntario en el programa de monitoreo del Río Motagua. Aprendí a tomar muestras de agua y a identificar especies indicadoras de la salud del ecosistema. ¡Una experiencia increíble! Si quieren unirse, hay jornadas todos los sábados. 🔬🌿",
-    fecha: "Ayer",
-    ubicacion: "Estación de Monitoreo Ambiental, Zacapa",
-    imagenes: ["/placeholder.svg?height=600&width=800", "/placeholder.svg?height=600&width=800"],
-    usuario: {
-      id: "user789",
-      nombre: "Carlos Méndez",
-      avatar: "/placeholder.svg",
-      verificado: false,
-    },
-    likes: 87,
-    comentarios: 12,
-    compartidos: 5,
-    guardado: false,
-    privacidad: "amigos",
-    etiquetas: ["Voluntariado", "CienciaCiudadana", "MedioAmbiente"],
-  },
-  {
-    id: "pub-104",
-    contenido:
-      "Nuestra empresa se ha comprometido a reducir a cero los vertidos industriales en el Río Motagua para 2025. Hoy inauguramos nuestra nueva planta de tratamiento de aguas residuales que utiliza tecnología de filtración avanzada. Invitamos a otras empresas de la zona a sumarse a esta iniciativa por un río más limpio.",
-    fecha: "Hace 2 días",
-    ubicacion: "Zona Industrial, Amatitlán",
-    imagenes: ["/placeholder.svg?height=600&width=800"],
-    usuario: {
-      id: "user101",
-      nombre: "EcoIndustrias Guatemala",
-      avatar: "/placeholder.svg",
-      verificado: true,
-    },
-    likes: 312,
-    comentarios: 56,
-    compartidos: 89,
-    guardado: true,
-    privacidad: "publico",
-    etiquetas: ["ResponsabilidadAmbiental", "AguasResiduales", "IndustriaVerde"],
-  },
-  {
-    id: "pub-105",
-    contenido:
-      "¡Miren lo que encontramos durante nuestra expedición de kayak por el Río Motagua! Esta tortuga blanca es una especie en peligro de extinción. La documentamos y seguimos nuestro camino. Es increíble cómo la biodiversidad se recupera cuando cuidamos nuestros ríos. 🐢",
-    fecha: "Hace 3 días",
-    ubicacion: "Río Motagua, tramo medio",
-    imagenes: ["/placeholder.svg?height=600&width=800"],
-    usuario: {
-      id: "user202",
-      nombre: "Ana García",
-      avatar: "/placeholder.svg",
-      verificado: false,
-    },
-    likes: 423,
-    comentarios: 67,
-    compartidos: 112,
-    guardado: false,
-    privacidad: "publico",
-    etiquetas: ["Biodiversidad", "FaunaGuatemalteca", "Conservación"],
-  },
-]
+import { usePublications } from "../../hooks/publication/usePublications.js"
 
 // Categorías para filtrar
 const categorias = [
-  { id: "todos", nombre: "Todas las publicaciones", icon: Globe },
+  /* { id: "todos", nombre: "Todas las publicaciones", icon: Globe },
   { id: "amigos", nombre: "De amigos", icon: Users },
-  { id: "guardados", nombre: "Guardados", icon: Bookmark },
+  { id: "guardados", nombre: "Guardados", icon: Bookmark }, */
   { id: "populares", nombre: "Más populares", icon: TrendingUp },
   { id: "recientes", nombre: "Más recientes", icon: Clock },
 ]
+
 
 // Etiquetas populares
 const etiquetasPopulares = [
@@ -160,13 +55,14 @@ const etiquetasPopulares = [
 ]
 
 export default function PublicacionesFeedPage() {
-  const [publicaciones, setPublicaciones] = useState(publicacionesData)
-  const [filteredPublicaciones, setFilteredPublicaciones] = useState(publicacionesData)
+/*   const [publicaciones, setPublicaciones] = useState([])
+ */  const [filteredPublicaciones, setFilteredPublicaciones] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [activeFilter, setActiveFilter] = useState("todos")
   const [activeTag, setActiveTag] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
   const [newPostText, setNewPostText] = useState("")
+  const { publicaciones, isLoading, setPublicaciones } = usePublications()
+
 
   // Filtrar publicaciones
   useEffect(() => {
@@ -205,83 +101,8 @@ export default function PublicacionesFeedPage() {
     setFilteredPublicaciones(filtered)
   }, [publicaciones, searchTerm, activeFilter, activeTag])
 
-  // Simular carga de más publicaciones al hacer scroll
-  const loadMorePublicaciones = () => {
-    setIsLoading(true)
-    // Simular una llamada a la API
-    setTimeout(() => {
-      // Duplicar algunas publicaciones para simular carga de más contenido
-      const morePublicaciones = [...publicacionesData].slice(0, 2).map((publicacion, index) => ({
-        ...publicacion,
-        id: `pub-${200 + index}`,
-        fecha: "Hace 1 semana",
-      }))
-      setPublicaciones((prev) => [...prev, ...morePublicaciones])
-      setIsLoading(false)
-    }, 1500)
-  }
 
-  // Manejar me gusta en una publicación
-  const handleLike = (publicacionId) => {
-    setPublicaciones((prev) =>
-      prev.map((publicacion) =>
-        publicacion.id === publicacionId ? { ...publicacion, likes: publicacion.likes + 1 } : publicacion,
-      ),
-    )
-    toast.success("Te gusta esta publicación", {
-      description: "Tu reacción ha sido registrada",
-    })
-  }
-
-  // Manejar guardar una publicación
-  const handleBookmark = (publicacionId) => {
-    setPublicaciones((prev) =>
-      prev.map((publicacion) =>
-        publicacion.id === publicacionId ? { ...publicacion, guardado: !publicacion.guardado } : publicacion,
-      ),
-    )
-    toast.success("Publicación guardada", {
-      description: "Puedes encontrarla en tu sección de guardados",
-    })
-  }
-
-  // Manejar compartir una publicación
-  const handleShare = (publicacionId) => {
-    toast.success("Publicación compartida", {
-      description: "El enlace ha sido copiado al portapapeles",
-    })
-  }
-
-  // Publicar una nueva publicación
-  const handlePost = () => {
-    if (!newPostText.trim()) return
-
-    const newPublicacion = {
-      id: `pub-${Date.now()}`,
-      contenido: newPostText,
-      fecha: "Ahora mismo",
-      ubicacion: "Mi ubicación actual",
-      imagenes: [],
-      usuario: {
-        id: "user123",
-        nombre: "Carlos Méndez",
-        avatar: "/placeholder.svg",
-        verificado: false,
-      },
-      likes: 0,
-      comentarios: 0,
-      compartidos: 0,
-      guardado: false,
-      privacidad: "publico",
-      etiquetas: [],
-    }
-
-    setPublicaciones((prev) => [newPublicacion, ...prev])
-    setNewPostText("")
-    toast.success("Publicación realizada", {
-      description: "Tu publicación ha sido compartida exitosamente",
-    })
-  }
+  
 
   return (
     <div className="container mx-auto py-6 px-4">
@@ -291,8 +112,17 @@ export default function PublicacionesFeedPage() {
             <h1 className="text-3xl font-bold text-[#282f33]">Feed Social</h1>
             <p className="text-[#434546]">Descubre las últimas publicaciones de la comunidad ambiental</p>
           </div>
-          <Button className="bg-[#2ba4e0] hover:bg-[#418fb6] text-white">
-            <UserPlus className="mr-2 h-4 w-4" /> Seguir personas
+          <Button
+            className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+            asChild
+          >
+            <Link
+              to="/dashboard/publications"
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Gestionar Publicaciones
+            </Link>
           </Button>
         </div>
 
@@ -443,13 +273,13 @@ export default function PublicacionesFeedPage() {
                         <Button variant="ghost" size="icon" className="h-9 w-9">
                           <Globe className="h-5 w-5 text-[#434546]" />
                         </Button>
-                        <Button
+                        {/* <Button
                           className="bg-[#2ba4e0] hover:bg-[#418fb6] text-white"
                           onClick={handlePost}
                           disabled={!newPostText.trim()}
                         >
                           Publicar
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
                   </div>
@@ -460,14 +290,8 @@ export default function PublicacionesFeedPage() {
             {/* Tabs para ordenar */}
             <Tabs defaultValue="destacadas">
               <TabsList className="w-full">
-                <TabsTrigger value="destacadas" className="flex-1">
-                  Destacadas
-                </TabsTrigger>
                 <TabsTrigger value="recientes" className="flex-1">
                   Más recientes
-                </TabsTrigger>
-                <TabsTrigger value="siguiendo" className="flex-1">
-                  Siguiendo
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -687,38 +511,7 @@ export default function PublicacionesFeedPage() {
                     </Card>
                   ))}
 
-                  {/* Botón para cargar más */}
-                  <div className="text-center pt-4">
-                    <Button
-                      variant="outline"
-                      className="border-[#2ba4e0] text-[#2ba4e0] hover:bg-[#2ba4e0]/10"
-                      onClick={loadMorePublicaciones}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <span className="animate-spin mr-2">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                            </svg>
-                          </span>
-                          Cargando...
-                        </>
-                      ) : (
-                        "Cargar más publicaciones"
-                      )}
-                    </Button>
-                  </div>
+                  
                 </>
               )}
             </div>

@@ -1,5 +1,5 @@
 "use client";
-
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -37,9 +37,8 @@ export default function PublicationForm() {
       date_end: endDate,
     });
 
-    if (res) {
-      navigate("/dashboard/publications");
-    }
+    navigate("/dashboard/publications");
+
   };
 
   return (
@@ -70,7 +69,7 @@ export default function PublicationForm() {
           />
         </div>
 
-        <div className="space-y-2"></div>
+        {/* <div className="space-y-2"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Fecha de inicio</Label>
@@ -123,12 +122,21 @@ export default function PublicationForm() {
               </PopoverContent>
             </Popover>
           </div>
-        </div>
+        </div> */}
 
         <Button type = "submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" >
             Crear publicación
         </Button>
+        
       </form>
+      <Link
+        to= "/dashboard/publications">
+        <Button className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-100" >
+            Cancelar
+        </Button>
+      </Link>
+      
+      
     </div>
   );
 }

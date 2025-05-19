@@ -61,7 +61,7 @@ function RoutesWrapper() {
         <Route path="publications/new" element={<CreatePublication />} />
         <Route path="/dashboard/events/edit/:eventId" element={<CreateEvent />} />
       </Route>
-
+    
       <Route path="/events" element={<EventosUser />} />
       <Route path="/publications" element={<PublicacionesFeedPage />} />
       <Route path="/reports" element={<ReportesFeedPage />} />
