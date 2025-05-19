@@ -88,116 +88,117 @@ export function UserForm({ mode = "create" }) {
     }
   };
 
-  return (<div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
-    <div className="w-full max-w-2xl bg-white border border-[#418fb6]/20 rounded-xl shadow-lg p-8">
-      <h1 className="text-3xl font-bold text-[#282f33] mb-2 text-center">
-        {userId ? "Editar Usuario" : "Crear Nuevo Usuario"}
-      </h1>
-      <p className="text-[#435761] text-center mb-8">
-        {userId ? "Modifica la información del usuario." : "Completa los datos para registrar un nuevo usuario."}
-      </p>
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
+      <div className="w-full max-w-2xl bg-white border border-[#418fb6]/20 rounded-xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-[#282f33] mb-2 text-center">
+          {userId ? "Editar Usuario" : "Crear Nuevo Usuario"}
+        </h1>
+        <p className="text-[#435761] text-center mb-8">
+          {userId ? "Modifica la información del usuario." : "Completa los datos para registrar un nuevo usuario."}
+        </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="name">Nombre</Label>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (<Input
-              id="name"
-              placeholder="Nombre del usuario"
-              disabled={isLoading}
-              {...field}
-            />)}
-          />
-          {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="email">Correo</Label>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (<Input
-              id="email"
-              placeholder="Correo del usuario"
-              disabled={isLoading}
-              {...field}
-            />)}
-          />
-          {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-        </div>
-
-
-        <div className="space-y-2">
-          <Label htmlFor="password">Contraseña</Label>
-          <div className="flex flex-col">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="name">Nombre</Label>
             <Controller
-              name="password"
+              name="name"
+              control={control}
+              render={({ field }) => (<Input
+                id="name"
+                placeholder="Nombre del usuario"
+                disabled={isLoading}
+                {...field}
+              />)}
+            />
+            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Correo</Label>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (<Input
+                id="email"
+                placeholder="Correo del usuario"
+                disabled={isLoading}
+                {...field}
+              />)}
+            />
+            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+          </div>
+
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Contraseña</Label>
+            <div className="flex flex-col">
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    id="password"
+                    placeholder="Contraseña"
+                    type="password"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                )}
+              />
+              {mode === "edit" && <span className="text-xs text-gray-500 pl-2">Dejar vacio para no actualizar</span>}
+
+            </div>
+            {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+          </div>
+
+
+          <div className="space-y-2">
+            <Label htmlFor="role">Rol</Label>
+            <Controller
+              name="role"
               control={control}
               render={({ field }) => (
-                <Input
-                  id="password"
-                  placeholder="Contraseña"
-                  type="password"
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
                   disabled={isLoading}
-                  {...field}
-                />
+                >
+                  <SelectTrigger className="w-full border-[#418fb6]/30 focus:border-[#2ba4e0] transition-all">
+                    <SelectValue placeholder="Seleccionar rol"/>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="usuario">Usuario</SelectItem>
+                    <SelectItem value="investigador">Investigador</SelectItem>
+                    <SelectItem value="moderador">Moderador</SelectItem>
+                    <SelectItem value="administrador">Administrador</SelectItem>
+                  </SelectContent>
+                </Select>
               )}
             />
-            {mode === "edit" && <span className="text-xs text-gray-500 pl-2">Dejar vacio para no actualizar</span>}
 
+            {errors.role && <p className="text-sm text-red-500">{errors.role.message}</p>}
           </div>
-          {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-        </div>
 
-
-        <div className="space-y-2">
-          <Label htmlFor="role">Rol</Label>
-          <Controller
-            name="role"
-            control={control}
-            render={({ field }) => (
-              <Select
-                value={field.value}
-                onValueChange={field.onChange}
-                disabled={isLoading}
-              >
-                <SelectTrigger className="w-full border-[#418fb6]/30 focus:border-[#2ba4e0] transition-all">
-                  <SelectValue placeholder="Seleccionar rol"/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="usuario">Usuario</SelectItem>
-                  <SelectItem value="investigador">Investigador</SelectItem>
-                  <SelectItem value="moderador">Moderador</SelectItem>
-                  <SelectItem value="administrador">Administrador</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-
-          {errors.role && <p className="text-sm text-red-500">{errors.role.message}</p>}
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-4">
-          <Button
-            type="submit"
-            className="w-1/2 bg-[#2ba4e0] hover:bg-[#418fb6] text-white text-lg font-semibold shadow"
-            disabled={isLoading}
-          >
-            {isLoading ? "Creando..." : userId ? "Actualizar Usuario" : "Crear Usuario"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-1/2"
-            onClick={() => navigate("/dashboard/users")}
-            disabled={isLoading}
-          >
-            Cancelar
-          </Button>
-        </div>
-      </form>
-    </div>
-  </div>);
+          <div className="flex flex-col md:flex-row gap-4">
+            <Button
+              type="submit"
+              className="w-1/2 bg-[#2ba4e0] hover:bg-[#418fb6] text-white text-lg font-semibold shadow"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creando..." : userId ? "Actualizar Usuario" : "Crear Usuario"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-1/2"
+              onClick={() => navigate("/dashboard/users")}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>);
 }
