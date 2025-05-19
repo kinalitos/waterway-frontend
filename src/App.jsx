@@ -22,6 +22,7 @@ import PublicacionesFeedPage from './pages/feed/PublicacionesFeedPage.jsx'
 import ReportesFeedPage from './pages/feed/ReportesFeedPage.jsx'
 import ReportDetailPage from "./pages/dashboard/ReportDetailPage.jsx"
 import EventDetail from "./pages/event/EventDetail.jsx";
+import ViewEvent from "./pages/event/ViewEvent.jsx"
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function RoutesWrapper() {
         <Route path="publications/new" element={<CreatePublication />} />
         <Route path="/dashboard/events/edit/:eventId" element={<CreateEvent />} />
         <Route path="/dashboard/events/:eventId" element={<EventDetail />} />
+        <Route path="view-event" element={<ViewEvent />} />
       </Route>
 
       <Route path="/events" element={<EventosUser />} />

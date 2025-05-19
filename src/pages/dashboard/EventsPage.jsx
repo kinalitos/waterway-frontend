@@ -57,11 +57,11 @@ export default function EventsPage() {
     }
   }
 
-   const canManageEvent = (events) => {
+   const canManageEvent = (event) => {
     return (
       user?.role === "administrador" ||
       user?.role === "moderador" ||
-      events.created_by === user?.id
+      event.created_by === user?.id
     );
   };
 
@@ -78,15 +78,26 @@ export default function EventsPage() {
             desarrollo sostenible.
           </p>
         </div>
+        {user?.role === "administrador" ||user?.role ===  'moderador'&& (
+          <Button
+            className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+            asChild
+          >
+            <Link to="/dashboard/events/new" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Nuevo Evento
+            </Link>
+          </Button>
+        )}
         <Button
-          className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
-          asChild
-        >
-          <Link to="/dashboard/events/new" className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Nuevo Evento
-          </Link>
-        </Button>
+            className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+            asChild
+          >
+            <Link to="/dashboard/view-event" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Más eventos
+            </Link>
+          </Button>
       </div>
 
       {/* Filtros */}
@@ -223,21 +234,20 @@ export default function EventsPage() {
                               <span>Ver detalles</span>
                             </Link>
                           </DropdownMenuItem>
-                          {canManageEvent(events) && (
+                          {canManageEvent(event) && (
                             <>
                               <DropdownMenuItem asChild>
                                 <Link to={`/dashboard/events/edit/${event._id}`}>
                                   <Edit className="mr-2 h-4 w-4" />
                                   <span>Editar</span>
-                                </Link>                                
+                                </Link>
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => handleDeleteEvent(event._id)} className="text-red-600">
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 <span>Eliminar</span>
                               </DropdownMenuItem>
                             </>
-                          )
-                         }
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
