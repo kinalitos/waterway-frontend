@@ -54,7 +54,7 @@ export default function PublicationsPage() {
         setPublications(data);
       })
       .catch(() =>
-        toast.error("No se pudieron cargar los eventos. Intente nuevamente.")
+        toast.error("No se pudieron cargar las publicaciones. Intente nuevamente.")
       )
       .finally(() => setIsLoading(false));
   }, 600);
@@ -316,18 +316,18 @@ export default function PublicationsPage() {
                             </DropdownMenuItem>
                             {canManagePublication(publication) && (
                               <>
-                                {/* <DropdownMenuItem
+                                 <DropdownMenuItem
                                   asChild
                                   className="cursor-pointer"
                                 >
                                   <Link
-                                    to={`/dashboard/publications/edit/${publication.id}`}
+                                    to={`/dashboard/publications/edit/${publication._id}`}
                                     className="flex items-center"
                                   >
                                     <Edit className="mr-2 h-4 w-4 text-[#418fb6]" />
                                     <span>Editar</span>
                                   </Link>
-                                </DropdownMenuItem> */}
+                                </DropdownMenuItem> 
                                 <DropdownMenuItem
                                   onClick={() =>
                                     handleDeletePublication(publication._id)
@@ -350,7 +350,7 @@ export default function PublicationsPage() {
           </div>
         </div>
 
-        {selectedPublication && user?.role === "usuario" &&  (
+        {/* {selectedPublication && user?.role === "usuario" &&  (
           <div className="w-[350px] p-4 border border-[#418fb6]/20 bg-white shadow-md rounded-xl">
             <h2 className="text-xl font-semibold mb-4">Editar publicación</h2>
             <Input
@@ -377,7 +377,7 @@ export default function PublicationsPage() {
               <Button onClick={handleSave}>Guardar</Button>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

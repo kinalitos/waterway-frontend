@@ -84,6 +84,8 @@ function RoutesWrapper() {
         {/* Publications */}
         <Route path="publications" element={<PublicationsPage/>}/>
         <Route path="publications/new" element={<CreatePublication/>}/>
+        <Route path="publications/edit/:publicationId" element={<CreatePublication mode="edit"/>}/>
+
 
         {/* Portal */}
         <Route path="portal/reports" element={<ReportesFeedPage/>}/>

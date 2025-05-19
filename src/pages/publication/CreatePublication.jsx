@@ -1,142 +1,153 @@
-"use client";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { useCreatePublication } from "../../hooks/publication/createPublication";
+import { useUpdatePublication } from "../../hooks/publication/useUpdatePublication";
+import { getPublication } from "@/services/publications-api";
 
-export default function PublicationForm() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [startDate, setStartDate] = useState(undefined);
-  const [endDate, setEndDate] = useState(undefined);
+// Valida campos obligatorios de la publicación
+const publicationSchema = z.object({
+  title: z.string().min(3, "El título debe tener al menos 3 caracteres"),
+  content: z.string().min(10, "El contenido debe tener al menos 10 caracteres"),
+});
+
+export default function PublicationForm({ mode = "create" }) {
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { publicationId } = useParams();
 
-  const {createPublicationFunction} = useCreatePublication()
+  const { createPublicationFunction } = useCreatePublication();
+  const { updatePublicationById } = useUpdatePublication();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+  } = useForm({
+    resolver: zodResolver(publicationSchema),
+    ...(mode === "create" && {
+      defaultValues: {
+        title: "",
+        content: "",
+        image: null,
+      },
+    }),
+    ...(mode === "edit" && {
+      defaultValues: async () => {
+        const res = await getPublication(publicationId);
+        if (res.error) {
+          toast.error("Publicación no encontrada");
+          navigate("/dashboard/publications");
+          return;
+        }
 
-    const res = await createPublicationFunction({
-      title,
-      content,
-      date_start: startDate,
-      date_end: endDate,
-    });
+        const pub = res.data.publication || res;
+        if (pub.image_url) {
+          setPreviewUrl(pub.image_url);
+        }
 
-    navigate("/dashboard/publications");
+        return {
+          title: pub.title || "",
+          content: pub.content || "",
+        };
+      },
+    }),
+  });
 
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      let success = false;
+
+      if (publicationId) {
+        success = await updatePublicationById(publicationId, data);
+        
+      } else {
+        success = await createPublicationFunction(data);
+      }
+
+      if (success) {
+        toast.success(
+          publicationId ? "Publicación actualizada" : "Publicación creada"
+        );
+        navigate("/dashboard/publications");
+      }
+    } catch (error) {
+      toast.error("Error al procesar la publicación");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Crear Publicación</h1>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
+      <div className="w-full max-w-2xl bg-white border border-[#418fb6]/20 rounded-xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-[#282f33] mb-2 text-center">
+          {publicationId ? "Editar Publicación" : "Crear Nueva Publicación"}
+        </h1>
+        <p className="text-[#435761] text-center mb-8">
+          {publicationId
+            ? "Modifica el contenido de la publicación."
+            : "Completa los campos para registrar una nueva publicación."}
+        </p>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="title">Título</Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Ingresa el título de la publicación"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="description">Contenido</Label>
-          <Textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Escribe tu publicación..."
-            rows={4}
-            required
-          />
-        </div>
-
-        {/* <div className="space-y-2"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Título */}
           <div className="space-y-2">
-            <Label>Fecha de inicio</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !startDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? format(startDate, "PPP") : "Seleccionar fecha"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  initialFocus
+            <Label htmlFor="title">Título</Label>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  id="title"
+                  placeholder="Título de la publicación"
+                  disabled={isLoading}
+                  {...field}
                 />
-              </PopoverContent>
-            </Popover>
+              )}
+            />
+            {errors.title && (
+              <p className="text-sm text-red-500">{errors.title.message}</p>
+            )}
           </div>
 
+          {/* Contenido */}
           <div className="space-y-2">
-            <Label>Fecha de cierre</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !endDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {endDate ? format(endDate, "PPP") : "Seleccionar fecha"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={setEndDate}
-                  initialFocus
+            <Label htmlFor="content">Contenido</Label>
+            <Controller
+              name="content"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  id="content"
+                  placeholder="Contenido de la publicación"
+                  rows={6}
+                  disabled={isLoading}
+                  {...field}
                 />
-              </PopoverContent>
-            </Popover>
+              )}
+            />
+            {errors.content && (
+              <p className="text-sm text-red-500">{errors.content.message}</p>
+            )}
           </div>
-        </div> */}
 
-        <Button type = "submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" >
-            Crear publicación
-        </Button>
-        
-      </form>
-      <Link
-        to= "/dashboard/publications">
-        <Button className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-100" >
-            Cancelar
-        </Button>
-      </Link>
-      
-      
+          {/* Botón enviar */}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {publicationId ? "Actualizar Publicación" : "Crear Publicación"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }
