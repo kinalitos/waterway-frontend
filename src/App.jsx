@@ -99,6 +99,7 @@ function RoutesWrapper() {
           <Route path="portal/reports" element={<ReportesFeedPage/>}/>
           <Route path="portal/publications" element={<PublicacionesFeedPage/>}/>
           <Route path="profile" element={<ProfilePage/>}/>
+          <Route path="portal/eventos/:eventId" element={<EventDetail/>}/>
         </Route>
 
         {/* Rutas para investigadores, moderadores y administradores */}
