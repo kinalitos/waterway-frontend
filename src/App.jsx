@@ -13,7 +13,7 @@ import MapsPage from "./pages/dashboard/MapsPage"
 import NewReportPage from "./pages/dashboard/NewReportPage"
 import PublicationsPage from "./pages/dashboard/PublicationsPage"
 import CreatePublication from "./pages/publication/CreatePublication.jsx"
-import ReportsPage from "./pages/dashboard/ReportsPage"
+import ReportsPage from "./pages/dashboard/ReportsPage.js"
 import CreateEvent from "./pages/event/CreateEvent.jsx"
 import LandingPage from './pages/LandingPage'
 
@@ -61,12 +61,12 @@ function RoutesWrapper() {
         <Route path="maps" element={<MapsPage/>}/>
         <Route path="reports" element={<ReportsPage/>}/>
         <Route path="reports/new" element={<NewReportPage/>}/>
+        <Route path="reports/:id" element={<ReportDetailPage/>}/>
         <Route path="events" element={<EventsPage/>}/>
         <Route path="events/new" element={<CreateEvent/>}/>
         <Route path="events/edit/:eventId" element={<CreateEvent mode="edit"/>}/>
         <Route path="publications" element={<PublicationsPage/>}/>
         <Route path="publications/new" element={<CreatePublication/>}/>
-        <Route path="reports/:id" element={<ReportDetailPage/>}/>
         <Route path="/dashboard/events/edit/:eventId" element={<CreateEvent/>}/>
         <Route path="portal/reports" element={<ReportesFeedPage/>}/>
         <Route path="portal/mapa-ia" element={<MapaIA/>}/>
