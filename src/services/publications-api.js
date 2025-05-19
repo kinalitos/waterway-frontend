@@ -4,11 +4,8 @@
 
 import { api } from "../lib/auth.ts";
 
-export const getPublications = async (searchQuery = "") => {
+export const getPublications = async (params) => {
     try {
-        const params = {};
-        if (searchQuery) params.search = searchQuery;
-
         const response = await api.get('/publications', { params });
         return response.data;
     } catch (err) {

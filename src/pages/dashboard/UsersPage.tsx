@@ -1,4 +1,4 @@
-import { Calendar, Edit, Eye, Filter, Mail, MapPin, Plus, Search, Trash2, UserCog } from "lucide-react"
+import { Calendar, Edit, Eye, Filter, Mail, Plus, Search, Trash2, UserCog } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
