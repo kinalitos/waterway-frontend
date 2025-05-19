@@ -23,8 +23,12 @@ import EventosUser from "./pages/feed/EventosFeedPage.jsx";
 import PublicacionesFeedPage from './pages/feed/PublicacionesFeedPage.jsx'
 import ReportesFeedPage from './pages/feed/ReportesFeedPage.jsx'
 import ReportDetailPage from "./pages/dashboard/ReportDetailPage.jsx"
+
 import { UserForm } from "@/pages/users/CreateUser.js";
 import { UserDetail } from "@/pages/users/UserDetail.js";
+
+import EventDetail from "./pages/event/EventDetail.jsx";
+
 
 function App() {
   return (
@@ -53,25 +57,40 @@ function RoutesWrapper() {
       <Route path="/login" element={<Login/>}/>
       <Route path="/register" element={<Register/>}/>
       <Route path="/dashboard" element={<DashboardLayout/>}>
-        <Route index element={<DashboardPage/>}/>
-        <Route path="users" element={<UsersPage/>}/>
-        <Route path="users/new" element={<UserForm/>}/>
-        <Route path="users/edit/:userId" element={<UserForm mode="edit"/>}/>
-        <Route path="users/:userId" element={<UserDetail/>}/>
-        <Route path="maps" element={<MapsPage/>}/>
-        <Route path="reports" element={<ReportsPage/>}/>
-        <Route path="reports/new" element={<NewReportPage/>}/>
-        <Route path="reports/:id" element={<ReportDetailPage/>}/>
-        <Route path="events" element={<EventsPage/>}/>
-        <Route path="events/new" element={<CreateEvent/>}/>
-        <Route path="events/edit/:eventId" element={<CreateEvent mode="edit"/>}/>
-        <Route path="publications" element={<PublicationsPage/>}/>
-        <Route path="publications/new" element={<CreatePublication/>}/>
-        <Route path="/dashboard/events/edit/:eventId" element={<CreateEvent/>}/>
-        <Route path="portal/reports" element={<ReportesFeedPage/>}/>
-        <Route path="portal/mapa-ia" element={<MapaIA/>}/>
-        <Route path="portal/events" element={<EventosUser/>}/>
-        <Route path="portal/publications" element={<PublicacionesFeedPage/>}/>
+        <Route path="/dashboard" element={<DashboardLayout/>}>
+          <Route index element={<DashboardPage/>}/>
+
+          {/* Users */}
+          <Route path="users" element={<UsersPage/>}/>
+          <Route path="users/new" element={<UserForm/>}/>
+          <Route path="users/edit/:userId" element={<UserForm mode="edit"/>}/>
+          <Route path="users/:userId" element={<UserDetail/>}/>
+
+          {/* Maps */}
+          <Route path="maps" element={<MapsPage/>}/>
+
+          {/* Reports */}
+          <Route path="reports" element={<ReportsPage/>}/>
+          <Route path="reports/new" element={<NewReportPage/>}/>
+          <Route path="reports/:id" element={<ReportDetailPage/>}/>
+
+          {/* Events */}
+          <Route path="events" element={<EventsPage/>}/>
+          <Route path="events/new" element={<CreateEvent/>}/>
+          <Route path="events/edit/:eventId" element={<CreateEvent mode="edit"/>}/>
+          <Route path="events/:eventId" element={<EventDetail/>}/>
+
+          {/* Publications */}
+          <Route path="publications" element={<PublicationsPage/>}/>
+          <Route path="publications/new" element={<CreatePublication/>}/>
+
+          {/* Portal */}
+          <Route path="portal/reports" element={<ReportesFeedPage/>}/>
+          <Route path="portal/mapa-ia" element={<MapaIA/>}/>
+          <Route path="portal/events" element={<EventosUser/>}/>
+          <Route path="portal/publications" element={<PublicacionesFeedPage/>}/>
+        </Route>
+
       </Route>
 
     </Routes>
