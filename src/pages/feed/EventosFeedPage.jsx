@@ -173,9 +173,6 @@ const eventosData = [
 // Categorías para filtrar
 const categorias = [
   { id: "todos", nombre: "Todos los eventos", icon: Calendar },
-  { id: "asistiendo", nombre: "Voy a asistir", icon: CalendarCheck },
-  { id: "interesado", nombre: "Me interesa", icon: Star },
-  { id: "guardados", nombre: "Guardados", icon: Bookmark },
   { id: "próximos", nombre: "Próximos", icon: CalendarClock },
   { id: "pasados", nombre: "Pasados", icon: CalendarDays },
 ];
@@ -319,7 +316,9 @@ export default function EventosFeedPage() {
             <p className="text-[#434546]">Descubre y participa en eventos para proteger nuestros ríos</p>
           </div>
           <Button className="bg-[#2ba4e0] hover:bg-[#418fb6] text-white">
-            <Plus className="mr-2 h-4 w-4" /> Crear evento
+            <Link to="/dashboard/events/new" className="flex items-center gap-2">
+              <Plus className="mr-2 h-4 w-4" /> Crear evento
+            </Link>
           </Button>
         </div>
 
@@ -356,81 +355,6 @@ export default function EventosFeedPage() {
                       </Button>
                     ))}
                   </div>
-                </div>
-
-                <Separator />
-
-                <div>
-                  <div className="font-medium text-[#282f33] mb-3">Tipos de eventos</div>
-                  <div className="space-y-1">
-                    <Button
-                      variant={activeCategory === "" ? "default" : "ghost"}
-                      className={`w-full justify-start ${
-                        activeCategory === "" ? "bg-[#2ba4e0] hover:bg-[#418fb6]" : ""
-                      }`}
-                      onClick={() => setActiveCategory("")}
-                    >
-                      Todos los tipos
-                    </Button>
-                    {tiposEvento.map((tipo) => (
-                      <Button
-                        key={tipo.id}
-                        variant={activeCategory === tipo.id ? "default" : "ghost"}
-                        className={`w-full justify-start ${
-                          activeCategory === tipo.id ? "bg-[#2ba4e0] hover:bg-[#418fb6]" : ""
-                        }`}
-                        onClick={() => setActiveCategory(tipo.id)}
-                      >
-                        <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: tipo.color }}></span>
-                        {tipo.nombre}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div>
-                  <div className="font-medium text-[#282f33] mb-3">Eventos destacados</div>
-                  <div className="space-y-3">
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24 bg-cover bg-center"
-                        style={{ backgroundImage: "url('https://via.placeholder.com/400x200')" }}
-                      ></div>
-                      <CardContent className="p-3">
-                        <p className="font-medium text-sm line-clamp-1">Foro Internacional del Agua 2024</p>
-                        <div className="flex items-center text-xs text-[#434546] mt-1">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          <span>15-17 de julio, 2024</span>
-                        </div>
-                        <div className="flex items-center text-xs text-[#434546] mt-1">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          <span className="line-clamp-1">Centro de Convenciones, Ciudad de Guatemala</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24 bg-cover bg-center"
-                        style={{ backgroundImage: "url('https://via.placeholder.com/400x200')" }}
-                      ></div>
-                      <CardContent className="p-3">
-                        <p className="font-medium text-sm line-clamp-1">Maratón por los Ríos Limpios</p>
-                        <div className="flex items-center text-xs text-[#434546] mt-1">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          <span>30 de junio, 2024</span>
-                        </div>
-                        <div className="flex items-center text-xs text-[#434546] mt-1">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          <span className="line-clamp-1">Parque Central, Antigua Guatemala</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  <Button variant="link" className="w-full mt-2 text-[#2ba4e0]">
-                    Ver más eventos destacados <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -484,11 +408,6 @@ export default function EventosFeedPage() {
                             className="h-48 md:h-full bg-cover bg-center relative"
                             style={{ backgroundImage: `url(${evento.imagen})` }}
                           >
-                            <div className="absolute top-2 right-2">
-                              <Badge className="bg-white text-[#282f33]">
-                                {tiposEvento.find((t) => t.id === evento.categoria)?.nombre || evento.categoria}
-                              </Badge>
-                            </div>
                             {evento.guardado && (
                               <div className="absolute bottom-2 right-2">
                                 <Badge className="bg-[#8b5cf6]">
@@ -550,36 +469,14 @@ export default function EventosFeedPage() {
                             <div className="flex items-center text-sm text-[#434546]">
                               <Calendar className="h-4 w-4 mr-2 text-[#2ba4e0]" />
                               <span>{formatDate(evento.fecha)}</span>
-                            </div>
-                            <div className="flex items-center text-sm text-[#434546]">
-                              <Clock className="h-4 w-4 mr-2 text-[#2ba4e0]" />
-                              <span>
-                                {evento.horaInicio} - {evento.horaFin}
-                              </span>
-                            </div>
+                            </div>        
                             <div className="flex items-center text-sm text-[#434546]">
                               <MapPin className="h-4 w-4 mr-2 text-[#2ba4e0]" />
                               <span className="line-clamp-1">{evento.ubicacion}</span>
-                            </div>
-                            <div className="flex items-center text-sm text-[#434546]">
-                              <Users className="h-4 w-4 mr-2 text-[#2ba4e0]" />
-                              <span>{evento.asistentes} asistentes</span>
-                            </div>
+                            </div>                     
                           </div>
 
-                          {evento.etiquetas && evento.etiquetas.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-4">
-                              {evento.etiquetas.map((tag) => (
-                                <Badge
-                                  key={tag}
-                                  variant="outline"
-                                  className="hover:bg-[#2ba4e0]/10 border-[#2ba4e0] text-[#2ba4e0]"
-                                >
-                                  #{tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
+                          
 
                           <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
                             <div className="flex items-center gap-2">
@@ -595,27 +492,14 @@ export default function EventosFeedPage() {
                               >
                                 {evento.asistiendo ? "Asistiré" : "Asistir"}
                               </Button>
-                              <Button
-                                variant={evento.interesado ? "default" : "outline"}
-                                size="sm"
-                                className={
-                                  evento.interesado
-                                    ? "bg-[#f97316] hover:bg-[#ea580c]"
-                                    : "border-[#f97316] text-[#f97316]"
-                                }
-                                onClick={() => handleInterested(evento.id)}
-                              >
-                                {evento.interesado ? "Me interesa" : "Interesado"}
-                              </Button>
                             </div>
-                            <div className="flex items-center gap-2">
+                            {/*<div className="flex items-center gap-2">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 className="flex items-center gap-1 text-[#434546]"
                                 onClick={() => handleShare(evento.id)}
                               >
-                                <Share2 className="h-4 w-4" />
                               </Button>
                               <Button
                                 variant="ghost"
@@ -627,7 +511,7 @@ export default function EventosFeedPage() {
                               >
                                 <Bookmark className="h-4 w-4" fill={evento.guardado ? "#8b5cf6" : "none"} />
                               </Button>
-                            </div>
+                            </div>*/}
                           </div>
                         </div>
                       </div>
