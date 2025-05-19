@@ -1,4 +1,3 @@
-"use client"
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
@@ -11,12 +10,11 @@ import {
   Map,
   AlertTriangle,
   Users,
-  Building2,
   Settings,
-  LogOut,
+  LogOut, BookOpen, PlusCircle, FilePlus,
 } from "lucide-react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar.js"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,14 +22,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "./ui/sheet"
-import { Separator } from "./ui/separator"
-import { Button } from "./ui/button"
-import { useAuth } from "@/providers/AuthProvider.js";
+} from "../ui/dropdown-menu.js"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "../ui/sheet.js"
+import { Separator } from "../ui/separator.js"
+import { Button } from "../ui/button.js"
+import { useAuth } from "@/providers/AuthProvider.tsx";
 
 export default function DashboardLayout() {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+  const isAdmin = user?.role !== "usuario" && !loading;
   const location = useLocation()
   const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -43,34 +42,48 @@ export default function DashboardLayout() {
 
   // Determinar los enlaces de navegación según el rol del usuario
   const getNavLinks = () => {
+    // Enlaces básicos para todos los usuarios autenticados
     const commonLinks = [
       { href: "/dashboard", label: "Inicio", icon: Home },
+      { href: "/dashboard/portal/events", label: isAdmin ? "Feed de Eventos": "Eventos", icon: Calendar },
+      { href: "/dashboard/portal/publications", label: isAdmin ? "Feed de Publicaciones": "Publicaciones", icon: BookOpen },
+      { href: "/dashboard/portal/reports", label: isAdmin ? "Feed de Reportes": "Reportes", icon: FileText },
+    ];
+
+    // Enlaces para investigadores, moderadores y administradores
+    const investigadorLinks = [
+      { href: "/dashboard/maps", label: "Mapas", icon: Map },
+      { href: "/dashboard/portal/mapa-ia", label: "Mapa IA", icon: Map },
+    ];
+
+    // Enlaces solo para moderadores y administradores
+    const moderadorLinks = [
       { href: "/dashboard/events", label: "Eventos", icon: Calendar },
       { href: "/dashboard/publications", label: "Publicaciones", icon: FileText },
-      { href: "/dashboard/maps", label: "Mapas", icon: Map },
+    ];
+
+    // Enlaces exclusivos para administradores
+    const adminLinks = [
+      { href: "/dashboard/users", label: "Usuarios", icon: Users },
       { href: "/dashboard/reports", label: "Reportes", icon: AlertTriangle },
-    ]
+    ];
 
-    // Enlaces específicos por rol
-    if (user?.role === "administrador") {
-      return [
-        ...commonLinks,
-        { href: "/dashboard/users", label: "Usuarios", icon: Users },
-        { href: "/dashboard/companies", label: "Empresas", icon: Building2 },
-      ]
+    // Construir el menú según el rol
+    switch (user?.role) {
+      case "administrador":
+        return [...commonLinks, ...investigadorLinks, ...moderadorLinks, ...adminLinks];
+
+      case "moderador":
+        return [...commonLinks, ...investigadorLinks, ...moderadorLinks];
+
+      case "investigador":
+        return [...commonLinks, ...investigadorLinks];
+
+      case "usuario":
+      default:
+        return commonLinks;
     }
-
-    if (user?.role === "moderador") {
-      return [...commonLinks, { href: "/dashboard/companies", label: "Empresas", icon: Building2 }]
-    }
-
-    if (user?.role === "empresa") {
-      return [...commonLinks, { href: "/dashboard/company-profile", label: "Perfil de Empresa", icon: Building2 }]
-    }
-
-    return commonLinks
-  }
-
+  };
   const navLinks = getNavLinks()
 
   const handleLogout = () => {

@@ -7,11 +7,12 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { getCurrentUser, getRecentEvents, getRecentPublications, getRecentReports } from "@/services/data-services"
+import { getRecentEvents, getRecentPublications, getRecentReports } from "@/services/data-services"
 import { formatDate } from '@/utils/utils.js'
+import { useAuth } from "@/providers/AuthProvider.js";
 
 export default function DashboardPage() {
-  const user = localStorage.getItem("nombre")
+  const { user } = useAuth();
   const [recentEvents, setRecentEvents] = useState([])
   const [recentPublications, setRecentPublications] = useState([])
   const [recentReports, setRecentReports] = useState([])
@@ -44,12 +45,13 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-<div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] bg-clip-text text-transparent">
-          Bienvenido, {user || "Usuario"}
+      <div className="space-y-2 text-center">
+        <h1
+          className="text-3xl font-bold tracking-tight bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] bg-clip-text text-transparent">
+          Bienvenido, {user?.name || "Usuario"}
         </h1>
         <p className="text-[#435761] text-center">
-          Accede a las herramientas y datos para monitorear y contribuir a la conservación del Río Motagua. 
+          Accede a las herramientas y datos para monitorear y contribuir a la conservación del Río Motagua.
           Tu participación es fundamental para proteger este importante recurso natural.
         </p>
       </div>
