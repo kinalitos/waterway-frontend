@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -31,7 +29,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import RioMotaguaDataSection from "./RioMotaguaDataSection";
-
+import logo from "@/assets/logo.png";
 
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,11 +42,11 @@ export default function LandingPage() {
   });
 
   const targetStats = {
-  users: 3200,         // Voluntarios y monitores ciudadanos
-  reports: 1850,       // Reportes de contaminación registrados
-  solutions: 48,       // Iniciativas de solución implementadas
-  communities: 26,     // Comunidades ribereñas participantes
-};
+    users: 3200,         // Voluntarios y monitores ciudadanos
+    reports: 1850,       // Reportes de contaminación registrados
+    solutions: 48,       // Iniciativas de solución implementadas
+    communities: 26,     // Comunidades ribereñas participantes
+  };
   // Animación de conteo para estadísticas
   useEffect(() => {
     const targetStats = {
@@ -136,8 +134,8 @@ export default function LandingPage() {
       >
         <div className="container mx-auto px-4 md:px-6 max-w-7xl flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-2xl text-[#2ba4e0]">
-            <div className="bg-[#2ba4e0] text-white p-1 rounded-md">
-              <MapPin className="h-6 w-6" />
+            <div className="size-8 rounded-full overflow-hidden">
+              <img src={logo} alt=""/>
             </div>
             <span>RíoMotagua</span>
           </div>
@@ -190,9 +188,9 @@ export default function LandingPage() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
+                <X className="h-6 w-6"/>
               ) : (
-                <Menu className="h-6 w-6" />
+                <Menu className="h-6 w-6"/>
               )}
             </Button>
           </div>
@@ -256,7 +254,8 @@ export default function LandingPage() {
 
           {/* Patrón de ondas animadas */}
           <div className="absolute inset-0 z-0 opacity-10">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI3NjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy92MDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMCAwaDEyMDB2NjAwSDB6Ii8+PHBhdGggZD0iTTAgMGgxMjAwdjYwMEgweiIvPjxwYXRoIGQ9Ik0xMjAwIDBoLTUuMUw0ODAgMzAwLjFMNS4xIDBoLTUuMXY2MDBIMHYtNS4xTDQ4MCAzMDAuMSA5NjAgNTk0LjlsLjEuMWgyNDBWMHoiIGZpbGw9IiNGRkYiLz48cGF0aCBkPSJNMTIwMCAwbC0yNDAgMTIwLTI0MCAxMjBWMGgtNzIwdjI0MGwtMjQwIDEyMEwwIDQ4MHYxMjBoMTIwMFYweiIgZmlsbD0iI0ZGRiIvPjwvZz48L3N2Zz4=')]"></div>
+            <div
+              className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI3NjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy92MDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMCAwaDEyMDB2NjAwSDB6Ii8+PHBhdGggZD0iTTAgMGgxMjAwdjYwMEgweiIvPjxwYXRoIGQ9Ik0xMjAwIDBoLTUuMUw0ODAgMzAwLjFMNS4xIDBoLTUuMXY2MDBIMHYtNS4xTDQ4MCAzMDAuMSA5NjAgNTk0LjlsLjEuMWgyNDBWMHoiIGZpbGw9IiNGRkYiLz48cGF0aCBkPSJNMTIwMCAwbC0yNDAgMTIwLTI0MCAxMjBWMGgtNzIwdjI0MGwtMjQwIDEyMEwwIDQ4MHYxMjBoMTIwMFYweiIgZmlsbD0iI0ZGRiIvPjwvZz48L3N2Zz4=')]"></div>
           </div>
 
           <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
@@ -283,7 +282,7 @@ export default function LandingPage() {
                   >
                     <Link to="/register">
                       Comenzar ahora
-                      <ChevronRight className="ml-2 h-4 w-4" />
+                      <ChevronRight className="ml-2 h-4 w-4"/>
                     </Link>
                   </Button>
                   <Button
@@ -423,7 +422,7 @@ export default function LandingPage() {
               <Card className="border-[#418fb6]/20 shadow-md hover:shadow-lg transition-all duration-300 group">
                 <CardHeader>
                   <div className="p-3 rounded-lg bg-[#418fb6]/10 w-fit group-hover:bg-[#2ba4e0]/20 transition-colors">
-                    <MapPin className="h-6 w-6 text-[#2ba4e0]" />
+                    <MapPin className="h-6 w-6 text-[#2ba4e0]"/>
                   </div>
                   <CardTitle className="mt-4 text-[#282f33]">
                     Mapeo de Contaminación
@@ -445,7 +444,7 @@ export default function LandingPage() {
                     variant="ghost"
                     className="text-[#418fb6] hover:text-[#2ba4e0] hover:bg-[#418fb6]/10 p-0 group-hover:translate-x-1 transition-transform"
                   >
-                    Explorar mapas <ArrowRight className="ml-2 h-4 w-4" />
+                    Explorar mapas <ArrowRight className="ml-2 h-4 w-4"/>
                   </Button>
                 </CardFooter>
               </Card>
@@ -453,7 +452,7 @@ export default function LandingPage() {
               <Card className="border-[#418fb6]/20 shadow-md hover:shadow-lg transition-all duration-300 group">
                 <CardHeader>
                   <div className="p-3 rounded-lg bg-[#418fb6]/10 w-fit group-hover:bg-[#2ba4e0]/20 transition-colors">
-                    <Database className="h-6 w-6 text-[#2ba4e0]" />
+                    <Database className="h-6 w-6 text-[#2ba4e0]"/>
                   </div>
                   <CardTitle className="mt-4 text-[#282f33]">
                     Datos Satelitales
@@ -475,7 +474,7 @@ export default function LandingPage() {
                     variant="ghost"
                     className="text-[#418fb6] hover:text-[#2ba4e0] hover:bg-[#418fb6]/10 p-0 group-hover:translate-x-1 transition-transform"
                   >
-                    Ver datos <ArrowRight className="ml-2 h-4 w-4" />
+                    Ver datos <ArrowRight className="ml-2 h-4 w-4"/>
                   </Button>
                 </CardFooter>
               </Card>
@@ -483,7 +482,7 @@ export default function LandingPage() {
               <Card className="border-[#418fb6]/20 shadow-md hover:shadow-lg transition-all duration-300 group">
                 <CardHeader>
                   <div className="p-3 rounded-lg bg-[#418fb6]/10 w-fit group-hover:bg-[#2ba4e0]/20 transition-colors">
-                    <BarChart2 className="h-6 w-6 text-[#2ba4e0]" />
+                    <BarChart2 className="h-6 w-6 text-[#2ba4e0]"/>
                   </div>
                   <CardTitle className="mt-4 text-[#282f33]">
                     Análisis Avanzado
@@ -505,7 +504,7 @@ export default function LandingPage() {
                     variant="ghost"
                     className="text-[#418fb6] hover:text-[#2ba4e0] hover:bg-[#418fb6]/10 p-0 group-hover:translate-x-1 transition-transform"
                   >
-                    Analizar <ArrowRight className="ml-2 h-4 w-4" />
+                    Analizar <ArrowRight className="ml-2 h-4 w-4"/>
                   </Button>
                 </CardFooter>
               </Card>
@@ -516,7 +515,7 @@ export default function LandingPage() {
               <div className="bg-[#f8fafc] p-8 rounded-xl border border-gray-100">
                 <div className="flex items-start">
                   <div className="p-3 rounded-lg bg-[#2ba4e0]/10 mr-4">
-                    <Globe className="h-6 w-6 text-[#2ba4e0]" />
+                    <Globe className="h-6 w-6 text-[#2ba4e0]"/>
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-[#282f33] mb-2">
@@ -534,7 +533,7 @@ export default function LandingPage() {
                         "Seguimiento de cambios temporales",
                       ].map((item, i) => (
                         <li key={i} className="flex items-center">
-                          <CheckCircle2 className="h-5 w-5 text-[#2ba4e0] mr-2 flex-shrink-0" />
+                          <CheckCircle2 className="h-5 w-5 text-[#2ba4e0] mr-2 flex-shrink-0"/>
                           <span className="text-sm text-[#435761]">{item}</span>
                         </li>
                       ))}
@@ -546,7 +545,7 @@ export default function LandingPage() {
               <div className="bg-[#f8fafc] p-8 rounded-xl border border-gray-100">
                 <div className="flex items-start">
                   <div className="p-3 rounded-lg bg-[#2ba4e0]/10 mr-4">
-                    <Droplets className="h-6 w-6 text-[#2ba4e0]" />
+                    <Droplets className="h-6 w-6 text-[#2ba4e0]"/>
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-[#282f33] mb-2">
@@ -563,7 +562,7 @@ export default function LandingPage() {
                         "Biodiversidad acuática",
                       ].map((item, i) => (
                         <li key={i} className="flex items-center">
-                          <CheckCircle2 className="h-5 w-5 text-[#2ba4e0] mr-2 flex-shrink-0" />
+                          <CheckCircle2 className="h-5 w-5 text-[#2ba4e0] mr-2 flex-shrink-0"/>
                           <span className="text-sm text-[#435761]">{item}</span>
                         </li>
                       ))}
@@ -594,9 +593,10 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 mx-auto">
-              <div className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02]">
+              <div
+                className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02]">
                 <div className="p-4 rounded-full bg-[#2ba4e0]/20 mb-4">
-                  <Users className="h-8 w-8 text-[#2ba4e0]" />
+                  <Users className="h-8 w-8 text-[#2ba4e0]"/>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Usuario</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
@@ -605,23 +605,24 @@ export default function LandingPage() {
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Reportar incidentes
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Participar en eventos
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Acceso a mapas básicos
                   </li>
                 </ul>
               </div>
 
-              <div className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02]">
+              <div
+                className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02]">
                 <div className="p-4 rounded-full bg-[#2ba4e0]/20 mb-4">
-                  <BarChart2 className="h-8 w-8 text-[#2ba4e0]" />
+                  <BarChart2 className="h-8 w-8 text-[#2ba4e0]"/>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Investigador</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
@@ -630,23 +631,24 @@ export default function LandingPage() {
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Análisis de datos avanzado
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Acceso a API completa
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Publicación de estudios
                   </li>
                 </ul>
               </div>
 
-              <div className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02]">
+              <div
+                className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02]">
                 <div className="p-4 rounded-full bg-[#2ba4e0]/20 mb-4">
-                  <Database className="h-8 w-8 text-[#2ba4e0]" />
+                  <Database className="h-8 w-8 text-[#2ba4e0]"/>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Empresa</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
@@ -655,23 +657,24 @@ export default function LandingPage() {
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Perfil corporativo
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Patrocinio de iniciativas
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Reportes personalizados
                   </li>
                 </ul>
               </div>
 
-              <div className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02]">
+              <div
+                className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02]">
                 <div className="p-4 rounded-full bg-[#2ba4e0]/20 mb-4">
-                  <Shield className="h-8 w-8 text-[#2ba4e0]" />
+                  <Shield className="h-8 w-8 text-[#2ba4e0]"/>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Moderador</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
@@ -680,23 +683,24 @@ export default function LandingPage() {
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Moderación de contenido
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Verificación de reportes
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Gestión de usuarios
                   </li>
                 </ul>
               </div>
 
-              <div className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02] md:col-span-2 lg:col-span-1">
+              <div
+                className="flex flex-col items-center p-8 bg-[#435761]/50 backdrop-blur-sm rounded-xl border border-white/10 hover:border-[#2ba4e0]/30 transition-all hover:transform hover:scale-[1.02] md:col-span-2 lg:col-span-1">
                 <div className="p-4 rounded-full bg-[#2ba4e0]/20 mb-4">
-                  <Shield className="h-8 w-8 text-[#2ba4e0]" />
+                  <Shield className="h-8 w-8 text-[#2ba4e0]"/>
                 </div>
                 <h3 className="text-xl font-bold mb-2">Administrador</h3>
                 <p className="text-center text-gray-300 text-sm mb-4">
@@ -705,15 +709,15 @@ export default function LandingPage() {
                 </p>
                 <ul className="w-full space-y-2 mt-2">
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Control total del sistema
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Gestión de permisos
                   </li>
                   <li className="flex items-center text-sm text-gray-200">
-                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2" />
+                    <CheckCircle2 className="h-4 w-4 text-[#2ba4e0] mr-2"/>
                     Configuración avanzada
                   </li>
                 </ul>
@@ -745,7 +749,7 @@ export default function LandingPage() {
                 <div className="space-y-6">
                   <div className="flex items-start">
                     <div className="p-3 rounded-full bg-[#2ba4e0]/10 mr-4">
-                      <Leaf className="h-6 w-6 text-[#2ba4e0]" />
+                      <Leaf className="h-6 w-6 text-[#2ba4e0]"/>
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-[#282f33] mb-2">
@@ -761,7 +765,7 @@ export default function LandingPage() {
 
                   <div className="flex items-start">
                     <div className="p-3 rounded-full bg-[#2ba4e0]/10 mr-4">
-                      <Users className="h-6 w-6 text-[#2ba4e0]" />
+                      <Users className="h-6 w-6 text-[#2ba4e0]"/>
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-[#282f33] mb-2">
@@ -776,7 +780,7 @@ export default function LandingPage() {
 
                   <div className="flex items-start">
                     <div className="p-3 rounded-full bg-[#2ba4e0]/10 mr-4">
-                      <Database className="h-6 w-6 text-[#2ba4e0]" />
+                      <Database className="h-6 w-6 text-[#2ba4e0]"/>
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-[#282f33] mb-2">
@@ -794,7 +798,7 @@ export default function LandingPage() {
                   <Button className="bg-[#2ba4e0] hover:bg-[#418fb6]" asChild>
                     <Link to="/impact">
                       Ver todos los resultados
-                      <ArrowUpRight className="ml-2 h-4 w-4" />
+                      <ArrowUpRight className="ml-2 h-4 w-4"/>
                     </Link>
                   </Button>
                 </div>
@@ -901,12 +905,13 @@ export default function LandingPage() {
         </section>
 
         <section>
-  <RioMotaguaDataSection />
-</section>
+          <RioMotaguaDataSection/>
+        </section>
         {/* CTA mejorado */}
         <section className="w-full py-20 md:py-32 bg-[#2ba4e0] text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI3NjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy92MDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMCAwaDEyMDB2NjAwSDB6Ii8+PHBhdGggZD0iTTAgMGgxMjAwdjYwMEgweiIvPjxwYXRoIGQ9Ik0xMjAwIDBoLTUuMUw0ODAgMzAwLjFMNS4xIDBoLTUuMXY2MDBIMHYtNS4xTDQ4MCAzMDAuMSA5NjAgNTk0LjlsLjEuMWgyNDBWMHoiIGZpbGw9IiNGRkYiLz48cGF0aCBkPSJNMTIwMCAwbC0yNDAgMTIwLTI0MCAxMjBWMGgtNzIwdjI0MGwtMjQwIDEyMEwwIDQ4MHYxMjBoMTIwMFYweiIgZmlsbD0iI0ZGRiIvPjwvZz48L3N2Zz4=')]"></div>
+            <div
+              className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI3NjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy92MDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMCAwaDEyMDB2NjAwSDB6Ii8+PHBhdGggZD0iTTAgMGgxMjAwdjYwMEgweiIvPjxwYXRoIGQ9Ik0xMjAwIDBoLTUuMUw0ODAgMzAwLjFMNS4xIDBoLTUuMXY2MDBIMHYtNS4xTDQ4MCAzMDAuMSA5NjAgNTk0LjlsLjEuMWgyNDBWMHoiIGZpbGw9IiNGRkYiLz48cGF0aCBkPSJNMTIwMCAwbC0yNDAgMTIwLTI0MCAxMjBWMGgtNzIwdjI0MGwtMjQwIDEyMEwwIDQ4MHYxMjBoMTIwMFYweiIgZmlsbD0iI0ZGRiIvPjwvZz48L3N2Zz4=')]"></div>
           </div>
           <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
             <div className="flex flex-col items-center space-y-4 text-center">
@@ -962,7 +967,7 @@ export default function LandingPage() {
             <div className="mb-8 md:mb-0">
               <div className="flex items-center gap-2 font-bold text-2xl text-white mb-4">
                 <div className="bg-[#2ba4e0] text-white p-1 rounded-md">
-                  <MapPin className="h-6 w-6" />
+                  <MapPin className="h-6 w-6"/>
                 </div>
                 <span>RíoMotagua</span>
               </div>
@@ -1048,7 +1053,7 @@ export default function LandingPage() {
                       to="#"
                       className="text-gray-400 hover:text-[#2ba4e0] transition-colors"
                     >
-                      API <ExternalLink className="h-3 w-3 inline ml-1" />
+                      API <ExternalLink className="h-3 w-3 inline ml-1"/>
                     </Link>
                   </li>
                   <li>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,24 +9,18 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Calendar,
   MapPin,
-  Clock,
-  Users,
-  Share2,
-  Bookmark,
   Filter,
   Search,
   CalendarDays,
-  CalendarCheck,
   CalendarClock,
-  Star,
   MoreHorizontal,
   Plus,
-  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { getEvents, agregarParticipante } from "@/services/events-api";
-import { getUser } from "@/services/users-api.ts"; // Asegúrate de tener este servicio
+import { getUser } from "@/services/users-api.ts";
 import motaguaImg from "@/assets/motagua2.jpg";
+import { useDebouncedCallback } from "use-debounce";
 
 // Categorías para filtrar
 const categorias = [
@@ -37,22 +31,29 @@ const categorias = [
 
 export default function EventosFeedPage() {
   const [eventos, setEventos] = useState([]);
-  const [filteredEventos, setFilteredEventos] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilter, setActiveFilter] = useState("todos");
-  const [activeCategory, setActiveCategory] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  // Search params setup
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get("q") || "";
+  const [queryInput, setQueryInput] = useState(query);
+  const activeFilter = searchParams.get("filter") || "todos";
+  const activeTab = searchParams.get("tab") || "recomendados";
+  const page = parseInt(searchParams.get("page") || "1");
   const pageSize = 3;
+  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
+  // Fetch events with search params
+  const fetchEvents = () => {
     setIsLoading(true);
 
     // Parámetros para el filtro de fecha
-    let params = { page: currentPage, pageSize };
+    let params = {
+      page,
+      pageSize,
+      q: query
+    };
+
     if (activeFilter === "próximos") {
       params.date = new Date().toISOString();
       params.direction = "forward";
@@ -60,6 +61,8 @@ export default function EventosFeedPage() {
       params.date = new Date().toISOString();
       params.direction = "backward";
     }
+
+    console.log({ params }, "feed")
 
     getEvents(params).then(async (res) => {
       let eventosBackend = (res.results || []).map((ev) => ({
@@ -75,7 +78,7 @@ export default function EventosFeedPage() {
           verificado: false,
         },
         estado: new Date(ev.date_start) > new Date() ? "próximo" : "pasado",
-        asistiendo: !!ev.asistiendo, // <-- Usa el valor del backend
+        asistiendo: !!ev.asistiendo,
       }));
 
       // Fetch de los usuarios para cada evento
@@ -87,56 +90,82 @@ export default function EventosFeedPage() {
               eventosBackend[idx].organizador.nombre = user.data?.name || "Desconocido";
               eventosBackend[idx].organizador.avatar = user.data?.avatar || "https://via.placeholder.com/150";
               eventosBackend[idx].organizador.verificado = user.data?.verified || false;
-            } catch {}
+            } catch {
+              eventosBackend[idx].organizador.nombre = "Desconocido";
+              eventosBackend[idx].organizador.avatar = "https://via.placeholder.com/150";
+              eventosBackend[idx].organizador.verificado = false;
+            }
           }
         }),
       );
 
       setEventos(eventosBackend);
-      setFilteredEventos(eventosBackend);
       setTotalPages(res.totalPages || 1);
       setIsLoading(false);
     });
-  }, [currentPage, activeFilter]);
-
-  // Filtrar eventos
-  useEffect(() => {
-    let filtered = eventos;
-
-    // Filtrar por término de búsqueda
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (evento) =>
-          evento.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          evento.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          evento.ubicacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          evento.organizador.nombre.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
-
-    // Filtrar por categoría principal
-    if (activeFilter !== "todos") {
-      if (activeFilter === "asistiendo") {
-        filtered = filtered.filter((evento) => evento.asistiendo);
-      } else if (activeFilter === "próximos") {
-        filtered = filtered.filter((evento) => evento.estado === "próximo");
-      } else if (activeFilter === "pasados") {
-        filtered = filtered.filter((evento) => evento.estado === "pasado");
-      }
-    }
-
-    // Filtrar por tipo de evento
-    if (activeCategory) {
-      filtered = filtered.filter((evento) => evento.categoria === activeCategory);
-    }
-
-    setFilteredEventos(filtered);
-  }, [eventos, searchTerm, activeFilter, activeCategory]);
-
-  // Cambiar de página
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
+
+  const debouncedFetch = useDebouncedCallback(fetchEvents, 600);
+
+  // Handle search input change with debounce
+  const handleSearch = (newQuery) => {
+    setQueryInput(newQuery);
+    updateQueryDebounced(newQuery);
+  };
+
+  const updateQuery = (newQuery) => {
+    setSearchParams({
+      q: newQuery,
+      filter: activeFilter,
+      tab: activeTab,
+      page: "1", // reset to first page on new search
+    });
+  };
+
+  const updateQueryDebounced = useDebouncedCallback(updateQuery, 200);
+
+  // Handle filter change
+  const handleFilterChange = (newFilter) => {
+    setSearchParams({
+      q: query,
+      filter: newFilter,
+      tab: activeTab,
+      page: "1", // reset to first page on filter change
+    });
+  };
+
+  // Handle tab change
+  const handleTabChange = (newTab) => {
+    setSearchParams({
+      q: query,
+      filter: activeFilter,
+      tab: newTab,
+      page: "1", // reset to first page on tab change
+    });
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setSearchParams({
+        q: query,
+        filter: activeFilter,
+        tab: activeTab,
+        page: newPage.toString(),
+      });
+    }
+  };
+
+  // Effect for query param changes
+  useEffect(() => {
+    debouncedFetch();
+  }, [query]);
+
+  // Effect for other param changes
+  useEffect(() => {
+    if (isLoading) return;
+    fetchEvents();
+  }, [activeFilter, activeTab, page]);
 
   // Función para asistir a un evento
   const handleAttend = async (eventoId) => {
@@ -154,11 +183,6 @@ export default function EventosFeedPage() {
           ev.id === eventoId ? { ...ev, asistiendo: true } : ev
         )
       );
-      setFilteredEventos((prev) =>
-        prev.map((ev) =>
-          ev.id === eventoId ? { ...ev, asistiendo: true } : ev
-        )
-      );
     } catch {
       toast.error("Ocurrió un error al intentar asistir.");
     }
@@ -167,6 +191,17 @@ export default function EventosFeedPage() {
   const formatDate = (dateString) => {
     const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("es-ES", options);
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setSearchParams({
+      q: "",
+      filter: "todos",
+      tab: "recomendados",
+      page: "1",
+    });
+    setQueryInput("");
   };
 
   return (
@@ -179,7 +214,7 @@ export default function EventosFeedPage() {
           </div>
           <Button className="bg-[#2ba4e0] hover:bg-[#418fb6] text-white">
             <Link to="/dashboard/events/new" className="flex items-center gap-2">
-              <Plus className="mr-2 h-4 w-4" /> Crear evento
+              <Plus className="mr-2 h-4 w-4"/> Crear evento
             </Link>
           </Button>
         </div>
@@ -190,27 +225,28 @@ export default function EventosFeedPage() {
             <Card className="sticky top-6">
               <CardContent className="p-4 space-y-6">
                 <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500"/>
                   <Input
                     placeholder="Buscar eventos..."
                     className="pl-8"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={queryInput}
+                    onChange={(e) => handleSearch(e.target.value)}
                   />
                 </div>
 
                 <div>
                   <div className="font-medium text-[#282f33] flex items-center mb-3">
-                    <Filter className="mr-2 h-4 w-4" /> Filtros
+                    <Filter className="mr-2 h-4 w-4"/> Filtros
                   </div>
                   <div className="space-y-1">
                     {categorias.map((categoria) => (
                       <Button
                         key={categoria.id}
                         variant={activeFilter === categoria.id ? "default" : "ghost"}
-                        onClick={() => setActiveFilter(categoria.id)}
+                        onClick={() => handleFilterChange(categoria.id)}
                       >
-                        <categoria.icon className="mr-2 h-4 w-4" /> {categoria.nombre}
+                        <categoria.icon className="mr-2 h-4 w-4"/>
+                        {categoria.nombre}
                       </Button>
                     ))}
                   </div>
@@ -221,7 +257,7 @@ export default function EventosFeedPage() {
 
           {/* Feed principal */}
           <div className="lg:col-span-3 space-y-6">
-            <Tabs defaultValue="recomendados">
+            <Tabs value={activeTab} onValueChange={handleTabChange}>
               <TabsList className="w-full">
                 <TabsTrigger value="recomendados" className="flex-1">
                   Recomendados
@@ -239,19 +275,15 @@ export default function EventosFeedPage() {
             </Tabs>
 
             <div className="space-y-6">
-              {filteredEventos.length === 0 ? (
+              {eventos.length === 0 ? (
                 <Card>
                   <CardContent className="p-8 text-center">
-                    <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3"/>
                     <p className="text-[#434546] text-lg font-medium">No se encontraron eventos</p>
                     <p className="text-[#434546] mt-1">No hay eventos que coincidan con tus criterios de búsqueda.</p>
                     <Button
                       className="mt-4 bg-[#2ba4e0] hover:bg-[#418fb6] text-white"
-                      onClick={() => {
-                        setSearchTerm("");
-                        setActiveFilter("todos");
-                        setActiveCategory("");
-                      }}
+                      onClick={resetFilters}
                     >
                       Ver todos los eventos
                     </Button>
@@ -259,7 +291,7 @@ export default function EventosFeedPage() {
                 </Card>
               ) : (
                 <>
-                  {filteredEventos.map((evento) => (
+                  {eventos.map((evento) => (
                     <Card key={evento.id} className="overflow-hidden">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="md:col-span-1">
@@ -270,7 +302,7 @@ export default function EventosFeedPage() {
                             {evento.guardado && (
                               <div className="absolute bottom-2 right-2">
                                 <Badge className="bg-[#8b5cf6]">
-                                  <Bookmark className="h-3 w-3 mr-1" /> Guardado
+                                  <Bookmark className="h-3 w-3 mr-1"/> Guardado
                                 </Badge>
                               </div>
                             )}
@@ -279,10 +311,11 @@ export default function EventosFeedPage() {
 
                         <div className="md:col-span-2 p-4 md:p-6 flex flex-col">
                           <div className="flex justify-between items-start">
-                            <div>                             
-                                <h3 className="text-xl font-semibold text-[#282f33] hover:text-[#2ba4e0] transition-colors">
-                                  {evento.titulo}
-                                </h3>             
+                            <div>
+                              <h3
+                                className="text-xl font-semibold text-[#282f33] hover:text-[#2ba4e0] transition-colors">
+                                {evento.titulo}
+                              </h3>
                               <div className="flex items-center mt-1">
                                 <div className="flex items-center">
                                   <Avatar className="h-5 w-5 mr-1">
@@ -314,7 +347,7 @@ export default function EventosFeedPage() {
                               </div>
                             </div>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreHorizontal className="h-4 w-4" />
+                              <MoreHorizontal className="h-4 w-4"/>
                             </Button>
                           </div>
 
@@ -324,13 +357,13 @@ export default function EventosFeedPage() {
 
                           <div className="mt-4 grid grid-cols-2 gap-2">
                             <div className="flex items-center text-sm text-[#434546]">
-                              <Calendar className="h-4 w-4 mr-2 text-[#2ba4e0]" />
+                              <Calendar className="h-4 w-4 mr-2 text-[#2ba4e0]"/>
                               <span>{formatDate(evento.fecha)}</span>
-                            </div>        
+                            </div>
                             <div className="flex items-center text-sm text-[#434546]">
-                              <MapPin className="h-4 w-4 mr-2 text-[#2ba4e0]" />
+                              <MapPin className="h-4 w-4 mr-2 text-[#2ba4e0]"/>
                               <span className="line-clamp-1">{evento.ubicacion}</span>
-                            </div>                     
+                            </div>
                           </div>
 
                           <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
@@ -359,19 +392,19 @@ export default function EventosFeedPage() {
                     <Button
                       variant="outline"
                       className="border-[#2ba4e0] text-[#2ba4e0]"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1 || isLoading}
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page === 1 || isLoading}
                     >
                       Anterior
                     </Button>
                     <span className="px-3 py-2 text-[#282f33] font-semibold">
-                      Página {currentPage} de {totalPages}
+                      Página {page} de {totalPages}
                     </span>
                     <Button
                       variant="outline"
                       className="border-[#2ba4e0] text-[#2ba4e0]"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages || isLoading}
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page === totalPages || isLoading}
                     >
                       Siguiente
                     </Button>

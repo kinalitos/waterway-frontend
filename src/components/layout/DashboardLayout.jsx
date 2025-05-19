@@ -27,6 +27,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose 
 import { Separator } from "../ui/separator.js"
 import { Button } from "../ui/button.js"
 import { useAuth } from "@/providers/AuthProvider.tsx";
+import logo from "@/assets/logo.png"
 
 export default function DashboardLayout() {
   const { user, loading } = useAuth()
@@ -113,7 +114,9 @@ export default function DashboardLayout() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-2 font-bold text-xl text-[#2ba4e0]">
-              <MapPin className="h-5 w-5"/>
+              <div className="size-8 rounded-full overflow-hidden">
+                <img src={logo} alt=""/>
+              </div>
               <span>RíoMotagua</span>
             </Link>
             <Separator orientation="vertical" className="h-6"/>
