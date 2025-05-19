@@ -3,6 +3,7 @@ import { agregarParticipante, getEvents } from "@/services/events-api";
 import { Calendar, MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button"
 
 export default function ViewEvent() {
   const [events, setEvents] = useState([]);
@@ -44,12 +45,13 @@ export default function ViewEvent() {
           <h1 className="text-3xl font-bold text-[#282f33] text-center md:text-left bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] bg-clip-text text-transparent">
             Todos los Eventos
           </h1>
-          <button
+          <Button
             onClick={() => navigate("/dashboard/events")}
-            className="mt-4 md:mt-0 bg-[#2ba4e0] hover:bg-[#418fb6] text-white font-semibold py-2 px-6 rounded shadow transition"
+            className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
           >
             DashBoard
-          </button>
+          </Button>
+          
         </div>
         {isLoading ? (
           <div className="text-center text-[#435761] py-12">Cargando eventos...</div>

@@ -140,15 +140,26 @@ export default function EventsPage() {
             Gestiona y participa en eventos relacionados con el Río Motagua para contribuir a su conservación.
           </p>
         </div>
+        {user?.role === "administrador" ||user?.role ===  'moderador'&& (
+          <Button
+            className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+            asChild
+          >
+            <Link to="/dashboard/events/new" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Nuevo Evento
+            </Link>
+          </Button>
+        )}
         <Button
-          className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
-          asChild
-        >
-          <Link to="/dashboard/events/new" className="flex items-center gap-2">
-            <Plus className="h-4 w-4"/>
-            Nuevo Evento
-          </Link>
-        </Button>
+            className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+            asChild
+          >
+            <Link to="/dashboard/view-event" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Más eventos
+            </Link>
+          </Button>
       </div>
 
       {/* Filtros */}
