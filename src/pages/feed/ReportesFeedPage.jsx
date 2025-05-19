@@ -50,7 +50,7 @@ const reportesData = [
     fecha: "Hace 2 horas",
     ubicacion: "Puente Las Vacas, Zona 6, Ciudad de Guatemala",
     coordenadas: { lat: 14.6349, lng: -90.5069 },
-    imagenes: ["https://via.placeholder.com/600x400", "https://via.placeholder.com/600x400"],
+    imagenes: ["http://quintopoder.com.gt/wp-content/uploads/2024/01/Foto-1-Alianza-por-el-Motagua-800x445.jpg", "https://www.undp.org/sites/g/files/zskgke326/files/2024-03/53596226806_f85369c13b_k.jpg"],
     usuario: {
       id: "user123",
       nombre: "Carlos Méndez",
@@ -73,7 +73,7 @@ const reportesData = [
     fecha: "Hace 5 horas",
     ubicacion: "Zona industrial, Amatitlán",
     coordenadas: { lat: 14.4808, lng: -90.6309 },
-    imagenes: ["https://via.placeholder.com/600x400"],
+    imagenes: ["https://munisantacruzelchol.gob.gt/wp-content/uploads/2022/04/photo_2022-04-26_08-26-18-768x512.jpg"],
     usuario: {
       id: "user456",
       nombre: "Ana García",
@@ -97,9 +97,9 @@ const reportesData = [
     ubicacion: "Sector sur, El Progreso",
     coordenadas: { lat: 14.8498, lng: -90.064 },
     imagenes: [
-      "https://via.placeholder.com/600x400",
-      "https://via.placeholder.com/600x400",
-      "https://via.placeholder.com/600x400",
+      "https://historiassinfronteras.com/proyectos/rio-motagua/img/biobarda-2.jpg",
+      "https://historiassinfronteras.com/proyectos/rio-motagua/img/arrecife.jpg",
+      "https://historiassinfronteras.com/proyectos/rio-motagua/img/demanda.jpg",
     ],
     usuario: {
       id: "user789",
@@ -123,7 +123,7 @@ const reportesData = [
     fecha: "Hace 2 días",
     ubicacion: "Zona norte, cerca de la fábrica textil",
     coordenadas: { lat: 15.5012, lng: -89.1325 },
-    imagenes: ["https://via.placeholder.com/600x400"],
+    imagenes: ["https://agn.gt/wp-content/uploads/2022/11/Guatemala-y-Honduras-reafirman-compromiso-para-la-atencion-del-rio-Motagua.jpg"],
     usuario: {
       id: "user456",
       nombre: "Ana García",
@@ -146,7 +146,7 @@ const reportesData = [
     fecha: "Hace 3 días",
     ubicacion: "Comunidad Las Flores, Izabal",
     coordenadas: { lat: 15.4942, lng: -89.1525 },
-    imagenes: ["https://via.placeholder.com/600x400", "https://via.placeholder.com/600x400"],
+    imagenes: ["http://quintopoder.com.gt/wp-content/uploads/2024/01/Foto-1-Alianza-por-el-Motagua-800x445.jpg", "https://quintopoder.com.gt/wp-content/uploads/2024/01/Foto-1-Alianza-por-el-Motagua-800x445.jpg"],
     usuario: {
       id: "user101",
       nombre: "Elena Ramírez",
@@ -255,7 +255,7 @@ export default function ReportesFeedPage() {
       fecha: "Ahora mismo",
       ubicacion: "Mi ubicación actual",
       coordenadas: { lat: 14.6349, lng: -90.5069 },
-      imagenes: [],
+      imagenes: ["https://munisantacruzelchol.gob.gt/wp-content/uploads/2022/04/photo_2022-04-26_08-26-10-768x512.jpg", "https://www.guatemala.com/fotos/201801/Untitled-1-6-885x500.jpg", "https://www.guatemala.com/fotos/201801/Untitled-1-6-885x500.jpg"],
       usuario: {
         id: "user123",
         nombre: "Carlos Méndez",
