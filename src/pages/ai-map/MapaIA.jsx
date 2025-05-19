@@ -11,6 +11,8 @@ import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, ImageOverlay, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { parse, format, isValid, isBefore, subDays } from "date-fns";
+import { es } from "date-fns/locale";
 
 // Fix Leaflet icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -21,9 +23,9 @@ L.Icon.Default.mergeOptions({
 });
 
 const PROMPT_SUGGESTIONS = [
-  "Muestra una imagen satelital en color natural",
-  "Visualiza la cobertura vegetal en la cuenca",
-  "Analiza la calidad del agua en el río",
+  "Muestra una imagen satelital en color natural del 1 de abril de 2024 al 30 de abril de 2024",
+  "Visualiza la cobertura vegetal en la cuenca del 1 de marzo de 2024 al 31 de marzo de 2024",
+  "Analiza la calidad del agua en el río del 1 de mayo de 2024 al 15 de mayo de 2024",
 ];
 
 const motaguaBounds = [
@@ -74,6 +76,81 @@ export default function MapaIA() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Function to parse dates from natural language prompt in Spanish
+  const parseDatesFromPrompt = (text) => {
+    // Split prompt into words and look for date patterns
+    const datePatterns = [
+      // Matches phrases like "1 de enero de 2025" or "primero de enero de 2025"
+      /\b(\d{1,2}|primero)\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)\s+(de\s+)?(\d{4})\b/gi,
+      // Matches "YYYY-MM-DD" for fallback
+      /\b(\d{4}-\d{2}-\d{2})\b/g,
+    ];
+
+    let dates = [];
+    for (const pattern of datePatterns) {
+      const matches = [...text.matchAll(pattern)];
+      dates = matches.map((match) => {
+        if (match[0].includes("-")) {
+          // Handle YYYY-MM-DD
+          return match[0];
+        } else {
+          // Handle natural language (e.g., "1 de enero de 2025")
+          const day = match[1] === "primero" ? "1" : match[1];
+          const monthName = match[2];
+          const year = match[4];
+          const monthMap = {
+            enero: "01",
+            febrero: "02",
+            marzo: "03",
+            abril: "04",
+            mayo: "05",
+            junio: "06",
+            julio: "07",
+            agosto: "08",
+            septiembre: "09",
+            octubre: "10",
+            noviembre: "11",
+            diciembre: "12",
+          };
+          return `${year}-${monthMap[monthName.toLowerCase()]}-${day.padStart(2, "0")}`;
+        }
+      });
+      if (dates.length > 0) break; // Use the first successful pattern
+    }
+
+    // Parse and validate dates
+    const parsedDates = dates
+      .map((dateStr) => {
+        let date;
+        if (dateStr.includes("-")) {
+          date = parse(dateStr, "yyyy-MM-dd", new Date(), { locale: es });
+        } else {
+          date = parse(dateStr, "yyyy-MM-dd", new Date(), { locale: es });
+        }
+        return isValid(date) ? date : null;
+      })
+      .filter((date) => date !== null);
+
+    // Ensure dates are valid and sort them
+    if (parsedDates.length >= 2) {
+      // Sort to get earliest as startDate, latest as endDate
+      parsedDates.sort((a, b) => a - b);
+      const start = format(parsedDates[0], "yyyy-MM-dd");
+      const end = format(parsedDates[1], "yyyy-MM-dd");
+      if (isBefore(new Date(start), new Date(end))) {
+        return { startDate: start, endDate: end };
+      }
+    } else if (parsedDates.length === 1) {
+      // If only one date, set endDate to today or a reasonable default
+      const start = format(parsedDates[0], "yyyy-MM-dd");
+      const end = format(new Date(), "yyyy-MM-dd");
+      return { startDate: start, endDate: end };
+    }
+
+    // If no valid dates, return null
+    return null;
+  };
+
   const processPrompt = async (text) => {
     if (!text.trim()) {
       toast.error("Por favor, ingrese un prompt válido");
@@ -81,6 +158,20 @@ export default function MapaIA() {
     }
     setIsLoading(true);
     try {
+      // Parse dates from prompt
+      const parsedDates = parseDatesFromPrompt(text);
+      let newStartDate = startDate;
+      let newEndDate = endDate;
+
+      if (parsedDates) {
+        newStartDate = parsedDates.startDate;
+        newEndDate = parsedDates.endDate;
+        setStartDate(newStartDate);
+        setEndDate(newEndDate);
+      } else {
+        toast.warning("No se encontraron fechas válidas en el prompt. Usando fechas actuales.");
+      }
+
       // Get Hugging Face API token from environment variable
       const hfApiToken = import.meta.env.VITE_HF_API_TOKEN;
       if (!hfApiToken) {
@@ -110,13 +201,13 @@ export default function MapaIA() {
       const result = await response.json();
       const predictedLayer = result.labels[0]; // Get the highest-scoring label
 
-      // Map the predicted layer to the appropriate fetchOverlay call
+      // Update state and fetch overlay
       setActiveView(text);
       currentLayerRef.current = predictedLayer;
-      await fetchOverlay(predictedLayer);
+      await fetchOverlay(predictedLayer, newStartDate, newEndDate);
 
       toast.success("Visualización generada", {
-        description: `Se ha generado la visualización para: "${text}" (Capa: ${predictedLayer})`,
+        description: `Se ha generado la visualización para: "${text}" (Capa: ${predictedLayer}, Fechas: ${newStartDate} a ${newEndDate})`,
       });
     } catch (error) {
       toast.error("Error al procesar el prompt: " + error.message);
@@ -145,7 +236,7 @@ export default function MapaIA() {
     };
   };
 
-  const fetchOverlay = async (layer) => {
+  const fetchOverlay = async (layer, start = startDate, end = endDate) => {
     const params = getMapParams();
     if (!params) return;
     setOverlayLoading(true);
@@ -162,8 +253,8 @@ export default function MapaIA() {
           max_lat: params.max_lat,
           width: params.width,
           height: params.height,
-          start_date: startDate,
-          end_date: endDate,
+          start_date: start,
+          end_date: end,
           layer,
         }),
       });
@@ -289,7 +380,7 @@ export default function MapaIA() {
           <div className="relative w-full max-w-4xl mx-auto mb-8">
             <div className="flex items-center gap-2">
               <Input
-                placeholder="Ej. Muestra una imagen satelital en color natural"
+                placeholder="Ej. Muestra una imagen satelital en color natural del 1 de abril de 2024 al 30 de abril de 2024"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && processPrompt(prompt)}
@@ -355,7 +446,7 @@ export default function MapaIA() {
                   <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-3 border-t border-[#2ba4e0]/20 z-10">
                     <p className="text-sm text-[#434546] truncate">
                       <span className="font-medium text-[#2ba4e0]">Vista actual:</span>{" "}
-                      {activeView}
+                      {activeView} (Fechas: {startDate} a {endDate})
                     </p>
                   </div>
                 )}
@@ -372,6 +463,9 @@ export default function MapaIA() {
                   <p className="text-gray-500 text-sm leading-relaxed">
                     {LAYER_DESCRIPTIONS[currentLayerRef.current].explanation}
                   </p>
+                  <p className="text-gray-500 text-sm mt-2">
+                    <span className="font-medium">Rango de fechas:</span> {startDate} a {endDate}
+                  </p>
                 </div>
               )}
             </div>
@@ -387,7 +481,12 @@ export default function MapaIA() {
                   className="border rounded px-2 py-1"
                   value={startDate}
                   max={endDate}
-                  onChange={e => setStartDate(e.target.value)}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    if (activeView) {
+                      fetchOverlay(currentLayerRef.current, e.target.value, endDate);
+                    }
+                  }}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -397,7 +496,12 @@ export default function MapaIA() {
                   className="border rounded px-2 py-1"
                   value={endDate}
                   min={startDate}
-                  onChange={e => setEndDate(e.target.value)}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    if (activeView) {
+                      fetchOverlay(currentLayerRef.current, startDate, e.target.value);
+                    }
+                  }}
                 />
               </div>
               <div className="flex flex-col gap-3 mt-4">

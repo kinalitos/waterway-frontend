@@ -1,33 +1,5 @@
 import { api } from "@/lib/auth.js";
-
-type SignInPayload = {
-  email: string;
-  password: string;
-};
-
-type IResponse<T> = {
-  data: T | null;
-  error: string | null;
-};
-
-type User = {
-  id: string;
-  name: string;
-  last_name: string;
-  email: string;
-  role: string;
-};
-
-type IBackendResponse<T> = {
-  data?: T,
-  success: boolean,
-  error?: string,
-}
-
-type JWT = {
-  accessToken: string;
-  refreshToken: string
-}
+import { IBackendResponse, IResponse, JWT, SignInPayload, User } from "./types.js";
 
 export async function signIn({ email, password }: SignInPayload): Promise<IResponse<JWT>> {
   try {
@@ -36,7 +8,7 @@ export async function signIn({ email, password }: SignInPayload): Promise<IRespo
       password,
     });
 
-    console.log({response})
+    console.log({ response })
 
     return { data: response.data.data, error: null };
   } catch (e: any) {
