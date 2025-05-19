@@ -176,7 +176,7 @@ export function UsersPage() {
         }
         renderRow={(user) => (
           <TableRow key={user.id}>
-            <TableCell>{`${user.name} ${user.last_name}`}</TableCell>
+            <TableCell>{user.name}</TableCell>
             <TableCell className="flex gap-2 items-end">
               <Mail className="inline h-3.5 w-3.5 text-[#2ba4e0]"/>
               <span>{user.email}</span>
