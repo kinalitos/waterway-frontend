@@ -38,8 +38,8 @@ export default function DashboardLayout({ children }) {
   // Determinar los enlaces de navegación según el rol del usuario
   const getNavLinks = () => {
     const commonLinks = [
+      { href: user?.user.role === "usuario" ? "/dashboard/view-event" : "/dashboard/events", label: "Eventos", icon: Calendar },
       { href: "/dashboard", label: "Inicio", icon: Home },
-      { href: "/dashboard/events", label: "Eventos", icon: Calendar },
       { href: "/dashboard/publications", label: "Publicaciones", icon: FileText },
       { href: "/dashboard/maps", label: "Mapas", icon: Map },
       { href: "/dashboard/reports", label: "Reportes", icon: AlertTriangle },
