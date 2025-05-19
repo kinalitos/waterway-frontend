@@ -8,7 +8,7 @@ import { ThemeProvider } from "./components/theme-provider"
 import Login from './pages/auth/login/Login.jsx'
 import Register from './pages/auth/signup/Register.jsx'
 import DashboardPage from "./pages/dashboard/DashboardPage"
-import EventsPage from "./pages/dashboard/EventsPage"
+import EventsPage from "./pages/dashboard/EventsPage.js"
 import MapsPage from "./pages/dashboard/MapsPage"
 import NewReportPage from "./pages/dashboard/NewReportPage"
 import PublicationsPage from "./pages/dashboard/PublicationsPage"

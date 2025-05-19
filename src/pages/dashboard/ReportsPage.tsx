@@ -21,7 +21,7 @@ export default function ReportsPage() {
   const statusFilter = searchParams.get("status") || "all";
   const page = parseInt(searchParams.get("page") || "1");
   const PAGE_SIZE = 10;
-  const totalPages = useRef < number > (0)
+  const totalPages = useRef<number>(0)
 
   const fetchReports = (query: string) => {
     setIsLoading(true);
@@ -66,7 +66,11 @@ export default function ReportsPage() {
 
   const handleDeleteReport = async (id: string) => {
     try {
-      await deleteContaminationReport(id)
+      const { error } = await deleteContaminationReport(id)
+      if (error) {
+        toast.error("No se pudo eliminar el reporte. Intente nuevamente.")
+        return
+      }
       setReports(reports.filter((r) => r._id !== id))
       toast.success("Reporte eliminado", {
         description: "El reporte ha sido eliminado correctamente.",
