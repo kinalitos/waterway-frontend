@@ -3,12 +3,8 @@
 // //////////////////////////////////////////////////// //
 import { api } from '../lib/auth.ts'
 
-export const getEvents = async ({ searchQuery = "", status = "all" } = {}) => {
+export const getEvents = async (params) => {
     try {
-        const params = {};
-        if (searchQuery) params.q = searchQuery;
-        if (status && status !== "all") params.status = status;
-
         const response = await api.get('/events', { params });
         return response.data;
     } catch (err) {

@@ -37,11 +37,12 @@ import {
   deleteContaminationReport,
   updateContaminationReport,
 } from "../../services/contamination-reports-api"
+import { useAuth } from "@/providers/AuthProvider.js";
 
 export default function ReportDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [user, setUser] = useState(null) // Asumimos que el usuario se obtiene de alguna fuente
+  const { user } = useAuth()
 
   const [report, setReport] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -49,36 +50,25 @@ export default function ReportDetailPage() {
   const [activeTab, setActiveTab] = useState("details")
 
   useEffect(() => {
-    const fetchUserAndReport = async () => {
+    const fetchReport = async () => {
       try {
-        // Obtener usuario desde localStorage (ajusta según tu lógica de autenticación)
-        const storedUser = {
-          id: localStorage.getItem("id"),
-          role: localStorage.getItem("role"),
-        }
-        if (!storedUser.id) {
-          toast.error("Debe iniciar sesión para ver este reporte.")
-          navigate("/login")
-          return
-        }
-        setUser(storedUser)
-
         // Obtener el reporte específico
         const response = await getContaminationReport(id)
         if (response.error) {
           throw new Error(response.error)
         }
+        console.log("Fetched report:", response.data)
         setReport(response.data)
       } catch (error) {
         console.error("Error fetching report:", error)
         toast.error("No se pudo cargar el reporte. Intente nuevamente.")
-        navigate("/dashboard/reports")
+        // navigate("/dashboard/reports")
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchUserAndReport()
+    void fetchReport()
   }, [id, navigate])
 
   const handleDeleteReport = async () => {
@@ -136,14 +126,15 @@ export default function ReportDetailPage() {
 
   // Determinar si el usuario puede eliminar o validar un reporte
   const canDeleteReport =
-    report && user && (user.role === "administrador" || user.role === "moderador" || report.created_by === user.id)
+    report && user && (user.role === "administrador" || user.role === "moderador" || report.created_by === user._id)
   const canValidateReport = report && user && (user.role === "administrador" || user.role === "moderador")
 
   if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
         <div className="text-center">
-          <div className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-[#2ba4e0] border-t-transparent mx-auto"></div>
+          <div
+            className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-[#2ba4e0] border-t-transparent mx-auto"></div>
           <p className="text-[#435761]">Cargando detalles del reporte...</p>
         </div>
       </div>
@@ -153,7 +144,7 @@ export default function ReportDetailPage() {
   if (!report) {
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center">
-        <AlertTriangle className="mb-4 h-16 w-16 text-yellow-500" />
+        <AlertTriangle className="mb-4 h-16 w-16 text-yellow-500"/>
         <h2 className="text-2xl font-bold">Reporte no encontrado</h2>
         <p className="mb-4 text-[#435761]">El reporte que estás buscando no existe o ha sido eliminado.</p>
         <Button asChild className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all">
@@ -169,11 +160,12 @@ export default function ReportDetailPage() {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" asChild className="mr-2 border-[#418fb6]/30 hover:bg-[#418fb6]/10">
             <Link to="/dashboard/reports">
-              <ArrowLeft className="h-5 w-5 text-[#418fb6]" />
+              <ArrowLeft className="h-5 w-5 text-[#418fb6]"/>
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] bg-clip-text text-transparent">
+            <h1
+              className="text-3xl font-bold tracking-tight bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] bg-clip-text text-transparent">
               {report.title}
             </h1>
             <div className="flex items-center gap-2">
@@ -183,8 +175,8 @@ export default function ReportDetailPage() {
                   report.status === "validado"
                     ? "border-green-500 bg-green-50 text-green-700"
                     : report.status === "falso"
-                    ? "border-red-500 bg-red-50 text-red-700"
-                    : "border-yellow-500 bg-yellow-50 text-yellow-700"
+                      ? "border-red-500 bg-red-50 text-red-700"
+                      : "border-yellow-500 bg-yellow-50 text-yellow-700"
                 } transition-all`}
               >
                 {report.status === "pendiente" ? "Pendiente" : report.status}
@@ -198,7 +190,7 @@ export default function ReportDetailPage() {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm" className="bg-red-600 hover:bg-red-700">
-                <Trash2 className="mr-2 h-4 w-4" />
+                <Trash2 className="mr-2 h-4 w-4"/>
                 Eliminar
               </Button>
             </AlertDialogTrigger>
@@ -240,7 +232,7 @@ export default function ReportDetailPage() {
               <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
                 <CardHeader className="border-b pb-4">
                   <CardTitle className="flex items-center">
-                    <AlertTriangle className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                    <AlertTriangle className="h-5 w-5 mr-2 text-[#2ba4e0]"/>
                     Detalles del Reporte
                   </CardTitle>
                   <CardDescription>Información sobre la fuente de contaminación reportada</CardDescription>
@@ -248,7 +240,8 @@ export default function ReportDetailPage() {
                 <CardContent className="space-y-6 pt-6">
                   <div>
                     <h3 className="text-sm font-medium text-[#435761]">Descripción</h3>
-                    <p className="mt-2 whitespace-pre-line text-[#282f33] bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
+                    <p
+                      className="mt-2 whitespace-pre-line text-[#282f33] bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
                       {report.description}
                     </p>
                   </div>
@@ -267,7 +260,7 @@ export default function ReportDetailPage() {
                                 className="flex items-center"
                                 aria-label={`Ver ubicación en Google Maps (${report.lat}, ${report.lng})`}
                               >
-                                <MapPin className="mr-2 h-4 w-4 text-[#2ba4e0] hover:text-[#1a73c0] transition-colors" />
+                                <MapPin className="mr-2 h-4 w-4 text-[#2ba4e0] hover:text-[#1a73c0] transition-colors"/>
                               </a>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -283,7 +276,7 @@ export default function ReportDetailPage() {
                     <div className="bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
                       <h3 className="text-sm font-medium text-[#435761] mb-2">Fecha de Reporte</h3>
                       <div className="flex items-center text-[#282f33]">
-                        <Calendar className="mr-2 h-4 w-4 text-[#2ba4e0]" />
+                        <Calendar className="mr-2 h-4 w-4 text-[#2ba4e0]"/>
                         <span>{formatDate(report.created_at)}</span>
                       </div>
                     </div>
@@ -292,8 +285,8 @@ export default function ReportDetailPage() {
                   <div className="bg-[#f8fafc] p-4 rounded-lg border border-[#418fb6]/10">
                     <h3 className="text-sm font-medium text-[#435761] mb-2">Reportado por</h3>
                     <div className="flex items-center text-[#282f33]">
-                      <User className="mr-2 h-4 w-4 text-[#2ba4e0]" />
-                      <span>{report.created_by === user?.id ? "Tú" : report.created_by?.name || "Usuario"}</span>
+                      <User className="mr-2 h-4 w-4 text-[#2ba4e0]"/>
+                      <span>{report.created_by === user?._id ? "Tú" : report.created_by?.name || "Usuario"}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -307,16 +300,17 @@ export default function ReportDetailPage() {
                 <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
                   <CardHeader className="border-b pb-4">
                     <CardTitle className="flex items-center text-lg">
-                      <CheckCircle className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                      <CheckCircle className="h-5 w-5 mr-2 text-[#2ba4e0]"/>
                       Validación
                     </CardTitle>
                     <CardDescription>Actualizar el estado de este reporte</CardDescription>
                   </CardHeader>
                   <CardContent className="pt-6">
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                      <div
+                        className="flex items-center justify-between p-3 rounded-lg bg-yellow-50 border border-yellow-200">
                         <div className="flex items-center">
-                          <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
+                          <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2"/>
                           <div>
                             <p className="font-medium text-yellow-700">Pendiente</p>
                             <p className="text-xs text-yellow-600">Aún no verificado</p>
@@ -333,9 +327,10 @@ export default function ReportDetailPage() {
                         </Button>
                       </div>
 
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200">
+                      <div
+                        className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200">
                         <div className="flex items-center">
-                          <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                          <CheckCircle className="h-5 w-5 text-green-500 mr-2"/>
                           <div>
                             <p className="font-medium text-green-700">Validado</p>
                             <p className="text-xs text-green-600">Contaminación confirmada</p>
@@ -354,7 +349,7 @@ export default function ReportDetailPage() {
 
                       <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-200">
                         <div className="flex items-center">
-                          <XCircle className="h-5 w-5 text-red-500 mr-2" />
+                          <XCircle className="h-5 w-5 text-red-500 mr-2"/>
                           <div>
                             <p className="font-medium text-red-700">Falso</p>
                             <p className="text-xs text-red-600">No es contaminación</p>
@@ -379,7 +374,7 @@ export default function ReportDetailPage() {
               <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
                 <CardHeader className="border-b pb-4">
                   <CardTitle className="flex items-center text-lg">
-                    <ExternalLink className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                    <ExternalLink className="h-5 w-5 mr-2 text-[#2ba4e0]"/>
                     Acciones Rápidas
                   </CardTitle>
                 </CardHeader>
@@ -408,7 +403,7 @@ export default function ReportDetailPage() {
           <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
             <CardHeader className="border-b pb-4">
               <CardTitle className="flex items-center">
-                <Camera className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                <Camera className="h-5 w-5 mr-2 text-[#2ba4e0]"/>
                 Evidencia Visual
               </CardTitle>
               <CardDescription>Imágenes proporcionadas como evidencia</CardDescription>
@@ -437,12 +432,12 @@ export default function ReportDetailPage() {
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="left-2 bg-white/80 hover:bg-white border-[#418fb6]/20 text-[#2ba4e0]" />
-                  <CarouselNext className="right-2 bg-white/80 hover:bg-white border-[#418fb6]/20 text-[#2ba4e0]" />
+                  <CarouselPrevious className="left-2 bg-white/80 hover:bg-white border-[#418fb6]/20 text-[#2ba4e0]"/>
+                  <CarouselNext className="right-2 bg-white/80 hover:bg-white border-[#418fb6]/20 text-[#2ba4e0]"/>
                 </Carousel>
               ) : (
                 <div className="flex flex-col h-[300px] items-center justify-center rounded-md border border-dashed">
-                  <Camera className="h-16 w-16 text-[#2ba4e0]/30 mb-4" />
+                  <Camera className="h-16 w-16 text-[#2ba4e0]/30 mb-4"/>
                   <p className="text-[#435761]">No hay imágenes disponibles para este reporte.</p>
                 </div>
               )}
@@ -454,7 +449,7 @@ export default function ReportDetailPage() {
           <Card className="border-[#418fb6]/20 shadow-md overflow-hidden">
             <CardHeader className="border-b pb-4">
               <CardTitle className="flex items-center">
-                <MapPin className="h-5 w-5 mr-2 text-[#2ba4e0]" />
+                <MapPin className="h-5 w-5 mr-2 text-[#2ba4e0]"/>
                 Ubicación del Reporte
               </CardTitle>
               <CardDescription>Coordenadas geográficas donde se reportó la contaminación</CardDescription>
@@ -487,7 +482,7 @@ export default function ReportDetailPage() {
                   className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all"
                 >
                   <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-                    <MapPin className="mr-2 h-4 w-4" />
+                    <MapPin className="mr-2 h-4 w-4"/>
                     Ver en Google Maps
                   </a>
                 </Button>

@@ -32,7 +32,6 @@ import { useAuth } from "@/providers/AuthProvider.js";
 
 export default function DashboardLayout() {
   const { user } = useAuth()
-  console.log({ user })
   const location = useLocation()
   const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
