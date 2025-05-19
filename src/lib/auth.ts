@@ -47,7 +47,7 @@ export function setUpInterceptors(navigate, refreshToken) {
             localStorage.removeItem("accessToken")
             localStorage.removeItem("refreshToken")
 
-            if (window.location.pathname !== "/login") navigate("/login")
+            if (window.location.pathname.startsWith("/dashboard")) navigate("/login")
           })
       }
       console.log({ error })
