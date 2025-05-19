@@ -61,7 +61,7 @@ export default function EventsPage() {
     return (
       user?.role === "administrador" ||
       user?.role === "moderador" ||
-      event.created_by === user?.id
+      event.created_by === user?._id
     );
   };
 
