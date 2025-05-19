@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { PaginatedTable } from "@/components/ui/paginated-table"
-import { deleteEvent, getEvents } from "@/services/events-api"
+import { deleteEvent, getEvents } from "@/services/events-api.js"
 import { formatDate } from "@/utils/utils"
 import { useAuth } from "@/providers/AuthProvider"
 import { cn } from "@/lib/utils.js";
@@ -50,6 +50,7 @@ export default function EventsPage() {
   // Pagination + filters
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get("q") || ""
+  const [queryInput, setQueryInput] = useState(query)
   const statusFilter = searchParams.get("status") || "all"
   const page = parseInt(searchParams.get("page") || "1")
   const PAGE_SIZE = 10
@@ -58,10 +59,14 @@ export default function EventsPage() {
   const fetchEvents = (query: string) => {
     setIsLoading(true)
     getEvents({
-      searchQuery: query,
-      status: statusFilter,
+      q: query,
       page,
       pageSize: PAGE_SIZE,
+      // filter completed or not completed
+      ...((statusFilter === "active" || statusFilter === "completed") && {
+        date: new Date().toISOString(),
+        direction: statusFilter === "active" ? "forward" : "backward",
+      })
     })
       .then((res) => {
         if ('error' in res) return
@@ -85,12 +90,19 @@ export default function EventsPage() {
     fetchEvents(query)
   }, [statusFilter, page])
 
-  const handleSearch = (newQuery: string) => {
+  const updateQuery = (newQuery) => {
     setSearchParams({
       q: newQuery,
-      status: statusFilter,
-      page: "1",
-    })
+      role: statusFilter,
+      page: "1", // reset to first page on new search
+    });
+  };
+
+  const updateQueryDebounced = useDebouncedCallback(updateQuery, 200)
+
+  const handleSearch = (newQuery) => {
+    setQueryInput(newQuery);
+    updateQueryDebounced(newQuery);
   }
 
   const handleStatusChange = (newStatus: string) => {
@@ -140,15 +152,15 @@ export default function EventsPage() {
             Gestiona y participa en eventos relacionados con el Río Motagua para contribuir a su conservación.
           </p>
         </div>
-          <Button
-            className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
-            asChild
-          >
-            <Link to="/dashboard/events/new" className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Nuevo Evento
-            </Link>
-          </Button>
+        <Button
+          className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+          asChild
+        >
+          <Link to="/dashboard/events/new" className="flex items-center gap-2">
+            <Plus className="h-4 w-4"/>
+            Nuevo Evento
+          </Link>
+        </Button>
       </div>
 
       {/* Filtros */}
@@ -159,7 +171,7 @@ export default function EventsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#435761]"/>
             <Input
               placeholder="Buscar eventos..."
-              value={query}
+              value={queryInput}
               onChange={(e) => handleSearch(e.target.value)}
               className="pl-10 border-[#418fb6]/30 focus:border-[#2ba4e0] transition-all"
             />
@@ -175,7 +187,6 @@ export default function EventsPage() {
               <SelectItem value="all">Todos los estados</SelectItem>
               <SelectItem value="active">Activos</SelectItem>
               <SelectItem value="completed">Completados</SelectItem>
-              <SelectItem value="cancelled">Cancelados</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -205,7 +216,7 @@ export default function EventsPage() {
               <MapPin className="inline h-3.5 w-3.5 text-[#2ba4e0]"/>
               <span>{event.location}</span>
             </TableCell>
-            <TableCell>{formatDate(event.date_start)}</TableCell>
+            <TableCell>{formatDate(event.date_end)}</TableCell>
             <TableCell>
               <StatusBadge variant={getEventStatus(event.date_end)}>{getEventStatus(event.date_end)}</StatusBadge>
             </TableCell>

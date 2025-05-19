@@ -21,6 +21,7 @@ export function UsersPage() {
   // query params usage
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
+  const [queryInput, setQueryInput] = useState(query)
   const roleFilter = searchParams.get("role") || "all";
   const page = parseInt(searchParams.get("page") || "1");
   const PAGE_SIZE = 10;
@@ -46,13 +47,20 @@ export function UsersPage() {
 
   }
 
-  const handleSearch = (newQuery: string) => {
+  const updateQuery = (newQuery) => {
     setSearchParams({
       q: newQuery,
       role: roleFilter,
-      page: "1", // reset to first page
+      page: "1", // reset to first page on new search
     });
   };
+
+  const updateQueryDebounced = useDebouncedCallback(updateQuery, 200)
+
+  const handleSearch = (newQuery) => {
+    setQueryInput(newQuery);
+    updateQueryDebounced(newQuery);
+  }
 
   const handleRoleChange = (newRole: string) => {
     setSearchParams({
@@ -135,7 +143,7 @@ export function UsersPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#435761]"/>
             <Input
               placeholder="Buscar usuarios..."
-              value={query}
+              value={queryInput}
               onChange={(e) => handleSearch(e.target.value)}
               className="pl-10 border-[#418fb6]/30 focus:border-[#2ba4e0] transition-all"
             />
