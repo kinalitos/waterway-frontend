@@ -109,7 +109,7 @@ export default function DashboardLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b bg-white">
+      <header className="sticky top-0 z-40 border-b bg-white flex justify-center">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-2 font-bold text-xl text-[#2ba4e0]">

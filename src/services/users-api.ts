@@ -61,9 +61,31 @@ export const updateUser = async (id, user) => {
     }
   }
 }
+
 export const deleteUser = async (id) => {
   try {
     return await api.delete(`/users/${id}`)
+  } catch (err) {
+    return {
+      error: true,
+      err
+    }
+  }
+}
+
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string
+) => {
+  try {
+    // user is taken from the JWT
+    console.log({
+      currentPassword,
+      newPassword,
+      confirmPassword
+    })
+    return await api.put(`/users/change-password`, { currentPassword, newPassword, confirmPassword })
   } catch (err) {
     return {
       error: true,
