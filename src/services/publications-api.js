@@ -59,3 +59,16 @@ export const deletePublication = async (id) => {
         }
     }
 }
+
+
+export const getPublicationsByUserId = async () => {
+    try {
+        const response = await api.get(`/publications/user`);
+        return response.data;
+    } catch (err) {
+        return {
+            error: true,
+            err
+        };
+    }
+}
