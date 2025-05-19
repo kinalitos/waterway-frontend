@@ -18,7 +18,7 @@ const publicationSchema = z.object({
   content: z.string().min(10, "El contenido debe tener al menos 10 caracteres"),
 });
 
-export default function PublicationForm({ mode = "create" }) {
+export default function CreatePublication({ mode = "create" }) {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -143,7 +143,7 @@ export default function PublicationForm({ mode = "create" }) {
           </div>
 
           {/* Botón enviar */}
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg" disabled={isLoading}>
             {publicationId ? "Actualizar Publicación" : "Crear Publicación"}
           </Button>
         </form>

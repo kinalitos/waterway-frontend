@@ -154,7 +154,6 @@ export default function PublicationsPage() {
             Comparte conocimientos y descubrimientos con la comunidad.
           </p>
         </div>
-        {user?.role === "usuario" && (
           <Button
             className="bg-gradient-to-r from-[#2ba4e0] to-[#418fb6] hover:opacity-90 transition-all shadow-md hover:shadow-lg"
             asChild
@@ -167,7 +166,6 @@ export default function PublicationsPage() {
               Nueva Publicación
             </Link>
           </Button>
-        )}
       </div>
 
       {/* Buscador */}
