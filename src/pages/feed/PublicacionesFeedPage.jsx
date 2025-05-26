@@ -30,7 +30,7 @@ import {
   Plus
 } from "lucide-react"
 import { toast } from "sonner"
-
+import { getPublications } from "../../services/publications-api.js"
 import { usePublications } from "../../hooks/publication/usePublications.js"
 
 // Categorías para filtrar
@@ -55,30 +55,26 @@ const etiquetasPopulares = [
 ]
 
 export default function PublicacionesFeedPage() {
-/*   const [publicaciones, setPublicaciones] = useState([])
- */  const [filteredPublicaciones, setFilteredPublicaciones] = useState([])
+  const [filteredPublicaciones, setFilteredPublicaciones] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [activeFilter, setActiveFilter] = useState("todos")
   const [activeTag, setActiveTag] = useState("")
   const [newPostText, setNewPostText] = useState("")
   const { publicaciones, isLoading, setPublicaciones } = usePublications()
 
-
   // Filtrar publicaciones
   useEffect(() => {
-    let filtered = publicaciones
+    let filtered = Array.isArray(publicaciones) ? publicaciones : [];
 
-    // Filtrar por término de búsqueda
     if (searchTerm) {
       filtered = filtered.filter(
         (publicacion) =>
           publicacion.contenido.toLowerCase().includes(searchTerm.toLowerCase()) ||
           publicacion.usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
           publicacion.etiquetas.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase())),
-      )
+      );
     }
 
-    // Filtrar por categoría
     if (activeFilter !== "todos") {
       if (activeFilter === "amigos") {
         filtered = filtered.filter((publicacion) => publicacion.privacidad === "amigos")
@@ -86,12 +82,9 @@ export default function PublicacionesFeedPage() {
         filtered = filtered.filter((publicacion) => publicacion.guardado)
       } else if (activeFilter === "populares") {
         filtered = [...filtered].sort((a, b) => b.likes - a.likes)
-      } else if (activeFilter === "recientes") {
-        // Ya están ordenadas por fecha
       }
     }
 
-    // Filtrar por etiqueta
     if (activeTag) {
       filtered = filtered.filter((publicacion) =>
         publicacion.etiquetas.some((tag) => tag.toLowerCase() === activeTag.toLowerCase()),
@@ -99,10 +92,10 @@ export default function PublicacionesFeedPage() {
     }
 
     setFilteredPublicaciones(filtered)
-  }, [publicaciones, searchTerm, activeFilter, activeTag])
+  }, [publicaciones, searchTerm, activeFilter, activeTag]);
 
 
-  
+
 
   return (
     <div className="container mx-auto py-6 px-4">
@@ -150,9 +143,8 @@ export default function PublicacionesFeedPage() {
                       <Button
                         key={categoria.id}
                         variant={activeFilter === categoria.id ? "default" : "ghost"}
-                        className={`w-full justify-start ${
-                          activeFilter === categoria.id ? "bg-[#2ba4e0] hover:bg-[#418fb6]" : ""
-                        }`}
+                        className={`w-full justify-start ${activeFilter === categoria.id ? "bg-[#2ba4e0] hover:bg-[#418fb6]" : ""
+                          }`}
                         onClick={() => setActiveFilter(categoria.id)}
                       >
                         <categoria.icon className="mr-2 h-4 w-4" /> {categoria.nombre}
@@ -170,11 +162,10 @@ export default function PublicacionesFeedPage() {
                       <Badge
                         key={tag}
                         variant={activeTag === tag ? "default" : "outline"}
-                        className={`cursor-pointer ${
-                          activeTag === tag
-                            ? "bg-[#2ba4e0] hover:bg-[#418fb6]"
-                            : "hover:bg-[#2ba4e0]/10 border-[#2ba4e0] text-[#2ba4e0]"
-                        }`}
+                        className={`cursor-pointer ${activeTag === tag
+                          ? "bg-[#2ba4e0] hover:bg-[#418fb6]"
+                          : "hover:bg-[#2ba4e0]/10 border-[#2ba4e0] text-[#2ba4e0]"
+                          }`}
                         onClick={() => setActiveTag(activeTag === tag ? "" : tag)}
                       >
                         #{tag}
@@ -308,10 +299,16 @@ export default function PublicacionesFeedPage() {
                     </p>
                     <Button
                       className="mt-4 bg-[#2ba4e0] hover:bg-[#418fb6] text-white"
-                      onClick={() => {
-                        setSearchTerm("")
-                        setActiveFilter("todos")
-                        setActiveTag("")
+                      onClick={async () => {
+                        setSearchTerm("");
+                        setActiveFilter("todos");
+                        setActiveTag("");
+                        try {
+                          const data = await getPublications();
+                          setPublicaciones(data); // Esto actualizará el feed con las publicaciones de la DB
+                        } catch (err) {
+                          toast.error("No se pudieron cargar las publicaciones.");
+                        }
                       }}
                     >
                       Ver todas las publicaciones
@@ -336,7 +333,8 @@ export default function PublicacionesFeedPage() {
                               </Avatar>
                               <div>
                                 <div className="flex items-center">
-                                  <p className="font-medium text-[#282f33]">{publicacion.usuario.nombre}</p>
+                                  <p className="font-bold text-lg text-[#282f33]">{publicacion.titulo}</p>
+                                  <p className="text-sm text-[#434546]">{publicacion.usuario.nombre}</p>
                                   {publicacion.usuario.verificado && (
                                     <Badge className="ml-1 h-4 px-1 bg-[#2ba4e0]">
                                       <svg
@@ -401,28 +399,26 @@ export default function PublicacionesFeedPage() {
                         {/* Imágenes de la publicación */}
                         {publicacion.imagenes && publicacion.imagenes.length > 0 && (
                           <div
-                            className={`grid ${
-                              publicacion.imagenes.length === 1
-                                ? "grid-cols-1"
-                                : publicacion.imagenes.length === 2
+                            className={`grid ${publicacion.imagenes.length === 1
+                              ? "grid-cols-1"
+                              : publicacion.imagenes.length === 2
+                                ? "grid-cols-2"
+                                : publicacion.imagenes.length === 3
                                   ? "grid-cols-2"
-                                  : publicacion.imagenes.length === 3
-                                    ? "grid-cols-2"
-                                    : "grid-cols-2"
-                            } gap-1`}
+                                  : "grid-cols-2"
+                              } gap-1`}
                           >
                             {publicacion.imagenes.slice(0, 4).map((imagen, index) => (
                               <div
                                 key={index}
-                                className={`${
-                                  publicacion.imagenes.length === 1
-                                    ? "aspect-video"
-                                    : publicacion.imagenes.length === 2
-                                      ? "aspect-square"
-                                      : publicacion.imagenes.length === 3 && index === 0
-                                        ? "aspect-square row-span-2"
-                                        : "aspect-square"
-                                } overflow-hidden bg-gray-100 relative`}
+                                className={`${publicacion.imagenes.length === 1
+                                  ? "aspect-video"
+                                  : publicacion.imagenes.length === 2
+                                    ? "aspect-square"
+                                    : publicacion.imagenes.length === 3 && index === 0
+                                      ? "aspect-square row-span-2"
+                                      : "aspect-square"
+                                  } overflow-hidden bg-gray-100 relative`}
                               >
                                 <img
                                   src={imagen || "/placeholder.svg"}
@@ -476,9 +472,8 @@ export default function PublicacionesFeedPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`flex items-center gap-1 ${
-                              publicacion.guardado ? "text-[#8b5cf6]" : "text-[#434546] hover:text-[#8b5cf6]"
-                            }`}
+                            className={`flex items-center gap-1 ${publicacion.guardado ? "text-[#8b5cf6]" : "text-[#434546] hover:text-[#8b5cf6]"
+                              }`}
                             onClick={() => handleBookmark(publicacion.id)}
                           >
                             <Bookmark className="h-4 w-4" fill={publicacion.guardado ? "#8b5cf6" : "none"} />
@@ -511,7 +506,7 @@ export default function PublicacionesFeedPage() {
                     </Card>
                   ))}
 
-                  
+
                 </>
               )}
             </div>

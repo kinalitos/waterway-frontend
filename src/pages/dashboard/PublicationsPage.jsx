@@ -52,16 +52,18 @@ export default function PublicationsPage() {
       pageSize: PAGE_SIZE,
     })
       .then((response) => {
+        console.log("Respuesta del backend:", response); // <-- Agrega este log
         if ('error' in response) {
+          console.error("Error en la respuesta:", response.error); // <-- Y este
           return;
         }
-
         setPublications(response.results || response);
         totalPages.current = response.totalPages || Math.ceil(response.length / PAGE_SIZE);
       })
-      .catch(() =>
-        toast.error("No se pudieron cargar las publicaciones. Intente nuevamente.")
-      )
+      .catch((err) => {
+        console.error("Error en la petición:", err); // <-- Y este
+        toast.error("No se pudieron cargar las publicaciones. Intente nuevamente.");
+      })
       .finally(() => setIsLoading(false));
   };
 
@@ -165,7 +167,7 @@ export default function PublicationsPage() {
             to="/dashboard/publications/new"
             className="flex items-center gap-2"
           >
-            <Plus className="h-4 w-4"/>
+            <Plus className="h-4 w-4" />
             Nueva Publicación
           </Link>
         </Button>
@@ -176,7 +178,7 @@ export default function PublicationsPage() {
         className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 md:space-x-4 bg-white/50 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-[#418fb6]/10">
         <div className="flex flex-1 items-center space-x-2">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#435761]"/>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#435761]" />
             <Input
               placeholder="Buscar publicaciones..."
               value={queryInput}
@@ -201,7 +203,7 @@ export default function PublicationsPage() {
         isLoading={isLoading}
         emptyState={
           <div className="flex flex-col items-center justify-center py-8 text-[#435761]">
-            <BookOpen className="h-12 w-12 text-[#2ba4e0]/40 mb-2"/>
+            <BookOpen className="h-12 w-12 text-[#2ba4e0]/40 mb-2" />
             <p className="font-medium">No se encontraron publicaciones</p>
             <p className="text-sm text-[#435761]/70">Intenta con otra búsqueda o crea una nueva publicación</p>
           </div>
@@ -232,7 +234,7 @@ export default function PublicationsPage() {
             </TableCell>
             <TableCell>
               <div className="flex items-center">
-                <FileText className="mr-1.5 h-3.5 w-3.5 text-[#2ba4e0]"/>
+                <FileText className="mr-1.5 h-3.5 w-3.5 text-[#2ba4e0]" />
                 <span className="text-sm">
                   {formatDate(publication.created_at)}
                 </span>
@@ -256,9 +258,9 @@ export default function PublicationsPage() {
                       strokeLinejoin="round"
                       className="h-4 w-4"
                     >
-                      <circle cx="12" cy="12" r="1"/>
-                      <circle cx="12" cy="5" r="1"/>
-                      <circle cx="12" cy="19" r="1"/>
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="12" cy="5" r="1" />
+                      <circle cx="12" cy="19" r="1" />
                     </svg>
                   </Button>
                 </DropdownMenuTrigger>
@@ -274,7 +276,7 @@ export default function PublicationsPage() {
                       to={`/dashboard/publications/${publication._id}`}
                       className="flex items-center"
                     >
-                      <Eye className="mr-2 h-4 w-4 text-[#2ba4e0]"/>
+                      <Eye className="mr-2 h-4 w-4 text-[#2ba4e0]" />
                       <span>Ver completo</span>
                     </Link>
                   </DropdownMenuItem>
@@ -288,7 +290,7 @@ export default function PublicationsPage() {
                           to={`/dashboard/publications/edit/${publication._id}`}
                           className="flex items-center"
                         >
-                          <Edit className="mr-2 h-4 w-4 text-[#418fb6]"/>
+                          <Edit className="mr-2 h-4 w-4 text-[#418fb6]" />
                           <span>Editar</span>
                         </Link>
                       </DropdownMenuItem>
@@ -298,7 +300,7 @@ export default function PublicationsPage() {
                         }
                         className="text-red-600 cursor-pointer focus:text-red-600 focus:bg-red-50"
                       >
-                        <Trash2 className="mr-2 h-4 w-4"/>
+                        <Trash2 className="mr-2 h-4 w-4" />
                         <span>Eliminar</span>
                       </DropdownMenuItem>
                     </>

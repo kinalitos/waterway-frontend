@@ -6,47 +6,47 @@ import { useAuth } from "../../providers/AuthProvider.js";
 export function usePublications() {
   const [publicaciones, setPublicaciones] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
-
+  const { user } = useAuth ? useAuth() : { user: null };
 
   useEffect(() => {
-  if (!user) return; // Esperar hasta que user esté disponible
-
-  setIsLoading(true);
-  getPublications()
-    .then(async (data) => {
-      const publicacionesConUsuarios = await Promise.all(
-        data.map(async (pub) => {
-          return {
+    if (!user) return; 
+    setIsLoading(true);
+    getPublications()
+      .then((data) => {
+        if (data?.error) {
+          toast.error("No se pudieron cargar las publicaciones.");
+          setPublicaciones([]);
+        } else if (Array.isArray(data.results)) {
+          const mapped = data.results.map(pub => ({
             id: pub._id,
-            contenido: pub.content,
-            fecha: new Date(pub.created_at).toLocaleDateString("es-GT", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            }),
-            ubicacion: "Guatemala",
-            imagenes: [],
+            titulo: pub.title || "",
+            contenido: pub.content || "",
             usuario: {
-              id: pub.created_by,
-              nombre: user?.name || "Anónimo",
-              avatar: pub.author_avatar || "/placeholder.svg",
+              nombre: pub.created_by || "Usuario",
+              avatar: "/placeholder.svg",
               verificado: false,
             },
-            likes: Math.floor(Math.random() * 300),
-            comentarios: 0,
-            compartidos: 0,
+            fecha: pub.created_at ? new Date(pub.created_at).toLocaleDateString() : "",
+            etiquetas: pub.tags || [],
+            ubicacion: pub.location || "",
+            privacidad: pub.privacy || "publico",
+            imagenes: pub.images || [],
+            likes: pub.likes || 0,
+            comentarios: pub.commentsCount || 0,
+            compartidos: pub.shares || 0,
             guardado: false,
-            privacidad: "publico",
-            etiquetas: [],
-          };
-        })
-      );
-      setPublicaciones(publicacionesConUsuarios);
-    })
-    .catch(() => toast.error("No se pudieron cargar las publicaciones."))
-    .finally(() => setIsLoading(false));
-}, [user]); // Importante: depende de `user`
+          }));
+          setPublicaciones(mapped);
+        } else {
+          setPublicaciones([]);
+        }
+      })
+      .catch(() => {
+        toast.error("No se pudieron cargar las publicaciones.");
+        setPublicaciones([]);
+      })
+      .finally(() => setIsLoading(false));
+  }, [user]);
 
-  return { publicaciones, isLoading, setPublicaciones };
+  return { publicaciones, setPublicaciones, isLoading, setIsLoading };
 }
