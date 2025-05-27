@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getContaminationReports, u } from "../../services/contamination-reports-api";
+import { getContaminationReports } from "../../services/contamination-reports-api";
 
 export function useReportes() {
   const [reportes, setReportes] = useState([]);

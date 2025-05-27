@@ -300,7 +300,7 @@ export default function ReportesFeedPage() {
                         key={img._id}
                         src={img.image_key}
                         alt="reporte"
-                        className="w-full h-full object-cover rounded"
+                        className="w-full h-60 object-cover rounded"
                       />
                     ))}
                   </div>
