@@ -135,11 +135,11 @@ export default function ReportesFeedPage() {
                   Pendiente
                 </TabsTrigger>
                 <TabsTrigger
-                  value="verificado"
+                  value="validado"
                   className="flex items-center gap-2 w-full justify-start"
                 >
                   <span className="w-3 h-3 rounded-full bg-green-500" />
-                  Verificado
+                  Validado
                 </TabsTrigger>
                 <TabsTrigger
                   value="falso"
@@ -277,7 +277,7 @@ export default function ReportesFeedPage() {
                     className={
                       reporte.status === "pendiente"
                         ? "bg-yellow-400 text-white"
-                        : reporte.status === "verificado"
+                        : reporte.status === "validado"
                           ? "bg-green-500 text-white"
                           : "bg-red-500 text-white"
                     }
