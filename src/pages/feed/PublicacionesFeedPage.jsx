@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import { Textarea } from "@/components/ui/textarea";
 import {
   MessageSquare,
   Share2,
@@ -32,7 +33,8 @@ import {
 import { toast } from "sonner"
 import { getPublications } from "../../services/publications-api.js"
 import { usePublications } from "../../hooks/publication/usePublications.js"
-
+import { useCreatePublication } from "../../hooks/publication/createPublication.js"
+import { useCreateReport } from "../../hooks/report/createReport.js"
 // Categorías para filtrar
 const categorias = [
   /* { id: "todos", nombre: "Todas las publicaciones", icon: Globe },
@@ -41,7 +43,6 @@ const categorias = [
   { id: "populares", nombre: "Más populares", icon: TrendingUp },
   { id: "recientes", nombre: "Más recientes", icon: Clock },
 ]
-
 
 // Etiquetas populares
 const etiquetasPopulares = [
@@ -60,8 +61,37 @@ export default function PublicacionesFeedPage() {
   const [activeFilter, setActiveFilter] = useState("todos")
   const [activeTag, setActiveTag] = useState("")
   const [newPostText, setNewPostText] = useState("")
-  const { publicaciones, isLoading, setPublicaciones } = usePublications()
+  const [newPostTitle, setNewPostTitle] = useState("")
+  const { loading: creating, createPublicationFunction } = useCreatePublication();
 
+  const { publicaciones, isLoading, setPublicaciones, refresh } = usePublications();
+  const handleCreatePost = async () => {
+    if (!newPostText.trim() || !newPostTitle.trim()) {
+      toast.error("Por favor completa todos los campos");
+      return;
+    }
+
+
+    try {
+
+      const newReport = {
+        title: newPostTitle,
+        content: newPostText,
+      };
+
+      await createPublicationFunction(newReport);
+      toast.success("Publicación creada con éxito");
+
+      setNewPostText("");
+      setNewPostTitle("");
+
+
+      await refresh();
+    } catch (err) {
+      console.error(err);
+      toast.error("Error inesperado al crear el reporte");
+    }
+  };
   // Filtrar publicaciones
   useEffect(() => {
     let filtered = Array.isArray(publicaciones) ? publicaciones : [];
@@ -240,13 +270,24 @@ export default function PublicacionesFeedPage() {
                     <AvatarImage src="/placeholder.svg" alt="Tu avatar" />
                     <AvatarFallback>CM</AvatarFallback>
                   </Avatar>
+
                   <div className="flex-1 space-y-3">
+                    {/* Campo para el Título */}
                     <Input
+                      placeholder="Título del reporte"
+                      value={newPostTitle}
+                      onChange={(e) => setNewPostTitle(e.target.value)}
+                      className="bg-gray-100 border-0 focus-visible:ring-[#2ba4e0]"
+                    />
+
+                    {/* Campo para el Contenido */}
+                    <Textarea
                       placeholder="¿Qué está pasando en el mundo ambiental?"
                       value={newPostText}
                       onChange={(e) => setNewPostText(e.target.value)}
-                      className="bg-gray-100 border-0 focus-visible:ring-[#2ba4e0]"
+                      className="bg-gray-100 border-0 focus-visible:ring-[#2ba4e0] resize-none"
                     />
+
                     <div className="flex flex-wrap gap-2">
                       <Button variant="outline" className="text-[#434546]">
                         <MapPin className="mr-2 h-4 w-4 text-[#f97316]" /> Ubicación
@@ -260,23 +301,26 @@ export default function PublicacionesFeedPage() {
                       <Button variant="outline" className="text-[#434546]">
                         <Smile className="mr-2 h-4 w-4 text-[#8b5cf6]" /> Sentimiento
                       </Button>
+
                       <div className="ml-auto flex items-center gap-2">
                         <Button variant="ghost" size="icon" className="h-9 w-9">
                           <Globe className="h-5 w-5 text-[#434546]" />
                         </Button>
-                        {/* <Button
+
+                        <Button
                           className="bg-[#2ba4e0] hover:bg-[#418fb6] text-white"
-                          onClick={handlePost}
-                          disabled={!newPostText.trim()}
+                          onClick={handleCreatePost}
+                          disabled={!newPostTitle.trim() || !newPostText.trim()}
                         >
                           Publicar
-                        </Button> */}
+                        </Button>
                       </div>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
+
 
             {/* Tabs para ordenar */}
             <Tabs defaultValue="destacadas">
@@ -326,16 +370,19 @@ export default function PublicacionesFeedPage() {
                             <div className="flex items-start gap-3">
                               <Avatar>
                                 <AvatarImage
-                                  src={publicacion.usuario.avatar || "/placeholder.svg"}
-                                  alt={publicacion.usuario.nombre}
+                                  src={"/placeholder.svg"}
+                                  alt={publicacion.usuario.avatar || "Usuario"}
                                 />
-                                <AvatarFallback>{publicacion.usuario.nombre.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>
+                                  {publicacion.usuario.avatar || "?"}
+                                </AvatarFallback>
                               </Avatar>
                               <div>
-                                <div className="flex items-center">
+                                <div className="flex items-center gap-1">
                                   <p className="font-bold text-lg text-[#282f33]">{publicacion.titulo}</p>
-                                  <p className="text-sm text-[#434546]">{publicacion.usuario.nombre}</p>
-                                  {publicacion.usuario.verificado && (
+                                  <p className="text-sm text-[#434546]">{publicacion.usuario.nombre.name || "Usuario"}</p>
+                                  {/* Verificado: usar false por ahora */}
+                                  {false && (
                                     <Badge className="ml-1 h-4 px-1 bg-[#2ba4e0]">
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"

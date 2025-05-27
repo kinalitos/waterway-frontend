@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getPublications } from "@/services/publications-api";
 import { toast } from "sonner";
 import { useAuth } from "../../providers/AuthProvider.js";
@@ -8,8 +8,9 @@ export function usePublications() {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth ? useAuth() : { user: null };
 
-  useEffect(() => {
-    if (!user) return; 
+  const fetchPublications = useCallback(() => {
+    if (!user) return;
+
     setIsLoading(true);
     getPublications()
       .then((data) => {
@@ -48,5 +49,15 @@ export function usePublications() {
       .finally(() => setIsLoading(false));
   }, [user]);
 
-  return { publicaciones, setPublicaciones, isLoading, setIsLoading };
+  useEffect(() => {
+    fetchPublications();
+  }, [fetchPublications]);
+
+  return {
+    publicaciones,
+    setPublicaciones,
+    isLoading,
+    setIsLoading,
+    refresh: fetchPublications,
+  };
 }
