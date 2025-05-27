@@ -96,7 +96,7 @@ export const createContaminationReport = async (data) => {
 
 export const updateContaminationReport = async (id, contaminationReport) => {
   try {
-    const response = await api.put(`/contamination-reports/${id}`, contaminationReport);
+    const response = await api.put(`/contamination-reports/${id}/status`, contaminationReport);
     return { data: response.data, error: null };
   } catch (err) {
     console.error("Error updating contamination report", err.response?.data || err.message);

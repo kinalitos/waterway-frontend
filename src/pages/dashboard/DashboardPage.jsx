@@ -10,14 +10,36 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { getRecentEvents, getRecentPublications, getRecentReports } from "@/services/data-services"
 import { formatDate } from '@/utils/utils.js'
 import { useAuth } from "@/providers/AuthProvider.js";
-
+import { getPublications } from "../../services/publications-api"
+import { getEvents } from "../../services/events-api"
+import { getContaminationReports } from "../../services/contamination-reports-api"
 export default function DashboardPage() {
   const { user } = useAuth();
   const [recentEvents, setRecentEvents] = useState([])
   const [recentPublications, setRecentPublications] = useState([])
   const [recentReports, setRecentReports] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [eventsCount, setEventsCount] = useState(0);
+  const [publicationsCount, setPublicationsCount] = useState(0);
+  const [reportsCount, setReportsCount] = useState(0);
 
+  useEffect(() => {
+  const fetchCounts = async () => {
+    try {
+      const [events, publications, reports] = await Promise.all([
+        getEvents(),
+        getPublications(),
+        getContaminationReports(),
+      ]);
+      setEventsCount(Array.isArray(events.results) ? events.results.length : 0);
+      setPublicationsCount(Array.isArray(publications.results) ? publications.results.length : 0);
+      setReportsCount(Array.isArray(reports.data.results) ? reports.data.results.length : 0);
+    } catch (error) {
+      toast.error("No se pudieron cargar los totales.");
+    }
+  };
+  fetchCounts();
+}, []);
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -61,37 +83,43 @@ export default function DashboardPage() {
         <Card className="border-[#418fb6]/20">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[#435761]">Eventos Activos</CardTitle>
-            <Calendar className="h-4 w-4 text-[#2ba4e0]"/>
+            <Calendar className="h-4 w-4 text-[#2ba4e0]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#282f33]">12</div>
-            <p className="text-xs text-[#435761]">+2 desde el mes pasado</p>
+            <div className="text-2xl font-bold text-[#282f33]">
+              {isLoading ? "..." : eventsCount}
+            </div>
+            <p className="text-xs text-[#435761]">Eventos en total</p>
           </CardContent>
         </Card>
         <Card className="border-[#418fb6]/20">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[#435761]">Publicaciones</CardTitle>
-            <FileText className="h-4 w-4 text-[#2ba4e0]"/>
+            <FileText className="h-4 w-4 text-[#2ba4e0]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#282f33]">48</div>
-            <p className="text-xs text-[#435761]">+8 desde el mes pasado</p>
+            <div className="text-2xl font-bold text-[#282f33]">
+              {isLoading ? "..." : publicationsCount}
+            </div>
+            <p className="text-xs text-[#435761]">Publicaciones en total</p>
           </CardContent>
         </Card>
         <Card className="border-[#418fb6]/20">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[#435761]">Reportes de Contaminación</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-[#2ba4e0]"/>
+            <AlertTriangle className="h-4 w-4 text-[#2ba4e0]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#282f33]">32</div>
-            <p className="text-xs text-[#435761]">+5 desde el mes pasado</p>
+            <div className="text-2xl font-bold text-[#282f33]">
+              {isLoading ? "..." : reportsCount}
+            </div>
+            <p className="text-xs text-[#435761]">Reportes en total</p>
           </CardContent>
         </Card>
         <Card className="border-[#418fb6]/20">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[#435761]">Índice de Calidad</CardTitle>
-            <BarChart2 className="h-4 w-4 text-[#2ba4e0]"/>
+            <BarChart2 className="h-4 w-4 text-[#2ba4e0]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-[#282f33]">65%</div>
@@ -99,7 +127,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-
       {/* Contenido principal */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Eventos recientes */}
@@ -111,15 +138,15 @@ export default function DashboardPage() {
           <CardContent className="space-y-4">
             {isLoading ? (
               <div className="space-y-2">
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
               </div>
             ) : recentEvents.length > 0 ? (
               recentEvents.map((event) => (
                 <div key={event.id} className="flex items-start space-x-3 rounded-lg border p-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#418fb6]/10">
-                    <Calendar className="h-5 w-5 text-[#2ba4e0]"/>
+                    <Calendar className="h-5 w-5 text-[#2ba4e0]" />
                   </div>
                   <div className="space-y-1">
                     <h3 className="font-medium text-[#282f33]">{event.title}</h3>
@@ -135,7 +162,7 @@ export default function DashboardPage() {
             <Button variant="ghost" className="w-full text-[#2ba4e0]" asChild>
               <Link to="/dashboard/events">
                 Ver todos los eventos
-                <ArrowRight className="ml-2 h-4 w-4"/>
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </CardFooter>
@@ -150,15 +177,15 @@ export default function DashboardPage() {
           <CardContent className="space-y-4">
             {isLoading ? (
               <div className="space-y-2">
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
               </div>
             ) : recentPublications.length > 0 ? (
               recentPublications.map((publication) => (
                 <div key={publication.id} className="flex items-start space-x-3 rounded-lg border p-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#418fb6]/10">
-                    <FileText className="h-5 w-5 text-[#2ba4e0]"/>
+                    <FileText className="h-5 w-5 text-[#2ba4e0]" />
                   </div>
                   <div className="space-y-1">
                     <h3 className="font-medium text-[#282f33]">{publication.title}</h3>
@@ -174,7 +201,7 @@ export default function DashboardPage() {
             <Button variant="ghost" className="w-full text-[#2ba4e0]" asChild>
               <Link to="/dashboard/publications">
                 Ver todas las publicaciones
-                <ArrowRight className="ml-2 h-4 w-4"/>
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </CardFooter>
@@ -189,28 +216,27 @@ export default function DashboardPage() {
           <CardContent className="space-y-4">
             {isLoading ? (
               <div className="space-y-2">
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
-                <div className="h-12 rounded-md bg-gray-200 animate-pulse"/>
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
+                <div className="h-12 rounded-md bg-gray-200 animate-pulse" />
               </div>
             ) : recentReports.length > 0 ? (
               recentReports.map((report) => (
                 <div key={report.id} className="flex items-start space-x-3 rounded-lg border p-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#418fb6]/10">
-                    <AlertTriangle className="h-5 w-5 text-[#2ba4e0]"/>
+                    <AlertTriangle className="h-5 w-5 text-[#2ba4e0]" />
                   </div>
                   <div className="space-y-1">
                     <h3 className="font-medium text-[#282f33]">{report.title}</h3>
                     <div className="flex items-center space-x-2">
-                        <span
-                          className={`inline-flex h-2 w-2 rounded-full ${
-                            report.status === "validado"
-                              ? "bg-green-500"
-                              : report.status === "falso"
-                                ? "bg-red-500"
-                                : "bg-yellow-500"
+                      <span
+                        className={`inline-flex h-2 w-2 rounded-full ${report.status === "validado"
+                          ? "bg-green-500"
+                          : report.status === "falso"
+                            ? "bg-red-500"
+                            : "bg-yellow-500"
                           }`}
-                        />
+                      />
                       <p className="text-xs capitalize text-[#435761]">{report.status}</p>
                     </div>
                   </div>
@@ -224,7 +250,7 @@ export default function DashboardPage() {
             <Button variant="ghost" className="w-full text-[#2ba4e0]" asChild>
               <Link to="/dashboard/reports">
                 Ver todos los reportes
-                <ArrowRight className="ml-2 h-4 w-4"/>
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </CardFooter>

@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import axios from "axios"
 import { useAuth } from "@/providers/AuthProvider.js"
+import { useReportes } from "../../hooks/report/useReports.js"
 
 // Configuración inicial del mapa
 const INITIAL_CENTER = { lat: 14.9515591, lon: -89.7709795 }
@@ -30,6 +31,7 @@ export default function MapsPage() {
   const [bbox, setBbox] = useState(null)
   const mapRef = useRef(null)
   const isMapInitialized = useRef(false)
+  const { reportes, loading, error, setFilterStatus, filterStatus } = useReportes();
 
   // Verificar permisos
   const canViewHeatMap = ["investigador", "moderador", "administrador"].includes(user?.role)
@@ -164,36 +166,18 @@ export default function MapsPage() {
     }
   }, [trueColorImage, waterQualityImage])
 
-  // Ejemplo de marcadores de reportes
-  const reportMarkers = [
-    {
-      id: 1,
-      lat: 15.6,
-      lon: -89.9,
-      status: "pending",
-      color: "yellow",
-      title: "Vertido industrial",
-      description: "Posible contaminación por vertido industrial no tratado",
-    },
-    {
-      id: 2,
-      lat: 15.5,
-      lon: -90.0,
-      status: "validated",
-      color: "green",
-      title: "Basura acumulada",
-      description: "Acumulación de desechos plásticos en la orilla del río",
-    },
-    {
-      id: 3,
-      lat: 15.4,
-      lon: -89.8,
-      status: "false",
-      color: "red",
-      title: "Agua turbia",
-      description: "Reporte de agua turbia que resultó ser sedimentación natural",
-    },
-  ]
+  function getStatusColor(status) {
+  switch (status) {
+    case "pendiente":
+      return "#facc15"; // amarillo (Tailwind yellow-400)
+    case "validado":
+      return "#22c55e"; // verde (Tailwind green-500)
+    case "falso":
+      return "#ef4444"; // rojo (Tailwind red-500)
+    default:
+      return "#a1a1aa"; // gris (Tailwind gray-400) para estados desconocidos
+  }
+}
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -394,27 +378,29 @@ export default function MapsPage() {
 
                 {waterQualityImage && bbox && <ImageOverlay url={waterQualityImage} bounds={bbox} opacity={0.85} />}
 
-                {showReportsMap &&
-                  reportMarkers.map((marker) => (
+                {Array.isArray(reportes.results) && showReportsMap &&
+                  reportes.results.map((report) => (
                     <CircleMarker
-                      key={marker.id}
-                      center={[marker.lat, marker.lon]}
+                      key={report.id}
+                      center={[parseFloat(report.lat), parseFloat(report.lng)]}
                       radius={8}
-                      fillColor={marker.color}
+                      fillColor={getStatusColor(report.status)}
                       color="white"
                       weight={2}
                       fillOpacity={0.8}
                       className="hover:animate-pulse transition-all duration-300"
                     >
+
                       <Popup className="leaflet-popup">
                         <div className="p-1">
-                          <h3 className="font-medium text-[#282f33]">{marker.title}</h3>
-                          <p className="text-xs text-[#435761] mt-1">{marker.description}</p>
+                          <h3 className="font-medium text-[#282f33]">{report.title}</h3>
+                          <p className="text-xs text-[#435761] mt-1">{report.description}</p>
                           <div className="flex items-center mt-2 text-xs">
                             <MapPin className="h-3 w-3 mr-1 text-[#2ba4e0]" />
                             <span>
-                              {marker.lat.toFixed(4)}, {marker.lon.toFixed(4)}
+                              {parseFloat(report.lat).toFixed(4)}, {parseFloat(report.lng).toFixed(4)}
                             </span>
+
                           </div>
                           <Button size="sm" className="w-full mt-2 bg-[#2ba4e0] hover:bg-[#418fb6] text-xs py-1">
                             Ver detalles
